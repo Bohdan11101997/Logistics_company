@@ -4,8 +4,8 @@ DROP TABLE IF EXISTS "logistic_company".person_role CASCADE;
 DROP TABLE IF EXISTS "logistic_company"."advertisement" CASCADE;
 DROP TABLE IF EXISTS "logistic_company"."advertisement_type" CASCADE;
 DROP TABLE IF EXISTS "logistic_company"."order" CASCADE;
+DROP TABLE IF EXISTS "logistic_company"."order_type" CASCADE;
 DROP TABLE IF EXISTS "logistic_company"."person" CASCADE;
-DROP TABLE IF EXISTS "logistic_company"."contact_address" CASCADE;
 DROP TABLE IF EXISTS "logistic_company"."contact" CASCADE;
 DROP TABLE IF EXISTS "logistic_company"."address" CASCADE;
 DROP TABLE IF EXISTS "logistic_company"."role" CASCADE;
@@ -95,15 +95,32 @@ CREATE TABLE "logistic_company"."work_day"
 
 CREATE TABLE "logistic_company"."order"
 (
-  "order_id"          INT4 DEFAULT nextval('main_seq_id' :: REGCLASS)    NOT NULL,
-  "creation_date"     TIMESTAMP                                          NOT NULL DEFAULT NOW(),
-  "delivery_time"     TIME                                               NOT NULL,
-  "order_status_time" TIMESTAMP                                          NOT NULL DEFAULT NOW(),
-  "courier_id"        INT4                                               NOT NULL,
-  "reseiver_id"       INT4                                               NOT NULL,
-  "sender_id"         INT4                                               NOT NULL,
-  "office_id"         INT4                                               NOT NULL,
-  "order_status_id"   INT4
+  "order_id"            INT4 DEFAULT nextval('main_seq_id' :: REGCLASS)    NOT NULL,
+  "creation_date"       TIMESTAMP                                          NOT NULL DEFAULT NOW(),
+  "delivery_time"       TIME                                               NOT NULL,
+  "order_status_time"   TIMESTAMP                                          NOT NULL DEFAULT NOW(),
+  "courier_id"          INT4                                               NOT NULL,
+  "receiver_contact_id" INT4                                               NOT NULL,
+  "receiver_address_id" INT4                                               NOT NULL,
+  "sender_contact_id"   INT4                                               NOT NULL,
+  "sender_address_id"   INT4                                               NOT NULL,
+  "office_id"           INT4                                               NOT NULL,
+  "order_status_id"     INT4,
+  "order_type_id"       INT4                                               NOT NULL,
+  "weight"              NUMERIC(5, 1)                                      NOT NULL,
+  "width"               INT4,
+  "height"              INT4,
+  "length"              INT4
+);
+
+CREATE TABLE "logistic_company"."order_type"
+(
+  "order_type_id" INT4 DEFAULT nextval('main_seq_id' :: REGCLASS) NOT NULL,
+  "name"          VARCHAR(30) COLLATE "default"                   NOT NULL,
+  "max_weight"    NUMERIC(5, 1)                                   NOT NULL,
+  "max_width"     INT4                                            NOT NULL,
+  "max_height"    INT4                                            NOT NULL,
+  "max_length"    INT4                                            NOT NULL
 );
 
 CREATE TABLE "logistic_company"."office"
@@ -117,14 +134,6 @@ CREATE TABLE "logistic_company"."order_status"
 (
   "order_status_id" INT4 DEFAULT nextval('main_seq_id' :: REGCLASS)   NOT NULL,
   "status_name"     VARCHAR(60) COLLATE "default"                     NOT NULL
-);
-
-
-CREATE TABLE "logistic_company"."address_contact"
-(
-  "address_contact_id" INT4 DEFAULT nextval('main_seq_id' :: REGCLASS) NOT NULL,
-  "contact_id"         INT4,
-  "address_id"         INT4
 );
 
 CREATE TABLE "logistic_company"."address"
@@ -172,8 +181,6 @@ ALTER TABLE logistic_company.registration_link
   ADD PRIMARY KEY (registration_link_id);
 ALTER TABLE logistic_company.person_role
   ADD PRIMARY KEY (person_id, role_id);
-ALTER TABLE "logistic_company"."address_contact"
-  ADD PRIMARY KEY ("address_contact_id");
 
 
 ALTER TABLE "logistic_company"."person_role"
@@ -192,29 +199,28 @@ ALTER TABLE "logistic_company"."person"
   ADD FOREIGN KEY ("contact_id") REFERENCES "logistic_company"."contact" (contact_id);
 
 ALTER TABLE "logistic_company"."order"
-  ADD FOREIGN KEY ("reseiver_id") REFERENCES "logistic_company"."address_contact" ("address_contact_id");
-
-ALTER TABLE "logistic_company"."order"
-  ADD FOREIGN KEY ("sender_id") REFERENCES "logistic_company"."address_contact" ("address_contact_id");
-
-ALTER TABLE "logistic_company"."order"
   ADD FOREIGN KEY ("office_id") REFERENCES "logistic_company"."office" ("office_id");
 
 ALTER TABLE "logistic_company"."order"
   ADD FOREIGN KEY ("order_status_id") REFERENCES "logistic_company"."order_status" ("order_status_id");
-
-ALTER TABLE "logistic_company"."address_contact"
-  ADD FOREIGN KEY ("contact_id") REFERENCES "logistic_company"."contact" ("contact_id");
-
-ALTER TABLE "logistic_company"."address_contact"
-  ADD FOREIGN KEY ("address_id") REFERENCES "logistic_company"."address" ("address_id");
-
 
 ALTER TABLE "logistic_company"."office"
   ADD FOREIGN KEY ("address_id") REFERENCES "logistic_company"."address" (address_id);
 
 ALTER TABLE "logistic_company"."order"
   ADD FOREIGN KEY ("courier_id") REFERENCES "logistic_company"."person" ("person_id");
+
+ALTER TABLE "logistic_company"."order"
+  ADD FOREIGN KEY ("receiver_contact_id") REFERENCES "logistic_company"."contact" ("contact_id");
+
+ALTER TABLE "logistic_company"."order"
+  ADD FOREIGN KEY ("receiver_address_id") REFERENCES "logistic_company"."address" ("address_id");
+
+ALTER TABLE "logistic_company"."order"
+  ADD FOREIGN KEY ("sender_contact_id") REFERENCES "logistic_company"."contact" ("contact_id");
+
+ALTER TABLE "logistic_company"."order"
+  ADD FOREIGN KEY ("sender_address_id") REFERENCES "logistic_company"."address" ("address_id");
 
 ALTER TABLE logistic_company.registration_link
   ADD FOREIGN KEY (person_id) REFERENCES logistic_company.person (person_id);
@@ -229,13 +235,13 @@ DECLARE
 BEGIN
   DELETE FROM person
   WHERE person.registration_date < NOW() - INTERVAL '24 hour' AND person_id IN (SELECT person_id
-                                                                                  FROM person_role
-                                                                                  WHERE role_id IN (SELECT
-                                                                                                      logistic_company.role.role_id
-                                                                                                    FROM
-                                                                                                      logistic_company.role
-                                                                                                    WHERE role_name =
-                                                                                                          'ROLE_UNCONFIRMED'));
+                                                                                FROM person_role
+                                                                                WHERE role_id IN (SELECT
+                                                                                                    logistic_company.role.role_id
+                                                                                                  FROM
+                                                                                                    logistic_company.role
+                                                                                                  WHERE role_name =
+                                                                                                        'ROLE_UNCONFIRMED'));
   IF found
   THEN
     GET DIAGNOSTICS row_count = ROW_COUNT;
