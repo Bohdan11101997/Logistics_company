@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
@@ -81,9 +82,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             pr.setPersonId(employeeId);
             employeeRoles.add(pr);
         }
-
         personRoleDao.deleteMany(employeeRoles);
-
         if (!hasUserRole) personDao.delete(employeeId);
     }
 
@@ -98,6 +97,21 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         return personDao.findOne(id);
+    }
+
+    @Override
+    public Optional<Person> findOne(String userName) {
+        Optional<Person> opt =  personDao.findOne(userName);
+        if (!opt.isPresent()) {
+            return Optional.empty();
+        }
+        Person emp = opt.get();
+        for (Role r: emp.getRoles()) {
+            if (r.isEmployeeRole()) {
+                return opt;
+            }
+        }
+        return Optional.empty();
     }
 
     @Override
@@ -120,7 +134,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                         .collect(Collectors.toSet());
         List<Long> searchRoleIds = (searchForm.getRoleIds() != null) ? searchForm.getRoleIds() : new ArrayList<>();
         // Leave only employee roles
-        for (Long id: searchRoleIds) {
+        for (Long id : searchRoleIds) {
             if (!availableRoleIds.contains(id)) {
                 searchRoleIds.remove(id);
             }

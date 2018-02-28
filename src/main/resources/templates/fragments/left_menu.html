@@ -11,6 +11,8 @@
     <!-- Bootstrap -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" th:href="@{/css/admin.css}" type="text/css" href="../static/css/admin.css" />
+
+
 </head>
 
 <body>
@@ -46,12 +48,12 @@
                                 <div id="dropdown-admin" class="panel-collapse collapse">
                                     <div class="panel-body">
                                         <ul class="nav navbar-nav">
-                                            <li><a th:href = "@{/admin/employees}" href="#">Employee List</a></li>
-                                            <li><a th:href = "@{/admin/crud/employee}" href="#">Create new employee</a></li>
-                                            <li><a th:href = "@{/admin/offices}" href="#">Office List</a></li>
-                                            <li><a th:href = "@{/admin/crud/office}" href="#">Create new office</a></li>
-                                            <li><a th:href = "@{/admin/advertisements}" href="#">Advertisement List</a></li>
-                                            <li><a th:href = "@{/admin/crud/advertisement}" href="#">Create new advertisement</a></li>
+                                            <li><a id="employees" th:href = "@{/admin/employees}" href="#">Employee List</a></li>
+                                            <li><a id="crud_employee" th:href = "@{/admin/crud/employee}" href="#">Create new employee</a></li>
+                                            <li><a id="offices" th:href = "@{/admin/offices}" href="#">Office List</a></li>
+                                            <li><a id="crud_office" th:href = "@{/admin/crud/office}" href="#">Create new office</a></li>
+                                            <li><a id="advertisements" th:href = "@{/admin/advertisements}" href="#">Advertisement List</a></li>
+                                            <li><a id="crud_advertisement" th:href = "@{/admin/crud/advertisement}" href="#">Create new advertisement</a></li>
                                         </ul>
                                     </div>
                                 </div>

@@ -16,6 +16,7 @@ public interface EmployeeService {
     Person update(Person employee);
     void delete(Long id);
     Optional<Person> findOne(Long id);
+    Optional<Person> findOne(String userName);
     List<Person> findAll();
     boolean contains(Long id);
     List<Person> search(SearchForm searchForm);
