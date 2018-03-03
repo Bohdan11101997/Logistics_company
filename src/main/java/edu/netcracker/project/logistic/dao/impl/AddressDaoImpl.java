@@ -4,6 +4,8 @@ import edu.netcracker.project.logistic.dao.AddressDao;
 import edu.netcracker.project.logistic.dao.QueryDao;
 import edu.netcracker.project.logistic.model.Address;
 import edu.netcracker.project.logistic.service.QueryService;
+
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -23,7 +25,7 @@ import java.util.Optional;
 @Repository
 public class AddressDaoImpl implements AddressDao, QueryDao, RowMapper<Address> {
 
-    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(ContactDaoImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(ContactDaoImpl.class);
 
     private JdbcTemplate jdbcTemplate;
     private QueryService queryService;
