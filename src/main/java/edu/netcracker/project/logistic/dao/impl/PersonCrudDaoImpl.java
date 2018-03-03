@@ -194,6 +194,18 @@ public class PersonCrudDaoImpl implements PersonCrudDao, QueryDao, RowMapper<Per
     }
 
     @Override
+    public List<Person> findByRoleId(Long roleId) {
+        try {
+            return jdbcTemplate.query(
+                    getFindByRoleIdQuery(),
+                    this
+            );
+        } catch (EmptyResultDataAccessException ex) {
+            return Collections.emptyList();
+        }
+    }
+
+    @Override
     public List<Person> search(SearchForm searchForm) {
         String firstName = searchForm.getFirstName();
         firstName = firstName == null ? "%%" : String.format("%%%s%%", firstName);
@@ -263,5 +275,9 @@ public class PersonCrudDaoImpl implements PersonCrudDao, QueryDao, RowMapper<Per
 
     private String getSearchQuery() {
         return queryService.getQuery("select.person.search");
+    }
+
+    private String getFindByRoleIdQuery() {
+        return queryService.getQuery("select.person.by.role_id");
     }
 }

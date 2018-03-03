@@ -17,6 +17,7 @@ public interface EmployeeService {
     void delete(Long id);
     Optional<Person> findOne(Long id);
     List<Person> findAll();
+    List<Person> findCallCenterAgents();
     boolean contains(Long id);
     List<Person> search(SearchForm searchForm);
 }
