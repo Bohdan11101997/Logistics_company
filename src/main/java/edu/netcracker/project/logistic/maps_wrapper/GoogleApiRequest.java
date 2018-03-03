@@ -2,7 +2,7 @@ package edu.netcracker.project.logistic.maps_wrapper;
 
 import com.google.appengine.api.appidentity.AppIdentityServiceFailureException;
 import com.google.appengine.repackaged.com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.google.maps.*;
+import edu.com.google.maps.*;
 import org.joda.time.DateTime;
 import org.slf4j.LoggerFactory;
 
