@@ -3,7 +3,7 @@
 ##
 spring:
   datasource:
-    url: jdbc:postgres://gkkhjyelmjkymz:c687b48d486199d21d2ea84d3fb2953823bc393c68183cbee8275d92a34302f6@ec2-54-204-46-60.compute-1.amazonaws.com:5432/d7hrte8m29chvs&ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory
+    url: jdbc:postgresql://eczcodjmxkuetx:99318cf721e69ab7592253119bc21057cab9b402ad10a4d3e719e6c0d2a95eba@ec2-54-221-220-59.compute-1.amazonaws.com:5432/deqo2lp4niomk2
     driver-class-name: org.postgresql.Driver
     tomcat:
       max-active: 15
