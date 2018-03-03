@@ -83,7 +83,7 @@ CREATE TABLE "logistic_company"."advertisement"
   "caption"               VARCHAR(200)  COLLATE "default"                     NOT NULL,
   "description"           VARCHAR(1000) COLLATE "default"                     NOT NULL,
   "publication_date"      TIMESTAMP                                           NOT NULL DEFAULT NOW(),
-  "publication_date_end"  TIMESTAMP                                           NOT NULL,
+  "publication_date_end"  DATE                                                NOT NULL,
   "type_advertisement_id" INT4                                                NOT NULL
 );
 
