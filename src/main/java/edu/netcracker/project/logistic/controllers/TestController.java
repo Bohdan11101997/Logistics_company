@@ -8,12 +8,7 @@ import edu.netcracker.project.logistic.model.Office;
 import edu.netcracker.project.logistic.service.AddressService;
 import edu.netcracker.project.logistic.service.PersonService;
 import edu.netcracker.project.logistic.service.RoleService;
-import net.fortuna.ical4j.model.*;
-import net.fortuna.ical4j.model.component.VEvent;
-import net.fortuna.ical4j.model.component.VTimeZone;
-import net.fortuna.ical4j.model.property.CalScale;
-import net.fortuna.ical4j.model.property.ProdId;
-import net.fortuna.ical4j.model.property.Version;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;

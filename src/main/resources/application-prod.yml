@@ -1,9 +1,0 @@
-##
-# Heroku Postgresql Configuration
-##
-spring:
-  datasource:
-    url: jdbc:postgresql://eczcodjmxkuetx:99318cf721e69ab7592253119bc21057cab9b402ad10a4d3e719e6c0d2a95eba@ec2-54-221-220-59.compute-1.amazonaws.com:5432/deqo2lp4niomk2
-    driver-class-name: org.postgresql.Driver
-    tomcat:
-      max-active: 15
