@@ -10,6 +10,8 @@ import java.util.Set;
 public interface PersonCrudDao extends CrudDao<Person, Long> {
     Optional<Person> findOne(String username);
 
+    Optional<Person> findByContactId(Long contactId);
+
     List<Person> findAll();
 
     List<Person> findAllEmployees();

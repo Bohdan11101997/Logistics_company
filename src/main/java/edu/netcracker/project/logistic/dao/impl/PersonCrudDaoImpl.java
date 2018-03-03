@@ -129,6 +129,21 @@ public class PersonCrudDaoImpl implements PersonCrudDao, QueryDao, RowMapper<Per
     }
 
     @Override
+    public Optional<Person> findByContactId(Long contactId) {
+        Person person;
+        try {
+            person = jdbcTemplate.queryForObject(
+                    getFindOneQuery(),
+                    new Object[]{contactId},
+                    this);
+            return Optional.of(person);
+
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
     public Optional<Person> findOne(String username) {
         Person person;
         try {
