@@ -12,6 +12,7 @@ DROP TABLE IF EXISTS "logistic_company"."role" CASCADE;
 DROP TABLE IF EXISTS "logistic_company"."bonus" CASCADE;
 DROP TABLE IF EXISTS "logistic_company"."office" CASCADE;
 DROP TABLE IF EXISTS "logistic_company"."order_status" CASCADE;
+DROP TABLE IF EXISTS "logistic_company"."task" CASCADE;
 
 
 DROP FUNCTION IF EXISTS logistic_company.delete_old_rows() CASCADE;
@@ -72,6 +73,7 @@ CREATE TABLE "logistic_company"."person_role"
 CREATE TABLE "logistic_company"."advertisement"
 (
   "advertisement_id"      INT4 DEFAULT nextval('main_seq_id' :: REGCLASS)     NOT NULL,
+  "caption"               VARCHAR(200) COLLATE "default"                      NOT NULL,
   "description"           VARCHAR(1000) COLLATE "default"                     NOT NULL,
   "publication_date"      TIMESTAMP                                           NOT NULL DEFAULT NOW(),
   "publication_date_end"  DATE                                                NOT NULL,
@@ -148,6 +150,14 @@ CREATE TABLE logistic_company.registration_link
   person_id            INT4 NOT NULL
 );
 
+CREATE TABLE logistic_company.task
+(
+  task_id      INT4 DEFAULT nextval('main_seq_id' :: REGCLASS) NOT NULL,
+  employee_id  INT4                                            NOT NULL,
+  order_id     INT4                                            NOT NULL,
+  is_completed BOOLEAN                                         NOT NULL
+);
+
 
 ALTER TABLE "logistic_company"."person"
   ADD UNIQUE ("user_name");
@@ -181,11 +191,14 @@ ALTER TABLE logistic_company.registration_link
   ADD PRIMARY KEY (registration_link_id);
 ALTER TABLE logistic_company.person_role
   ADD PRIMARY KEY (person_id, role_id);
+ALTER TABLE logistic_company.order
+  ADD PRIMARY KEY (order_id);
+ALTER TABLE logistic_company.task
+  ADD PRIMARY KEY (task_id);
 
 
 ALTER TABLE "logistic_company"."person_role"
   ADD FOREIGN KEY ("role_id") REFERENCES "logistic_company"."role" ("role_id");
-
 ALTER TABLE "logistic_company"."person_role"
   ADD FOREIGN KEY ("person_id") REFERENCES "logistic_company"."person" ("person_id") ON DELETE CASCADE;
 
@@ -198,9 +211,9 @@ ALTER TABLE "logistic_company"."work_day"
 ALTER TABLE "logistic_company"."person"
   ADD FOREIGN KEY ("contact_id") REFERENCES "logistic_company"."contact" (contact_id);
 
+
 ALTER TABLE "logistic_company"."order"
   ADD FOREIGN KEY ("office_id") REFERENCES "logistic_company"."office" ("office_id");
-
 ALTER TABLE "logistic_company"."order"
   ADD FOREIGN KEY ("order_status_id") REFERENCES "logistic_company"."order_status" ("order_status_id");
 
@@ -209,6 +222,14 @@ ALTER TABLE "logistic_company"."office"
 
 ALTER TABLE "logistic_company"."order"
   ADD FOREIGN KEY ("courier_id") REFERENCES "logistic_company"."person" ("person_id");
+ALTER TABLE "logistic_company"."order"
+  ADD FOREIGN KEY ("sender_address_id") REFERENCES "logistic_company"."address" ("address_id");
+ALTER TABLE "logistic_company"."order"
+  ADD FOREIGN KEY ("receiver_address_id") REFERENCES "logistic_company"."address" ("address_id");
+ALTER TABLE "logistic_company"."order"
+  ADD FOREIGN KEY ("sender_contact_id") REFERENCES "logistic_company"."contact" ("contact_id");
+ALTER TABLE "logistic_company"."order"
+  ADD FOREIGN KEY ("receiver_contact_id") REFERENCES "logistic_company"."contact" ("contact_id");
 
 ALTER TABLE "logistic_company"."order"
   ADD FOREIGN KEY ("receiver_contact_id") REFERENCES "logistic_company"."contact" ("contact_id");
@@ -225,6 +246,10 @@ ALTER TABLE "logistic_company"."order"
 ALTER TABLE logistic_company.registration_link
   ADD FOREIGN KEY (person_id) REFERENCES logistic_company.person (person_id);
 
+ALTER TABLE logistic_company.task
+  ADD FOREIGN KEY ("order_id") REFERENCES "logistic_company"."order" ("order_id");
+ALTER TABLE logistic_company.task
+  ADD FOREIGN KEY ("employee_id") REFERENCES "logistic_company"."person" ("person_id");
 
 CREATE FUNCTION delete_old_rows()
   RETURNS TRIGGER
