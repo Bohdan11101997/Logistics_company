@@ -58,6 +58,16 @@
                                 </select>
                             </div>
 
+                            <div class="form-group">
+                                <label class="control-label">Start and End</label>
+                                <div class="form-inline">
+                                    <input type="date" class="form-control" id="show-start-date" title="Start"
+                                           th:field="*{{showFirstDate}}"/>
+                                    <input type="date" class="form-control" id="show-end-date" title="End"
+                                           th:field="*{{showEndDate}}"/>
+                                </div>
+                            </div>
+
                             <div class="form-group required">
                                 <label for="name" class="control-label">Caption</label>
                                 <input type="text" class="form-control" id="name" placeholder=""

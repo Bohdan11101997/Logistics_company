@@ -1,7 +1,12 @@
 package edu.netcracker.project.logistic.model;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
 
 public class AdvertisementForm {
 
@@ -9,6 +14,10 @@ public class AdvertisementForm {
     private String caption;
     private String description;
     private String type;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate showFirstDate;
+    @DateTimeFormat(pattern ="yyyy-MM-dd")
+    private LocalDate showEndDate;
 
     public Long getId() {
         return id;
@@ -44,5 +53,21 @@ public class AdvertisementForm {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public LocalDate getShowFirstDate() {
+        return showFirstDate;
+    }
+
+    public void setShowFirstDate(LocalDate showFirstDate) {
+        this.showFirstDate = showFirstDate;
+    }
+
+    public LocalDate getShowEndDate() {
+        return showEndDate;
+    }
+
+    public void setShowEndDate(LocalDate showEndDate) {
+        this.showEndDate = showEndDate;
     }
 }

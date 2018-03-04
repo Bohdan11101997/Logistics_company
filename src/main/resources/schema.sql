@@ -82,8 +82,8 @@ CREATE TABLE "logistic_company"."advertisement"
   "advertisement_id"      INT4 DEFAULT nextval('main_seq_id' :: REGCLASS)     NOT NULL,
   "caption"               VARCHAR(200)  COLLATE "default"                     NOT NULL,
   "description"           VARCHAR(1000) COLLATE "default"                     NOT NULL,
-  "publication_date"      TIMESTAMP                                           NOT NULL DEFAULT NOW(),
-  "publication_date_end"  DATE                                                NOT NULL,
+  "show_first_date"       DATE                                                NOT NULL DEFAULT NOW(),
+  "show_end_date"         DATE                                                NOT NULL,
   "type_advertisement_id" INT4                                                NOT NULL
 );
 

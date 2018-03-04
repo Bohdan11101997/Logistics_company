@@ -17,7 +17,9 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.security.Principal;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -57,11 +59,13 @@ public class AdminController {
     }
 
     @PostMapping("/crud/advertisement")
-    public String publishAdvertisement(@ModelAttribute(value = "advertisement") AdvertisementForm advertisementForm) {
+    public String publishAdvertisement(@Valid @ModelAttribute(value = "advertisement") AdvertisementForm advertisementForm) {
 
         Advertisement advertisement = new Advertisement();
         advertisement.setCaption(advertisementForm.getCaption());
         advertisement.setDescription(advertisementForm.getDescription());
+        advertisement.setShowFirstDate(advertisementForm.getShowFirstDate());
+        advertisement.setShowEndDate(advertisementForm.getShowEndDate());
         AdvertisementType advertisementType = new AdvertisementType();
         advertisementType.setName(advertisementForm.getType());
         advertisement.setType(advertisementType);
