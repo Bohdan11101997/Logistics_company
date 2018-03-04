@@ -158,6 +158,14 @@ CREATE TABLE logistic_company.task
   is_completed BOOLEAN                                         NOT NULL
 );
 
+CREATE TABLE logistic_company.day_off
+(
+  day_off_id  INT4 NOT NULL,
+  start_date  DATE NOT NULL,
+  end_date    DATE NOT NULL,
+  employee_id INT4 NOT NULL
+);
+
 
 ALTER TABLE "logistic_company"."person"
   ADD UNIQUE ("user_name");
@@ -195,6 +203,10 @@ ALTER TABLE logistic_company.order
   ADD PRIMARY KEY (order_id);
 ALTER TABLE logistic_company.task
   ADD PRIMARY KEY (task_id);
+ALTER TABLE logistic_company.work_day
+  ADD PRIMARY KEY (employee_id, week_day);
+ALTER TABLE logistic_company.day_off
+  ADD PRIMARY KEY (day_off_id);
 
 
 ALTER TABLE "logistic_company"."person_role"
@@ -250,6 +262,8 @@ ALTER TABLE logistic_company.task
   ADD FOREIGN KEY ("order_id") REFERENCES "logistic_company"."order" ("order_id");
 ALTER TABLE logistic_company.task
   ADD FOREIGN KEY ("employee_id") REFERENCES "logistic_company"."person" ("person_id");
+ALTER TABLE logistic_company.day_off
+  ADD FOREIGN KEY (employee_id) REFERENCES logistic_company.person (person_id);
 
 CREATE FUNCTION delete_old_rows()
   RETURNS TRIGGER
