@@ -58,13 +58,18 @@
                                 </select>
                             </div>
 
-                            <div class="form-group">
-                                <label class="control-label">Start and End</label>
+                            <div class="form-group required"
+                                 th:classappend="${#fields.hasErrors('showFirstDate')}? 'has-error'">
+                                <label class="control-label">Publication Date Interval</label>
                                 <div class="form-inline">
                                     <input type="date" class="form-control" id="show-start-date" title="Start"
                                            th:field="*{{showFirstDate}}"/>
                                     <input type="date" class="form-control" id="show-end-date" title="End"
                                            th:field="*{{showEndDate}}"/>
+                                </div>
+                                <div class="has-error help-block"
+                                     th:if="${#fields.hasErrors('showFirstDate')}"
+                                     th:errors="*{showFirstDate}">
                                 </div>
                             </div>
 
@@ -81,7 +86,7 @@
                                           required="required" minlength="10" maxlength="1000"></textarea>
                             </div>
 
-                            <p class="text-center"><input type="submit" class="btn btn-success" value="Publish" /></p>
+                            <p class="text-center"><input type="submit" class="btn btn-success" value="Save" /></p>
                         </form>
 
                     </div>
