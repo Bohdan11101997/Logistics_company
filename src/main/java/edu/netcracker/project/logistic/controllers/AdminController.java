@@ -87,6 +87,8 @@ public class AdminController {
         advertisementForm.setId(advertisement.getId());
         advertisementForm.setCaption(advertisement.getCaption());
         advertisementForm.setDescription(advertisement.getDescription());
+        advertisementForm.setShowFirstDate(advertisement.getShowFirstDate());
+        advertisementForm.setShowEndDate(advertisement.getShowEndDate());
         advertisementForm.setType(advertisement.getType().getName());
 
         model.addAttribute("advertisement", advertisementForm);
@@ -106,6 +108,8 @@ public class AdminController {
         Advertisement advertisement = advertisementOptional.get();
         advertisement.setCaption(advertisementForm.getCaption());
         advertisement.setDescription(advertisementForm.getDescription());
+        advertisement.setShowFirstDate(advertisementForm.getShowFirstDate());
+        advertisement.setShowEndDate(advertisementForm.getShowEndDate());
         advertisement.getType().setName(advertisementForm.getType());
         advertisementService.update(advertisement);
 
