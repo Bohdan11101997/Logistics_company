@@ -76,14 +76,9 @@ public class TestController {
         return "/error/403";
     }
 
-    @GetMapping("/user")
+    @GetMapping("/main")
     public String user() {
-        return "user";
-    }
-
-    @GetMapping("/employee")
-    public String admin() {
-        return "employee";
+        return "person_main";
     }
 
 }
