@@ -31,7 +31,8 @@
                                 <th>#</th>
                                 <th>Caption</th>
                                 <th>Description</th>
-                                <th>Publication Date</th>
+                                <th>First show date</th>
+                                <th>End show date</th>
                                 <th>Type</th>
                             </tr>
                             </thead>
@@ -40,7 +41,8 @@
                                 <td th:text="${iter.index + 1}"></td>
                                 <td th:text="${advertisement.caption}"></td>
                                 <td th:text="${advertisement.description}"></td>
-                                <td th:text="${advertisement.publicationDate}"></td>
+                                <td th:text="${advertisement.showFirstDate}"></td>
+                                <td th:text="${advertisement.showEndDate}"></td>
                                 <td th:text="${advertisement.type.name}"></td>
                                 <td>
                                     <form th:action="@{'/admin/crud/advertisement/update/' + ${advertisement.id}}" th:method="GET">
