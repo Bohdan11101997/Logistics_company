@@ -21,12 +21,15 @@ import java.util.Collection;
 @Configuration
 public class AuthenticationSuccessHandlerImpl implements AuthenticationSuccessHandler {
 
+    private final int SESSION_INACTIVITY_TIMEOUT = 60 * 60;
+
     private final Logger logger = LoggerFactory.getLogger(RegistrationController.class);
     private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         handle(request, response, authentication);
+        request.getSession().setMaxInactiveInterval(SESSION_INACTIVITY_TIMEOUT);
         clearAuthenticationAttributes(request);
     }
 
