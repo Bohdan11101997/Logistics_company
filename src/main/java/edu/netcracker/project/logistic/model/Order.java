@@ -14,7 +14,7 @@ public class Order {
     private OrderStatus orderStatus;
 
 
-  public   Order() {
+    public Order() {
 
 
     }

@@ -82,8 +82,8 @@ CREATE TABLE "logistic_company"."advertisement"
   "advertisement_id"      INT4 DEFAULT nextval('main_seq_id' :: REGCLASS)     NOT NULL,
   "caption"               VARCHAR(200)  COLLATE "default"                     NOT NULL,
   "description"           VARCHAR(1000) COLLATE "default"                     NOT NULL,
-  "publication_date"      TIMESTAMP                                           NOT NULL DEFAULT NOW(),
-  "publication_date_end"  DATE                                                NOT NULL,
+  "show_first_date"       DATE                                                NOT NULL DEFAULT NOW(),
+  "show_end_date"         DATE                                                NOT NULL,
   "type_advertisement_id" INT4                                                NOT NULL
 );
 
@@ -274,8 +274,22 @@ BEGIN
 END;
 $$;
 
-
 CREATE TRIGGER trigger_delete_old_rows
   AFTER INSERT
   ON person
 EXECUTE PROCEDURE delete_old_rows();
+
+
+CREATE FUNCTION advertisement_delete_old_rows() RETURNS trigger
+  LANGUAGE plpgsql
+  AS $$
+BEGIN
+  DELETE FROM advertisement WHERE show_end_date < NOW();
+  RETURN NEW;
+END;
+$$;
+
+CREATE TRIGGER advertisement_delete_old_rows_trigger
+  AFTER INSERT ON advertisement
+  EXECUTE PROCEDURE advertisement_delete_old_rows();
+

@@ -14,6 +14,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.sql.Timestamp;
@@ -47,7 +48,8 @@ public class AdvertisementDaoImpl implements AdvertisementDao, QueryDao {
             advertisement.setId(resultSet.getLong("advertisement_id"));
             advertisement.setCaption(resultSet.getString("caption"));
             advertisement.setDescription(resultSet.getString("description"));
-            advertisement.setPublicationDate(resultSet.getTimestamp("publication_date").toLocalDateTime());
+            advertisement.setShowFirstDate(resultSet.getDate("show_first_date").toLocalDate());
+            advertisement.setShowEndDate(resultSet.getDate("show_end_date").toLocalDate());
 
             AdvertisementType advertisementType = advertisementTypeRowMapper.mapRow(resultSet, i);
             advertisement.setType(advertisementType);
@@ -71,8 +73,8 @@ public class AdvertisementDaoImpl implements AdvertisementDao, QueryDao {
             PreparedStatement ps = psc.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             ps.setObject(1, advertisement.getCaption());
             ps.setObject(2, advertisement.getDescription());
-            ps.setObject(3, LocalDateTime.now());
-            ps.setObject(4, LocalDateTime.now().plusWeeks(2));
+            ps.setObject(3, Date.valueOf(advertisement.getShowFirstDate()));
+            ps.setObject(4, Date.valueOf(advertisement.getShowEndDate()));
             ps.setObject(5, advertisement.getType().getId());
             return ps;
         }, keyHolder);
@@ -94,6 +96,8 @@ public class AdvertisementDaoImpl implements AdvertisementDao, QueryDao {
         jdbcTemplate.update(getUpdateQuery(),
                 advertisement.getCaption(),
                 advertisement.getDescription(),
+                Date.valueOf(advertisement.getShowFirstDate()),
+                Date.valueOf(advertisement.getShowEndDate()),
                 advertisement.getType().getId(),
                 advertisement.getId());
     }

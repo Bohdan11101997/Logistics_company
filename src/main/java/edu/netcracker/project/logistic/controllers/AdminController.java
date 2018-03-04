@@ -9,6 +9,7 @@ import edu.netcracker.project.logistic.model.Office;
 
 import edu.netcracker.project.logistic.service.AdvertisementService;
 
+import edu.netcracker.project.logistic.validation.AdvertisementValidator;
 import edu.netcracker.project.logistic.validation.EmployeeValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -17,7 +18,9 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.security.Principal;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -32,20 +35,22 @@ public class AdminController {
     private AdvertisementService advertisementService;
     private AddressService addressService;
     private EmployeeValidator employeeValidator;
+    private AdvertisementValidator advertisementValidator;
     private UserDetailsService userDetailsService;
 
 
     @Autowired
     public AdminController(OfficeService officeService, EmployeeService employeeService,
                            RoleService roleService, AdvertisementService advertisementService,
-                           AddressService addressService,
-                           EmployeeValidator employeeValidator, UserDetailsService userDetailsService) {
+                           AddressService addressService, EmployeeValidator employeeValidator,
+                           AdvertisementValidator advertisementValidator, UserDetailsService userDetailsService) {
         this.officeService = officeService;
         this.employeeService = employeeService;
         this.roleService = roleService;
         this.advertisementService = advertisementService;
         this.addressService = addressService;
         this.employeeValidator = employeeValidator;
+        this.advertisementValidator = advertisementValidator;
         this.userDetailsService = userDetailsService;
     }
 
@@ -57,11 +62,18 @@ public class AdminController {
     }
 
     @PostMapping("/crud/advertisement")
-    public String publishAdvertisement(@ModelAttribute(value = "advertisement") AdvertisementForm advertisementForm) {
+    public String publishAdvertisement(@Valid @ModelAttribute(value = "advertisement") AdvertisementForm advertisementForm, BindingResult bindingResult) {
+
+        advertisementValidator.validate(advertisementForm, bindingResult);
+        if (bindingResult.hasErrors()) {
+            return "/admin/admin_crud_advertisement";
+        }
 
         Advertisement advertisement = new Advertisement();
         advertisement.setCaption(advertisementForm.getCaption());
         advertisement.setDescription(advertisementForm.getDescription());
+        advertisement.setShowFirstDate(advertisementForm.getShowFirstDate());
+        advertisement.setShowEndDate(advertisementForm.getShowEndDate());
         AdvertisementType advertisementType = new AdvertisementType();
         advertisementType.setName(advertisementForm.getType());
         advertisement.setType(advertisementType);
@@ -83,6 +95,8 @@ public class AdminController {
         advertisementForm.setId(advertisement.getId());
         advertisementForm.setCaption(advertisement.getCaption());
         advertisementForm.setDescription(advertisement.getDescription());
+        advertisementForm.setShowFirstDate(advertisement.getShowFirstDate());
+        advertisementForm.setShowEndDate(advertisement.getShowEndDate());
         advertisementForm.setType(advertisement.getType().getName());
 
         model.addAttribute("advertisement", advertisementForm);
@@ -92,7 +106,13 @@ public class AdminController {
 
     @PostMapping("/crud/advertisement/update/{id}")
     public String updateAdvertisement(@PathVariable long id,
-                                      @ModelAttribute(value = "advertisement") AdvertisementForm advertisementForm) {
+                                      @ModelAttribute(value = "advertisement") AdvertisementForm advertisementForm,
+                                      BindingResult bindingResult) {
+
+        advertisementValidator.validate(advertisementForm, bindingResult);
+        if (bindingResult.hasErrors()) {
+            return "/admin/admin_crud_advertisement";
+        }
 
         Optional<Advertisement> advertisementOptional = advertisementService.findOne(id);
         if (!advertisementOptional.isPresent()) {
@@ -102,6 +122,8 @@ public class AdminController {
         Advertisement advertisement = advertisementOptional.get();
         advertisement.setCaption(advertisementForm.getCaption());
         advertisement.setDescription(advertisementForm.getDescription());
+        advertisement.setShowFirstDate(advertisementForm.getShowFirstDate());
+        advertisement.setShowEndDate(advertisementForm.getShowEndDate());
         advertisement.getType().setName(advertisementForm.getType());
         advertisementService.update(advertisement);
 
