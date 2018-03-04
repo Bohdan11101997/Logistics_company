@@ -61,12 +61,6 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .clearAuthentication(true)
                 .permitAll()
                 .and()
-                .rememberMe()
-                .key("unique-and-secret")
-                .userDetailsService(userDetailsService)
-                .rememberMeCookieName("remember-me-cookie-name")
-                .tokenValiditySeconds(60*60)
-                .and()
                 .exceptionHandling().accessDeniedHandler(accessDeniedHandler);
     }
 
