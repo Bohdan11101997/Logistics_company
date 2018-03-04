@@ -19,6 +19,7 @@ import java.util.UUID;
 public class RegistrationController {
     private final Logger logger = LoggerFactory.getLogger(RegistrationController.class);
 
+
     private RegistrationService registrationService;
     private RegistrationValidator registrationValidator;
     private RoleService roleService;

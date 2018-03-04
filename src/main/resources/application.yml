@@ -1,12 +1,8 @@
-spring:
-
-  datasource:
-    url: jdbc:postgresql://ec2-54-228-182-57.eu-west-1.compute.amazonaws.com:5432/d7lnt6ggk9rcbt?user=tkacgwphjmxbcr&password=7b30fa8db77649da5b55ee2cd64b3c4399ef8feebc020417391b05121563b024&ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory
-
-    tomcat:
-      max-active: 5
-      max-idle: 5
-logging:
-  level:
-    com:
-      logistic: debug
+#spring:
+#
+#  datasource:
+#    url: jdbc:postgresql://ec2-54-228-182-57.eu-west-1.compute.amazonaws.com:5432/d7lnt6ggk9rcbt?user=tkacgwphjmxbcr&password=7b30fa8db77649da5b55ee2cd64b3c4399ef8feebc020417391b05121563b024&ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory
+#
+#    tomcat:
+#      max-active: 15
+#      max-idle: 15
