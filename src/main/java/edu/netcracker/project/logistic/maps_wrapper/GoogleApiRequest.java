@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 public class GoogleApiRequest {
 
+
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(GoogleApiRequest.class);
 
     private static final String API_KEY = "AIzaSyBHUNATkvBBtqWEF8roNL_EJEF-IQ1THP0";
