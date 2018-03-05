@@ -4,17 +4,13 @@ import edu.netcracker.project.logistic.model.ChangePasswordForm;
 import edu.netcracker.project.logistic.model.Contact;
 import edu.netcracker.project.logistic.model.Person;
 import edu.netcracker.project.logistic.model.UserForm;
-import edu.netcracker.project.logistic.service.PersonService;
 import edu.netcracker.project.logistic.service.SecurityService;
 import edu.netcracker.project.logistic.service.UserService;
+import edu.netcracker.project.logistic.validation.CurrentPasswordValidator;
 import edu.netcracker.project.logistic.validation.UpdateUserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,28 +19,30 @@ import org.springframework.validation.SmartValidator;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Controller
 @RequestMapping(value = "/user")
 public class UserController {
 
+    private SmartValidator fieldValidator;
+    private UpdateUserValidator updateUserValidator;
+    private CurrentPasswordValidator currentPasswordValidator;
     private UserService userService;
-    private UpdateUserValidator validator;
-    private SmartValidator userFormValidator;
-    private PasswordEncoder passwordEncoder;
     private SecurityService securityService;
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserController(UserService userService, UpdateUserValidator validator,
-                          SmartValidator userFormValidator, PasswordEncoder passwordEncoder,
-                          SecurityService securityService){
+    public UserController(SmartValidator fieldValidator, UpdateUserValidator updateUserValidator,
+                          CurrentPasswordValidator currentPasswordValidator, UserService userService,
+                          SecurityService securityService, PasswordEncoder passwordEncoder){
+        this.fieldValidator = fieldValidator;
+        this.updateUserValidator = updateUserValidator;
+        this.currentPasswordValidator = currentPasswordValidator;
         this.userService = userService;
-        this.validator = validator;
-        this.userFormValidator = userFormValidator;
-        this.passwordEncoder = passwordEncoder;
         this.securityService = securityService;
+        this.passwordEncoder = passwordEncoder;
+
     }
 
     @GetMapping("/personal")
@@ -58,19 +56,29 @@ public class UserController {
         }
 
         Person person = optionalPerson.get();
+        UserForm userForm = getUserFormFilledWithPersonData(person);
+        model.addAttribute("user", userForm);
 
-        UserForm userForm = new UserForm();
+        return "/user/user_personal_area";
+    }
+
+    private UserForm getUserFormFilledWithPersonData(Person person) {
+
+        Contact contact = person.getContact();
+        UserForm userForm = getUserFormFilledWithContactData(contact);
         userForm.setId(person.getId());
         userForm.setUserName(person.getUserName());
-        Contact contact = person.getContact();
+        return userForm;
+    }
+
+    private UserForm getUserFormFilledWithContactData(Contact contact){
+
+        UserForm userForm = new UserForm();
         userForm.setFirstName(contact.getFirstName());
         userForm.setLastName(contact.getLastName());
         userForm.setEmail(contact.getEmail());
         userForm.setPhoneNumber(contact.getPhoneNumber());
-
-        model.addAttribute("user", userForm);
-
-        return "/user/user_personal_area";
+        return userForm;
     }
 
     @GetMapping(value = "/personal/{id}")
@@ -81,7 +89,6 @@ public class UserController {
     @PostMapping(value = "/personal/{id}", params = "action=save")
     public String updatePersonalArea(@PathVariable Long id,
                                      @ModelAttribute("user") UserForm userForm,
-                                     Authentication authentication,
                                      BindingResult bindingResult){
 
         Optional<Person> optionalPerson = userService.findOne(id);
@@ -99,8 +106,8 @@ public class UserController {
         contact.setEmail(userForm.getEmail());
         contact.setPhoneNumber(userForm.getPhoneNumber());
 
-        userFormValidator.validate(userForm, bindingResult);
-        validator.validate(person, bindingResult);
+        fieldValidator.validate(userForm, bindingResult);
+        updateUserValidator.validate(person, bindingResult);
 
         if (bindingResult.hasErrors()) {
             return "/user/user_personal_area";
@@ -109,6 +116,7 @@ public class UserController {
         userService.update(person);
 
         if (!oldUsername.equals(person.getUserName())){
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             securityService.autoLogIn(person.getUserName(), (String) authentication.getCredentials());
         }
 
@@ -132,22 +140,16 @@ public class UserController {
 
     @PostMapping(value = "/change/password")
     public String saveNewPassword(@ModelAttribute("changePassword") ChangePasswordForm changePasswordForm,
-                                  Authentication authentication,
                                   BindingResult bindingResult){
 
-        String oldPassword = (String) authentication.getCredentials();
-        String oldPasswordFromForm = changePasswordForm.getOldPassword();
-
-        // validation
-        if (!oldPassword.equals(oldPasswordFromForm)){
-            bindingResult.rejectValue("oldPassword", "Password.Not.Match");
-        }
+        String currentPasswordFromForm = changePasswordForm.getOldPassword();
+        currentPasswordValidator.validate(currentPasswordFromForm, bindingResult);
 
         if (bindingResult.hasErrors()){
             return "user/user_change_password";
         }
 
-        String username = authentication.getName();
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
         // change for single password
         Optional<Person> optionalPerson = userService.findOne(username);
 
