@@ -56,6 +56,8 @@ public interface FlowBuilder {
 
     boolean process();
 
+    String getError();
+
     /*
     * //TODO: give a better name
     *enum FlowResultType {

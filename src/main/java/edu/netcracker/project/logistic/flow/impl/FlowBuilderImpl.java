@@ -2,12 +2,12 @@ package edu.netcracker.project.logistic.flow.impl;
 
 import edu.com.google.maps.StaticMap;
 import edu.com.google.maps.model.LatLng;
-import edu.netcracker.project.logistic.dao.RoleCrudDao;
 import edu.netcracker.project.logistic.flow.FlowBuilder;
 import edu.netcracker.project.logistic.model.Office;
 import edu.netcracker.project.logistic.model.Order;
 import edu.netcracker.project.logistic.model.Person;
 import edu.netcracker.project.logistic.model.Role;
+import edu.netcracker.project.logistic.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 //import org.apache.tomcat.util.collections.SynchronizedQueue;
@@ -24,15 +24,17 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
     protected Queue<Person> walkCouriers;
     protected Queue<Person> driveCouriers;
 
-    protected RoleCrudDao roleCrudDao;
+    protected RoleService roleService;
 
-    protected Office office;
+    protected final Office office;
     protected LatLng center;
 
-    public FlowBuilderImpl(RoleCrudDao roleCrudDao, Office office) {
-        this.roleCrudDao = roleCrudDao;
+    protected String errorMessage = "No error";
+
+    public FlowBuilderImpl(RoleService roleService, Office office) {
+        this.roleService = roleService;
         this.office = office;
-        center = office.getAddress().getLocation();
+        this.center = office.getAddress().getLocation();
 
         init(this, this.office);
     }
@@ -68,10 +70,10 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
                 + Math.pow(a.lng-b.lng,2));
     }
 
-    protected static double updateOrderDistanceIfVip(FlowBuilderImpl impl,Order o, double distance){
+    protected static double updateOrderDistanceIfVip(FlowBuilderImpl impl, Order o, double distance){
         boolean isVIP = false;
         for(Role role :
-                impl.roleCrudDao.getByPersonId(
+                impl.roleService.findRolesByPersonId(
                         o.getSender().getContact().getContactId()
                 )){
             if(role.isEmployeeRole()){
@@ -91,7 +93,7 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
     @Override
     public boolean add(Person courier, CourierType type) {
         //checking if is not a courier
-        if (courier.getRoles().contains(roleCrudDao.getByName("ROLE_COURIER")))
+        if (courier.getRoles().contains(new Role((long)(5), "ROLE_COURIER"))) {//5 == ROLE_COURIER
             switch (type) {
                 case Walker:
                     walkCouriers.add(courier);
@@ -100,6 +102,7 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
                     driveCouriers.add(courier);
                     break;
             }
+        }
         return false;
     }
 
@@ -278,4 +281,9 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
 
     @Override
     public abstract boolean process();
+
+    @Override
+    public String getError(){
+        return errorMessage;
+    }
 }

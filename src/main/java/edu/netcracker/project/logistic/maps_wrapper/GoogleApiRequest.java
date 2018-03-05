@@ -12,7 +12,7 @@ public class GoogleApiRequest {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(GoogleApiRequest.class);
 
     private static final String API_KEY = "AIzaSyBHUNATkvBBtqWEF8roNL_EJEF-IQ1THP0";
-    private static final String RESERVE_API_KEY = "test_key";
+    private static final String RESERVE_API_KEY = "AIzaSyBHUNATkvBBtqWEF8roNL_EJEF-IQ1THP0";
 
     private static long request_quote_per_key = 2500;
     private static long requests_count = 0;
@@ -24,21 +24,21 @@ public class GoogleApiRequest {
 
     private GoogleApiRequest() {
         new_context(API_KEY);
-        TimerToNextDay();
+        //TODO: rework due to unrecognized OutOfMemoryError
+        //TimerToNextDay();
     }
 
     private static void TimerToNextDay() {
         TimerToNextDay(null);
     }
 
-    //using thread Factory due to Appengine requirements
     private static void TimerToNextDay(Long milliseconds) {
-        new ThreadFactoryBuilder().setDaemon(true).build().newThread(() -> {
+        Thread deamon = new Thread(() -> {
             while (true) {
                 final long millis = milliseconds == null ?
                         DateTime.now().withTime(0, 0, 0, 0).plusDays(1).minus(DateTime.now().getMillisOfDay()).getMillisOfDay()
                         : milliseconds;
-                new ThreadFactoryBuilder().setDaemon(true).build().newThread(() -> {
+                Thread timer = new Thread(() -> {
                     try {
                         Thread.currentThread().sleep(millis); //always running not in main thread
                     } catch (InterruptedException e) {
@@ -46,9 +46,13 @@ public class GoogleApiRequest {
                     }
                     //"restarting" origin key
                     reset();
-                }).start();
+                });
+                timer.setDaemon(true);
+                timer.start();
             }
-        }).start();
+        });
+        deamon.setDaemon(true);
+        deamon.start();
     }
 
     // @return - @true if new value is valid
