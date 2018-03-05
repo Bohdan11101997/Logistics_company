@@ -81,6 +81,7 @@ public class UserController {
     @PostMapping(value = "/personal/{id}", params = "action=save")
     public String updatePersonalArea(@PathVariable Long id,
                                      @ModelAttribute("user") UserForm userForm,
+                                     Authentication authentication,
                                      BindingResult bindingResult){
 
         Optional<Person> optionalPerson = userService.findOne(id);
@@ -108,8 +109,7 @@ public class UserController {
         userService.update(person);
 
         if (!oldUsername.equals(person.getUserName())){
-            SecurityContextHolder.clearContext();
-            return "redirect:/login?changeUsername";
+            securityService.autoLogIn(person.getUserName(), (String) authentication.getCredentials());
         }
 
         return "redirect:/user/personal?save";
