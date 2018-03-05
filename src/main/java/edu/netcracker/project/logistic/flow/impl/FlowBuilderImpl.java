@@ -8,8 +8,6 @@ import edu.netcracker.project.logistic.model.Order;
 import edu.netcracker.project.logistic.model.Person;
 import edu.netcracker.project.logistic.model.Role;
 import edu.netcracker.project.logistic.service.RoleService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 //import org.apache.tomcat.util.collections.SynchronizedQueue;
 
 import java.util.*;
@@ -41,8 +39,8 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
 
     private static void init(FlowBuilderImpl impl, Office office) {
         Comparator<Order> co = (Order o1, Order o2) -> {
-            LatLng l1 = o1.getReceiver().getAddress().getLocation();
-            LatLng l2 = o2.getReceiver().getAddress().getLocation();
+            LatLng l1 = o1.getReceiverAddress().getLocation();
+            LatLng l2 = o2.getSenderAddress().getLocation();
             Double dist1 = distance(l1, office.getAddress().getLocation());
             Double dist2 = distance(l2, office.getAddress().getLocation());
             dist1 = updateOrderDistanceIfVip(impl, o1, dist1);
@@ -65,23 +63,29 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
 
     }
 
-    protected static double distance(LatLng a, LatLng b){
-        return Math.sqrt(Math.pow(a.lat-b.lat,2)
-                + Math.pow(a.lng-b.lng,2));
+    protected static double distance(LatLng a, LatLng b) {
+        return Math.sqrt(Math.pow(a.lat - b.lat, 2)
+                + Math.pow(a.lng - b.lng, 2));
     }
 
-    protected static double updateOrderDistanceIfVip(FlowBuilderImpl impl, Order o, double distance){
+    protected static double updateOrderDistanceIfVip(FlowBuilderImpl impl, Order o, double distance) {
         boolean isVIP = false;
         for(Role role :
                 impl.roleService.findRolesByPersonId(
                         o.getSender().getContact().getContactId()
-                )){
-            if(role.isEmployeeRole()){
-                isVIP = true; break; }
-            if(role.getRoleName().equalsIgnoreCase("ROLE_VIP_USER")){
-                isVIP = true; break; }
+                )) {
+            if (role.isEmployeeRole()) {
+                isVIP = true;
+                break;
+            }
+            if (role.getRoleName().equalsIgnoreCase("ROLE_VIP_USER")){
+                isVIP = true;
+                break;
+            }
         }
-        if(isVIP){ distance = (Double.MIN_VALUE+distance); }
+        if (isVIP) {
+            distance = (Double.MIN_VALUE + distance);
+        }
         return distance;
     }
 

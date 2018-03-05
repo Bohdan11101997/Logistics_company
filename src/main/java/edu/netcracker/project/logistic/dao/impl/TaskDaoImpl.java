@@ -1,69 +1,84 @@
 package edu.netcracker.project.logistic.dao.impl;
 
 import edu.netcracker.project.logistic.dao.TaskDao;
-import edu.netcracker.project.logistic.model.Person;
 import edu.netcracker.project.logistic.model.Task;
 import edu.netcracker.project.logistic.service.QueryService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public class TaskDaoImpl implements TaskDao, RowMapper<Task> {
-
-
-    private JdbcTemplate jdbcTemplate;
     private QueryService queryService;
-    private RowMapper<Person> personRowMapper;
+    private JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    public TaskDaoImpl(JdbcTemplate jdbcTemplate, QueryService queryService, RowMapper<Person> personRowMapper) {
-        this.jdbcTemplate = jdbcTemplate;
+    public TaskDaoImpl(QueryService queryService, JdbcTemplate jdbcTemplate) {
         this.queryService = queryService;
-        this.personRowMapper = personRowMapper;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-
-
+    @Override
+    public Task mapRow(ResultSet rs, int rowNum) throws SQLException {
+        Task task = new Task();
+        task.setId(rs.getLong("task_id"));
+        task.setOrderId(rs.getLong("order_id"));
+        task.setEmployeeId(rs.getLong("employee_id"));
+        task.setCompleted(rs.getBoolean("is_completed"));
+        return task;
+    }
 
     @Override
-    public Task mapRow(ResultSet resultSet, int i) throws SQLException {
+    public List<Task> findUncompleted() {
+        try {
+            return jdbcTemplate.query(
+                    getFindUncompletedQuery(),
+                    this
+            );
+        } catch (EmptyResultDataAccessException ex) {
+            return Collections.emptyList();
+        }
+    }
 
-        Task task = new Task();
-        task.setId(resultSet.getLong("task_id"));
-        task.setDescription(resultSet.getString("description"));
-        task.setIs_complete(resultSet.getBoolean("is_complete"));
-        Person person = personRowMapper.mapRow(resultSet, i);
-        task.setPerson(person);
-        return null;
+    @Override
+    public List<Task> findUncompletedByEmployeeId(Long employeeId) {
+        try {
+            return jdbcTemplate.query(
+                    getFindUncompletedByEmployeeIdQuery(),
+                    new Object[]{employeeId},
+                    this
+            );
+        } catch (EmptyResultDataAccessException ex) {
+            return Collections.emptyList();
+        }
     }
 
     @Override
     public Task save(Task object) {
-        return null;
+        throw new RuntimeException("Not implemented yet.");
     }
 
     @Override
     public void delete(Long aLong) {
-
+        throw new RuntimeException("Not implemented yet.");
     }
 
     @Override
     public Optional<Task> findOne(Long aLong) {
-        return Optional.empty();
+        throw new RuntimeException("Not implemented yet.");
     }
 
-    @Override
-    public List<Task> findAll() {
-
-        return null;
-
-
+    private String getFindUncompletedQuery() {
+        return queryService.getQuery("select.task.uncompleted");
     }
 
-
+    private String getFindUncompletedByEmployeeIdQuery() {
+        return queryService.getQuery("select.task.uncompleted.by.employee_id");
+    }
 }

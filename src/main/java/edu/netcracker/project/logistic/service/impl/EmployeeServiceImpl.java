@@ -120,6 +120,17 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    public List<Person> findCallCenterAgents() {
+        Optional<Role> callCentreAgent = roleDao.getByName("ROLE_CALL_CENTER");
+        if (!callCentreAgent.isPresent()) {
+            String errorMsg = "Role for call center agents not found";
+            logger.error(errorMsg);
+            throw new IllegalStateException(errorMsg);
+        }
+        return personDao.findByRoleId(callCentreAgent.get().getRoleId());
+    }
+
+    @Override
     public boolean contains(Long id) {
         return findOne(id).isPresent();
     }

@@ -7,29 +7,15 @@ public class Order {
     private LocalDate creationDay;
     private LocalDate deliveryTime;
     private LocalDate orderStatusTime;
-    private AddressContact receiver;
-    private AddressContact sender;
+    private Contact receiverContact;
+    private Contact senderContact;
+    private Address receiverAddress;
+    private Address senderAddress;
     private Person courier;
     private Office office;
     private OrderStatus orderStatus;
 
-
-    public Order() {
-
-
-    }
-
-    public Order(Long id, LocalDate creationDay, LocalDate deliveryTime, LocalDate orderStatusTime, AddressContact receiver, AddressContact sender, Person courier, Office office, OrderStatus orderStatus) {
-        this.id = id;
-        this.creationDay = creationDay;
-        this.deliveryTime = deliveryTime;
-        this.orderStatusTime = orderStatusTime;
-        this.receiver = receiver;
-        this.sender = sender;
-        this.courier = courier;
-        this.office = office;
-        this.orderStatus = orderStatus;
-    }
+    public Order() {}
 
     public Long getId() {
         return id;
@@ -63,20 +49,36 @@ public class Order {
         this.orderStatusTime = orderStatusTime;
     }
 
-    public AddressContact getReceiver() {
-        return receiver;
+    public Contact getReceiverContact() {
+        return receiverContact;
     }
 
-    public void setReceiver(AddressContact receiver) {
-        this.receiver = receiver;
+    public void setReceiverContact(Contact receiverContact) {
+        this.receiverContact = receiverContact;
     }
 
-    public AddressContact getSender() {
-        return sender;
+    public Contact getSenderContact() {
+        return senderContact;
     }
 
-    public void setSender(AddressContact sender) {
-        this.sender = sender;
+    public void setSenderContact(Contact senderContact) {
+        this.senderContact = senderContact;
+    }
+
+    public Address getReceiverAddress() {
+        return receiverAddress;
+    }
+
+    public void setReceiverAddress(Address receiverAddress) {
+        this.receiverAddress = receiverAddress;
+    }
+
+    public Address getSenderAddress() {
+        return senderAddress;
+    }
+
+    public void setSenderAddress(Address senderAddress) {
+        this.senderAddress = senderAddress;
     }
 
     public Person getCourier() {
