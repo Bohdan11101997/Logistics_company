@@ -46,18 +46,19 @@ public class FlowController {
             public List<Order> generate(int count){
                 List<Order> return_value = new ArrayList<>(count);
                 for(int i = 0; i < count; i++){
-                    Order o = new Order((long)(404+i), LocalDate.now(),
-                            null,
-                            null,
-                            new AddressContact((long)(504+i),new Address((long)(604+i),new LatLng(
-                                    Math.random()*radius+office.getAddress().getLocation().lat,
-                                    Math.random()*radius+office.getAddress().getLocation().lng
-                            )), new Contact()),
-                            new AddressContact((long)(400), office.getAddress(), new Contact()),
-                            null,
-                            office,
-                            new OrderStatus((long)(1),"testing")
-                    );
+                    Order o = new Order();
+                    o.setId((long)(404+i));
+                    o.setCreationDay(LocalDate.now());
+                    o.setCourier(null);
+                    o.setReceiverAddress(new Address((long)(604+i),new LatLng(
+                            Math.random()*radius+office.getAddress().getLocation().lat,
+                            Math.random()*radius+office.getAddress().getLocation().lng
+                    )));
+                    o.setSenderAddress(office.getAddress());
+                    o.setOffice(office);
+                    o.setOrderStatus(new OrderStatus((long)(1),"testing"));
+                    o.setReceiverContact(new Contact());
+                    o.setSenderContact(new Contact());
 
                     return_value.add(o);
                 }
@@ -72,7 +73,8 @@ public class FlowController {
         fb.add(new OrderGenerator().generate(10), FlowBuilder.OrderType.Freight);
 
         Set<Role> couriers = new HashSet<>();
-        couriers.add(new Role((long)(5), "ROLE_COURIER"));
+        //TODO: priority???
+        couriers.add(new Role((long)(5), "ROLE_COURIER", "NULL"));
         fb.add(new Person("Courier#1", "loggedin", LocalDateTime.now(), new Contact(), couriers), FlowBuilder.CourierType.Walker);
         fb.add(new Person("Courier#2", "loggedin", LocalDateTime.now(), new Contact(), couriers), FlowBuilder.CourierType.Driver);
         fb.add(new Person("Courier#3", "loggedin", LocalDateTime.now(), new Contact(), couriers), FlowBuilder.CourierType.Walker);

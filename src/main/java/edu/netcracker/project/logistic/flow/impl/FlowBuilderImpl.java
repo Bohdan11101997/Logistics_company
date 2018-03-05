@@ -72,7 +72,7 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
         boolean isVIP = false;
         for(Role role :
                 impl.roleService.findRolesByPersonId(
-                        o.getSender().getContact().getContactId()
+                        o.getSenderContact().getContactId()
                 )) {
             if (role.isEmployeeRole()) {
                 isVIP = true;
@@ -97,7 +97,8 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
     @Override
     public boolean add(Person courier, CourierType type) {
         //checking if is not a courier
-        if (courier.getRoles().contains(new Role((long)(5), "ROLE_COURIER"))) {//5 == ROLE_COURIER
+        //TODO: priority???
+        if (courier.getRoles().contains(new Role((long)(5), "ROLE_COURIER","NULL"))) {//5 == ROLE_COURIER
             switch (type) {
                 case Walker:
                     walkCouriers.add(courier);

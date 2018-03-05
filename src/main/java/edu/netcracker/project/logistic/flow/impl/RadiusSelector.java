@@ -183,7 +183,7 @@ public class RadiusSelector extends FlowBuilderImpl {
             //staticMap.marker(o.getReceiverAddress().getName());
             staticMap.marker(
                     new StaticMap.GeoPoint(
-                            o.getReceiver().getAddress().getLocation().lat,o.getReceiver().getAddress().getLocation().lng
+                            o.getReceiverAddress().getLocation().lat,o.getReceiverAddress().getLocation().lng
                     )
             );
 
