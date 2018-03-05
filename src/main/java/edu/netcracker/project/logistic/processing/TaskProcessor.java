@@ -52,17 +52,17 @@ public class TaskProcessor {
         private int tasksAssigned;
         private LocalDate workDayDate;
         private WorkDay workDay;
-        private Person employee;
+        private Long employeeId;
 
-        private EmployeeEntry(LocalDate workDayDate, WorkDay workDay, Person employee) {
+        private EmployeeEntry(LocalDate workDayDate, WorkDay workDay, Long employeeId) {
             this.workDayDate = workDayDate;
             this.workDay = workDay;
-            this.employee = employee;
+            this.employeeId = employeeId;
             this.tasksAssigned = 0;
         }
 
-        private EmployeeEntry(Person employee) {
-            this.employee = employee;
+        private EmployeeEntry(Long employeeId) {
+            this.employeeId = employeeId;
         }
 
         @Override
@@ -70,12 +70,12 @@ public class TaskProcessor {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             EmployeeEntry that = (EmployeeEntry) o;
-            return Objects.equals(employee, that.employee);
+            return Objects.equals(employeeId, that.employeeId);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(employee);
+            return Objects.hash(employeeId);
         }
     }
 
@@ -128,10 +128,10 @@ public class TaskProcessor {
     @Transactional
     public void assignTask(TaskEntry taskEntry, EmployeeEntry employeeEntry) throws InterruptedException {
         Task task = taskEntry.task;
-        Person employee = employeeEntry.employee;
+        Long employeeId = employeeEntry.employeeId;
 
         // Check if employee is still call center agent
-        Optional<Person> employeeRecord = personDao.findOne(employee.getId());
+        Optional<Person> employeeRecord = personDao.findOne(employeeId);
         if (!employeeRecord.isPresent()) {
             logger.info("Employee instance not found.");
             taskQueue.put(taskEntry);
@@ -154,7 +154,7 @@ public class TaskProcessor {
         LocalDate todayDate = now.toLocalDate();
         // Check if stored schedule is still actual
         if (!todayDate.equals(employeeEntry.workDayDate)) {
-            Optional<WorkDay> opt = workDayDao.findScheduleForDate(todayDate, employee.getId());
+            Optional<WorkDay> opt = workDayDao.findScheduleForDate(todayDate, employeeId);
             if (!opt.isPresent()) {
                 logger.error("Employee is not working on this day ({})", todayDate);
                 taskQueue.put(taskEntry);
@@ -170,7 +170,7 @@ public class TaskProcessor {
             return;
         }
 
-        task.setEmployeeId(employee.getId());
+        task.setEmployeeId(employeeId);
         taskDao.save(task);
         employeeEntry.tasksAssigned += 1;
         workerQueue.put(employeeEntry);
@@ -191,17 +191,17 @@ public class TaskProcessor {
         }
     }
 
-    public void addAgent(Person agent) {
+    public void addAgent(Long employeeId) {
         LocalDateTime now = LocalDateTime.now();
         LocalDate workDayDate = now.toLocalDate();
 
-        Optional<WorkDay> opt = workDayDao.findScheduleForDate(workDayDate, agent.getId());
+        Optional<WorkDay> opt = workDayDao.findScheduleForDate(workDayDate, employeeId);
         if (!opt.isPresent()) {
             logger.error("Employee is not working on this day ({})", workDayDate);
             return;
         }
         WorkDay workDay = opt.get();
-        EmployeeEntry entry = new EmployeeEntry(workDayDate, workDay, agent);
+        EmployeeEntry entry = new EmployeeEntry(workDayDate, workDay, employeeId);
         if (!workerQueue.contains(entry))
             try {
                 workerQueue.put(entry);
@@ -211,8 +211,8 @@ public class TaskProcessor {
     }
 
     @Transactional
-    public void removeAgent(Person agent) {
-        List<Task> uncompletedByEmployee = taskDao.findUncompletedByEmployeeId(agent.getId());
+    public void removeAgent(Long employeeId) {
+        List<Task> uncompletedByEmployee = taskDao.findUncompletedByEmployeeId(employeeId);
         for (Task t: uncompletedByEmployee) {
             t.setEmployeeId(null);
             taskDao.delete(t.getId());
@@ -221,7 +221,7 @@ public class TaskProcessor {
                     .orElseThrow(() -> new IllegalStateException("Order for task don't exists"));
             createTask(order);
         }
-        workerQueue.remove(new EmployeeEntry(agent));
+        workerQueue.remove(new EmployeeEntry(employeeId));
     }
 
     public void createTask(OrderContactData order) {
