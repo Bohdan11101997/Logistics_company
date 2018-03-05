@@ -4,14 +4,12 @@ import edu.netcracker.project.logistic.dao.ContactDao;
 import edu.netcracker.project.logistic.dao.OfficeDao;
 import edu.netcracker.project.logistic.dao.impl.AddressDaoImpl;
 import edu.netcracker.project.logistic.model.Address;
-import edu.netcracker.project.logistic.model.Contact;
 import edu.netcracker.project.logistic.model.Office;
-import edu.netcracker.project.logistic.model.Person;
 import edu.netcracker.project.logistic.service.AddressService;
 import edu.netcracker.project.logistic.service.PersonService;
 import edu.netcracker.project.logistic.service.RoleService;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,6 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.time.LocalDateTime;
+import java.util.GregorianCalendar;
 
 
 @Controller
@@ -67,6 +66,7 @@ public class TestController {
         officeDao.contains(1L);
         contactDao.findOne(1L);
 
+
         return "test";
     }
 
@@ -76,14 +76,9 @@ public class TestController {
         return "/error/403";
     }
 
-    @GetMapping("/user")
+    @GetMapping("/main")
     public String user() {
-        return "user";
-    }
-
-    @GetMapping("/employee")
-    public String admin() {
-        return "employee";
+        return "person_main";
     }
 
 }

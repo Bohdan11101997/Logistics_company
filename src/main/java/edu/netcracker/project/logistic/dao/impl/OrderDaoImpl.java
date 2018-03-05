@@ -95,6 +95,9 @@ public class OrderDaoImpl implements OrderDao, QueryDao, RowMapper<Order> {
 
     }
 
+
+
+
     @Override
     public Optional<Order> findOne(Long aLong) {
         return Optional.empty();
@@ -120,5 +123,8 @@ public class OrderDaoImpl implements OrderDao, QueryDao, RowMapper<Order> {
     public String getFindOneQuery() {
         return null;
     }
+
+
+
 
 }

@@ -5,6 +5,10 @@ public class Task {
     private Long employeeId;
     private Long orderId;
     private Boolean isCompleted;
+    private String description;
+
+    public Task() {
+    }
 
     public Long getId() {
         return id;
@@ -13,6 +17,7 @@ public class Task {
     public void setId(Long id) {
         this.id = id;
     }
+
 
     public Long getEmployeeId() {
         return employeeId;
@@ -37,4 +42,13 @@ public class Task {
     public void setCompleted(Boolean completed) {
         isCompleted = completed;
     }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 }
+

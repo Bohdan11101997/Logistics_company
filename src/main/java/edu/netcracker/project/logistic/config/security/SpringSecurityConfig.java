@@ -3,7 +3,6 @@ package edu.netcracker.project.logistic.config.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -45,8 +44,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/", "/index", "/registration", "/registration/complete", "/registration/confirm", "/test", "/login/forgot/password").permitAll()
-                .antMatchers("/employee").hasAnyRole("ADMIN", "MANAGER", "COURIER", "CALL_CENTER_AGENT")
-                .antMatchers("/user").hasRole("USER")
+                .antMatchers("/person_main").hasAnyRole("ADMIN", "MANAGER", "COURIER", "CALL_CENTER_AGENT", "USER")
                 .antMatchers("/admin/**").hasAnyRole("ADMIN")
                 .antMatchers("/manager/**").hasAnyRole("MANAGER")
                 .antMatchers("/courier/**").hasAnyRole("COURIER")
@@ -64,18 +62,13 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .clearAuthentication(true)
                 .permitAll()
                 .and()
-                .rememberMe()
-                .key("unique-and-secret")
-                .userDetailsService(userDetailsService)
-                .rememberMeCookieName("remember-me-cookie-name")
-                .tokenValiditySeconds(60 * 60)
-                .and()
                 .exceptionHandling().accessDeniedHandler(accessDeniedHandler);
     }
 
     @Override
     protected void configure(
             AuthenticationManagerBuilder auth) throws Exception {
+        auth.eraseCredentials(false);
         auth.authenticationProvider(authenticationProvider());
     }
 

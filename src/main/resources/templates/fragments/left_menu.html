@@ -10,7 +10,9 @@
 
     <!-- Bootstrap -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" />
-    <link rel="stylesheet" th:href="@{/css/admin.css}" type="text/css" href="../static/css/admin.css" />
+    <link rel="stylesheet" th:href="@{/css/left_menu.css}" type="text/css" href="../static/css/left_menu.css" />
+
+
 </head>
 
 <body>
@@ -46,11 +48,12 @@
                                 <div id="dropdown-admin" class="panel-collapse collapse">
                                     <div class="panel-body">
                                         <ul class="nav navbar-nav">
-                                            <li><a th:href = "@{/admin/employees}" href="#">Employee List</a></li>
-                                            <li><a th:href = "@{/admin/crud/employee}" href="#">Create new employee</a></li>
-                                            <li><a th:href = "@{/admin/offices}" href="#">Office List</a></li>
-                                            <li><a th:href = "@{/admin/crud/office}" href="#">Create new office</a></li>
-                                            <li><a th:href = "@{/admin/advertisements}" href="#">Publish advertisement</a></li>
+                                            <li><a id="employees" th:href = "@{/admin/employees}" href="#">Employee List</a></li>
+                                            <li><a id="crud_employee" th:href = "@{/admin/crud/employee}" href="#">Create new employee</a></li>
+                                            <li><a id="offices" th:href = "@{/admin/offices}" href="#">Office List</a></li>
+                                            <li><a id="crud_office" th:href = "@{/admin/crud/office}" href="#">Create new office</a></li>
+                                            <li><a id="advertisements" th:href = "@{/admin/advertisements}" href="#">Advertisement List</a></li>
+                                            <li><a id="crud_advertisement" th:href = "@{/admin/crud/advertisement}" href="#">Create new advertisement</a></li>
                                         </ul>
                                     </div>
                                 </div>
@@ -67,6 +70,23 @@
                                             <li><a href="#">Manager Func 1</a></li>
                                             <li><a href="#">Manager Func 2</a></li>
                                             <li><a href="#">Manager Func 3</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+
+                            <li sec:authorize="hasRole('ROLE_USER')" class="dropdown panel panel-default">
+                                <a data-toggle="collapse" href="#dropdown-admin">
+                                    <span class="glyphicon glyphicon-user"></span> User <span class="caret"></span>
+                                </a>
+
+                                <div id="dropdown-user" class="panel-collapse collapse">
+                                    <div class="panel-body">
+                                        <ul class="nav navbar-nav">
+                                            <li><a id="user_personal_area" th:href = "@{/user/personal}" href="#">Personal Area</a></li>
+                                            <li><a id="user_change_password" th:href="@{/user/change/password}" href="#">Change password</a></li>
+                                            <li><a id="user_my_orders" href="#">My orders</a></li>
+                                            <li><a id="user_create_new_order" href="#">Create new order</a></li>
                                         </ul>
                                     </div>
                                 </div>

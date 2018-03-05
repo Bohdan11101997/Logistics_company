@@ -3,17 +3,14 @@
 <head>
 
     <th:block th:replace="fragments/header :: header-bootstrap-config" />
-
-    <title>Admin_Advertisements</title>
-
     <th:block th:replace="fragments/header :: header-bootstrap-config-IE" />
 
-    <link rel="stylesheet" th:href="@{/css/admin.css}" type="text/css" href="../static/css/admin.css" />
+    <link rel="stylesheet" th:href="@{/css/left_menu.css}" type="text/css" href="../static/css/left_menu.css" />
 
 </head>
 <body>
 
-    <div class="row">
+<div class="row">
 
     <div th:replace="fragments/left_menu :: left-menu-header">
     </div>
@@ -23,59 +20,57 @@
         <div class="side-body">
             <div class="row">
 
-                <h1 style="text-align:center"> Create new advertisement </h1>
+                <h1 style="text-align:center"> Advertisements </h1>
 
-                <div class="col-lg-10 col-md-6  col-lg-offset-1">
+                <div class="col-lg-10 col-md-10 col-md-offset-1 col-lg-offset-1">
 
-                    <div th:if="${param.success}">
-                        <div class="alert alert-success">
-                            Advertisement has been successfully published.
-                        </div>
-                    </div>
-
-                    <div class="well">
-
-                        <h3 align="center">New Advertisement</h3>
-
-                        <form class="form-horizontal" method="post" th:action= "@{/admin/advertisements}" th:object="${advertisement}" >
-
-                            <div class="form-group">
-                                <label for="advertisement_type" class="control-label">Type</label>
-                                <select class="form-control" name="" id="advertisement_type" th:field="*{type.name}">
-                                    <option value="Advertisement">Advertisement</option>
-                                    <option value="Announcement">Announcement</option>
-                                    <option value="Other">Other</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group required">
-                                <label for="name" class="control-label">Caption</label>
-                                <input type="text" class="form-control" id="name" placeholder=""
-                                required="required" minlength="3" maxlength="200"
-                                th:field="*{name}"/>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="description" class="control-label">Description</label>
-                                <textarea class="form-control" rows="5" id="description" th:field="*{description}"
-                                          required="required" minlength="10" maxlength="1000"></textarea>
-                            </div>
-
-                            <p class="text-center"><input type="submit"  class="btn btn-success" value="Publish" /></p>
-                        </form>
-
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Caption</th>
+                                <th>Description</th>
+                                <th>First show date</th>
+                                <th>End show date</th>
+                                <th>Type</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="advertisement, iter : ${advertisements}">
+                                <td th:text="${iter.index + 1}"></td>
+                                <td th:text="${advertisement.caption}"></td>
+                                <td th:text="${advertisement.description}"></td>
+                                <td th:text="${advertisement.showFirstDate}"></td>
+                                <td th:text="${advertisement.showEndDate}"></td>
+                                <td th:text="${advertisement.type.name}"></td>
+                                <td>
+                                    <form th:action="@{'/admin/crud/advertisement/update/' + ${advertisement.id}}" th:method="GET">
+                                        <button class="btn btn-link">edit</button>
+                                    </form>
+                                </td>
+                                <td>
+                                    <form th:action="@{'/admin/crud/advertisement/delete/' + ${advertisement.id}}"  th:method="POST">
+                                        <button class="btn btn-link">delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
-    </div>
+</div>
 
-    <th:block th:replace="fragments/footer :: footer"/>
+<th:block th:replace="fragments/footer :: footer"/>
+<th:block th:replace="fragments/left_menu :: left-menu-footer" />
 
-
-    <th:block th:replace="fragments/left_menu :: left-menu-footer" />
-
+<script type="text/javascript">
+    document.getElementById('advertisements').className='active';
+</script>
 
 </body>
 </html>

@@ -10,10 +10,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Optional;
 
 @Repository
-public class AdvertisementTypeDaoImpl implements AdvertisementTypeDao, QueryDao {
+public class AdvertisementTypeDaoImpl implements AdvertisementTypeDao, QueryDao, RowMapper<AdvertisementType> {
 
     private JdbcTemplate jdbcTemplate;
     private QueryService queryService;
@@ -24,14 +26,12 @@ public class AdvertisementTypeDaoImpl implements AdvertisementTypeDao, QueryDao 
         this.queryService = queryService;
     }
 
-    private RowMapper<AdvertisementType> getMapper() {
-        return (resultSet, i) ->
-        {
-            AdvertisementType type = new AdvertisementType();
-            type.setId(resultSet.getLong("type_advertisement_id"));
-            type.setName(resultSet.getString("advertisement_name"));
-            return type;
-        };
+    @Override
+    public AdvertisementType mapRow(ResultSet resultSet, int i) throws SQLException {
+        AdvertisementType type = new AdvertisementType();
+        type.setId(resultSet.getLong("type_advertisement_id"));
+        type.setName(resultSet.getString("advertisement_name"));
+        return type;
     }
 
     @Override
@@ -56,7 +56,7 @@ public class AdvertisementTypeDaoImpl implements AdvertisementTypeDao, QueryDao 
             AdvertisementType type = jdbcTemplate.queryForObject(
                     getFindByNameQuery(),
                     new Object[]{advertisementName},
-                    getMapper());
+                    this::mapRow);
             return Optional.of(type);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -84,6 +84,7 @@ public class AdvertisementTypeDaoImpl implements AdvertisementTypeDao, QueryDao 
     }
 
     private String getFindByNameQuery() { return queryService.getQuery("select.advertisement.type.by.name"); }
+
 
 
 }

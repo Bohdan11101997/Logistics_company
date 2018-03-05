@@ -21,8 +21,6 @@ For local usage these files must be placed in *src/main/resources/static/local/*
 * "jquery.min.js" 3.3.1+
 
 ## Usage
-### IDEA
-Run configuration for IDEA is included.
 
 ### Maven
 Use spring-boot-maven-plugin:

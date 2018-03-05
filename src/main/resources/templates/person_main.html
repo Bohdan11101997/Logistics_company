@@ -1,0 +1,53 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+
+    <th:block th:replace="fragments/header :: header-bootstrap-config" />
+
+    <title>Main page</title>
+
+    <th:block th:replace="fragments/header :: header-bootstrap-config-IE" />
+
+    <link rel="stylesheet" th:href="@{/css/left_menu.css}" type="text/css" href="/static/css/left_menu.css" />
+
+</head>
+<body>
+
+<div class="row">
+
+
+    <div th:replace="fragments/left_menu :: left-menu-header">
+    </div>
+
+    <!-- Main Content -->
+    <div class="container-fluid">
+        <div class="side-body">
+            <div class="row">
+
+                <div sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_COURIER')">
+                    <h1>Employee page</h1>
+                    <h1 th:inline="text">Hello, employee!</h1>
+                </div>
+                <div sec:authorize="hasRole('ROLE_USER')">
+                    <h1>User page</h1>
+                    <h1 th:inline="text">Hello, user!</h1>
+                </div>
+
+                <h3>All your functions are on your left!</h3>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block th:replace="fragments/footer :: footer"/>
+
+
+<th:block th:replace="fragments/left_menu :: left-menu-footer" />
+
+
+
+
+</body>
+</html>

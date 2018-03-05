@@ -15,8 +15,7 @@ public class Order {
     private Office office;
     private OrderStatus orderStatus;
 
-    public Order() {
-    }
+    public Order() {}
 
     public Long getId() {
         return id;

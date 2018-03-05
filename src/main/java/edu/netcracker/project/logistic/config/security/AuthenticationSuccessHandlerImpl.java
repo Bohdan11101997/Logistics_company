@@ -21,12 +21,15 @@ import java.util.Collection;
 @Configuration
 public class AuthenticationSuccessHandlerImpl implements AuthenticationSuccessHandler {
 
+    private final int SESSION_INACTIVITY_TIMEOUT = 60 * 60;
+
     private final Logger logger = LoggerFactory.getLogger(RegistrationController.class);
     private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         handle(request, response, authentication);
+        request.getSession().setMaxInactiveInterval(SESSION_INACTIVITY_TIMEOUT);
         clearAuthenticationAttributes(request);
     }
 
@@ -42,30 +45,23 @@ public class AuthenticationSuccessHandlerImpl implements AuthenticationSuccessHa
     }
 
     private String determineTargetUrl(Authentication authentication) {
-        boolean isUser = false;
-        boolean isEmployee = false;
+        boolean isRoleExist = false;
         Collection<? extends GrantedAuthority> authorities =
                 authentication.getAuthorities();
         for (GrantedAuthority grantedAuthority : authorities){
 
             String authority = grantedAuthority.getAuthority();
 
-            if (authority.equals("ROLE_USER")){
-                isUser = true;
-                break;
-            } else if (authority.equals("ROLE_ADMIN") || authority.equals("ROLE_MANAGER") ||
-                    authority.equals("ROLE_COURIER") || authority.equals("ROLE_CALL_CENTER_AGENT")){
-                isEmployee = true;
-                break;
+                 if (authority.equals("ROLE_USER") ||  authority.equals("ROLE_VIP_USER") || authority.equals("ROLE_ADMIN")
+                     || authority.equals("ROLE_MANAGER") || authority.equals("ROLE_COURIER") || authority.equals("ROLE_CALL_CENTER_AGENT") ){
+                     isRoleExist = true;
             }
         }
 
-        if (isUser) {
-            return "user";
-        } else if (isEmployee) {
-            return "employee";
+        if (isRoleExist) {
+            return "main";
         } else
-            throw new IllegalStateException();
+            throw new IllegalStateException("Role does not exist!");
         }
 
     private void clearAuthenticationAttributes(HttpServletRequest request) {

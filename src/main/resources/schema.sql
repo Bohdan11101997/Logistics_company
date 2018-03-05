@@ -9,7 +9,6 @@ DROP TABLE IF EXISTS "logistic_company"."person" CASCADE;
 DROP TABLE IF EXISTS "logistic_company"."contact" CASCADE;
 DROP TABLE IF EXISTS "logistic_company"."address" CASCADE;
 DROP TABLE IF EXISTS "logistic_company"."role" CASCADE;
-DROP TABLE IF EXISTS "logistic_company"."bonus" CASCADE;
 DROP TABLE IF EXISTS "logistic_company"."office" CASCADE;
 DROP TABLE IF EXISTS "logistic_company"."order_status" CASCADE;
 DROP TABLE IF EXISTS "logistic_company"."task" CASCADE;
@@ -69,14 +68,22 @@ CREATE TABLE "logistic_company"."person_role"
   "role_id"   INT4
 );
 
+CREATE TABLE "logistic_company"."tasks_list"
+(
+  "task_id"       INT4 DEFAULT nextval('main_seq_id' :: REGCLASS)    NOT NULL,
+  "description"   VARCHAR(60) COLLATE "default"                 NOT NULL,
+  "is_complete"   BOOLEAN                                       NOT NULL,
+  "person_id"     INT4                                           NOT NULL,
+  "order_id"      INT4                                           NOT NULL
+);
 
 CREATE TABLE "logistic_company"."advertisement"
 (
   "advertisement_id"      INT4 DEFAULT nextval('main_seq_id' :: REGCLASS)     NOT NULL,
   "caption"               VARCHAR(200) COLLATE "default"                      NOT NULL,
   "description"           VARCHAR(1000) COLLATE "default"                     NOT NULL,
-  "publication_date"      TIMESTAMP                                           NOT NULL DEFAULT NOW(),
-  "publication_date_end"  DATE                                                NOT NULL,
+  "show_first_date"       DATE                                                NOT NULL DEFAULT NOW(),
+  "show_end_date"         DATE                                                NOT NULL,
   "type_advertisement_id" INT4                                                NOT NULL
 );
 
@@ -178,7 +185,10 @@ ALTER TABLE "logistic_company"."contact"
 ALTER TABLE logistic_company.registration_link
   ADD UNIQUE (person_id);
 
-
+ALTER TABLE "logistic_company"."order_type"
+  ADD PRIMARY KEY ("order_type_id");
+ALTER TABLE "logistic_company"."tasks_list"
+  ADD PRIMARY KEY ("task_id");
 ALTER TABLE "logistic_company"."person"
   ADD PRIMARY KEY ("person_id");
 ALTER TABLE "logistic_company"."role"
@@ -223,7 +233,6 @@ ALTER TABLE "logistic_company"."work_day"
 ALTER TABLE "logistic_company"."person"
   ADD FOREIGN KEY ("contact_id") REFERENCES "logistic_company"."contact" (contact_id);
 
-
 ALTER TABLE "logistic_company"."order"
   ADD FOREIGN KEY ("office_id") REFERENCES "logistic_company"."office" ("office_id");
 ALTER TABLE "logistic_company"."order"
@@ -242,6 +251,18 @@ ALTER TABLE "logistic_company"."order"
   ADD FOREIGN KEY ("sender_contact_id") REFERENCES "logistic_company"."contact" ("contact_id");
 ALTER TABLE "logistic_company"."order"
   ADD FOREIGN KEY ("receiver_contact_id") REFERENCES "logistic_company"."contact" ("contact_id");
+
+ALTER TABLE "logistic_company"."order"
+  ADD FOREIGN KEY ("receiver_contact_id") REFERENCES "logistic_company"."contact" ("contact_id");
+
+ALTER TABLE "logistic_company"."order"
+  ADD FOREIGN KEY ("receiver_address_id") REFERENCES "logistic_company"."address" ("address_id");
+
+ALTER TABLE "logistic_company"."order"
+  ADD FOREIGN KEY ("sender_contact_id") REFERENCES "logistic_company"."contact" ("contact_id");
+
+ALTER TABLE "logistic_company"."order"
+  ADD FOREIGN KEY ("sender_address_id") REFERENCES "logistic_company"."address" ("address_id");
 
 ALTER TABLE "logistic_company"."order"
   ADD FOREIGN KEY ("receiver_contact_id") REFERENCES "logistic_company"."contact" ("contact_id");
@@ -290,8 +311,22 @@ BEGIN
 END;
 $$;
 
-
 CREATE TRIGGER trigger_delete_old_rows
   AFTER INSERT
   ON person
 EXECUTE PROCEDURE delete_old_rows();
+
+
+CREATE FUNCTION advertisement_delete_old_rows() RETURNS trigger
+  LANGUAGE plpgsql
+  AS $$
+BEGIN
+  DELETE FROM advertisement WHERE show_end_date < NOW();
+  RETURN NEW;
+END;
+$$;
+
+CREATE TRIGGER advertisement_delete_old_rows_trigger
+  AFTER INSERT ON advertisement
+  EXECUTE PROCEDURE advertisement_delete_old_rows();
+

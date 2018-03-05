@@ -1,20 +1,13 @@
 package edu.netcracker.project.logistic.dao;
 
-public interface QueryDao
-{
+public interface QueryDao {
 
-   String getInsertQuery();
-
-
+    String getInsertQuery();
 
     String getUpsertQuery();
 
+    String getDeleteQuery();
 
-
-   String getDeleteQuery();
-
-
-
-   String getFindOneQuery();
+    String getFindOneQuery();
 
 }
