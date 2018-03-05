@@ -48,7 +48,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-
         Optional<Person> personOptional = personService.findOne(username);
 
         Person person;
