@@ -29,7 +29,8 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <arguments>
-                        --spring.config.location=classpath:/mail.properties,--spring.config.location=classpath:/application.properties
+                        <argument>--spring.config.location=classpath:/mail.properties</argument>
+                        <argument>--spring.config.location=classpath:/application.properties</argument>
                     </arguments>
                 </configuration>
             </plugin>
