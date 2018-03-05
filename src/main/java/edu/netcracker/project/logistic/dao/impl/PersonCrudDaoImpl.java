@@ -129,6 +129,21 @@ public class PersonCrudDaoImpl implements PersonCrudDao, QueryDao, RowMapper<Per
     }
 
     @Override
+    public Optional<Person> findByContactId(Long contactId) {
+        Person person;
+        try {
+            person = jdbcTemplate.queryForObject(
+                    getFindByContactIdQuery(),
+                    new Object[]{contactId},
+                    this);
+            return Optional.of(person);
+
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
     public Optional<Person> findOne(String username) {
         Person person;
         try {
@@ -187,6 +202,18 @@ public class PersonCrudDaoImpl implements PersonCrudDao, QueryDao, RowMapper<Per
             return jdbcTemplate.query(
                     getFindAllEmployeesQuery(),
                     this::extractMany
+            );
+        } catch (EmptyResultDataAccessException ex) {
+            return Collections.emptyList();
+        }
+    }
+
+    @Override
+    public List<Person> findByRoleId(Long roleId) {
+        try {
+            return jdbcTemplate.query(
+                    getFindByRoleIdQuery(),
+                    this
             );
         } catch (EmptyResultDataAccessException ex) {
             return Collections.emptyList();
@@ -264,4 +291,10 @@ public class PersonCrudDaoImpl implements PersonCrudDao, QueryDao, RowMapper<Per
     private String getSearchQuery() {
         return queryService.getQuery("select.person.search");
     }
+
+    private String getFindByRoleIdQuery() {
+        return queryService.getQuery("select.person.by.role_id");
+    }
+
+    private String getFindByContactIdQuery() { return queryService.getQuery("select.person.by.contact_id"); }
 }

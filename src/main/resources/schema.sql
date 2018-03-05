@@ -11,7 +11,7 @@ DROP TABLE IF EXISTS "logistic_company"."address" CASCADE;
 DROP TABLE IF EXISTS "logistic_company"."role" CASCADE;
 DROP TABLE IF EXISTS "logistic_company"."office" CASCADE;
 DROP TABLE IF EXISTS "logistic_company"."order_status" CASCADE;
-DROP TABLE IF EXISTS "logistic_company"."tasks_list";
+DROP TABLE IF EXISTS "logistic_company"."task" CASCADE;
 
 
 DROP FUNCTION IF EXISTS logistic_company.delete_old_rows() CASCADE;
@@ -25,7 +25,7 @@ DROP SCHEMA IF EXISTS "logistic_company" CASCADE;
 
 CREATE SCHEMA "logistic_company";
 
-CREATE TYPE logistic_company.WEEK_DAY AS ENUM ('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday');
+CREATE TYPE logistic_company.WEEK_DAY AS ENUM ('MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY');
 
 CREATE SEQUENCE "logistic_company"."main_seq_id"
   INCREMENT 1
@@ -80,7 +80,7 @@ CREATE TABLE "logistic_company"."tasks_list"
 CREATE TABLE "logistic_company"."advertisement"
 (
   "advertisement_id"      INT4 DEFAULT nextval('main_seq_id' :: REGCLASS)     NOT NULL,
-  "caption"               VARCHAR(200)  COLLATE "default"                     NOT NULL,
+  "caption"               VARCHAR(200) COLLATE "default"                      NOT NULL,
   "description"           VARCHAR(1000) COLLATE "default"                     NOT NULL,
   "show_first_date"       DATE                                                NOT NULL DEFAULT NOW(),
   "show_end_date"         DATE                                                NOT NULL,
@@ -98,7 +98,7 @@ CREATE TABLE "logistic_company"."work_day"
 (
   "employee_id" INT4     NOT NULL,
   "week_day"    WEEK_DAY NOT NULL,
-  "begin_time"  TIME     NOT NULL,
+  "start_time"  TIME     NOT NULL,
   "end_time"    TIME     NOT NULL
 );
 
@@ -157,6 +157,22 @@ CREATE TABLE logistic_company.registration_link
   person_id            INT4 NOT NULL
 );
 
+CREATE TABLE logistic_company.task
+(
+  task_id      INT4 DEFAULT nextval('main_seq_id' :: REGCLASS) NOT NULL,
+  employee_id  INT4                                            NOT NULL,
+  order_id     INT4                                            NOT NULL,
+  is_completed BOOLEAN                                         NOT NULL
+);
+
+CREATE TABLE logistic_company.day_off
+(
+  day_off_id  INT4 NOT NULL,
+  start_date  DATE NOT NULL,
+  end_date    DATE NOT NULL,
+  employee_id INT4 NOT NULL
+);
+
 
 ALTER TABLE "logistic_company"."person"
   ADD UNIQUE ("user_name");
@@ -169,8 +185,6 @@ ALTER TABLE "logistic_company"."contact"
 ALTER TABLE logistic_company.registration_link
   ADD UNIQUE (person_id);
 
-ALTER TABLE "logistic_company"."order"
-  ADD PRIMARY KEY ("order_id");
 ALTER TABLE "logistic_company"."order_type"
   ADD PRIMARY KEY ("order_type_id");
 ALTER TABLE "logistic_company"."tasks_list"
@@ -195,20 +209,18 @@ ALTER TABLE logistic_company.registration_link
   ADD PRIMARY KEY (registration_link_id);
 ALTER TABLE logistic_company.person_role
   ADD PRIMARY KEY (person_id, role_id);
-
-ALTER TABLE "logistic_company"."order"
-  ADD  FOREIGN KEY ("order_type_id") REFERENCES "logistic_company"."order_type"("order_type_id");
-
-ALTER TABLE "logistic_company"."tasks_list"
-  ADD FOREIGN KEY ("order_id") REFERENCES "logistic_company"."order" ("order_id");
-
-ALTER TABLE "logistic_company"."tasks_list"
-  ADD FOREIGN KEY ("person_id") REFERENCES "logistic_company"."person" ("person_id");
+ALTER TABLE logistic_company.order
+  ADD PRIMARY KEY (order_id);
+ALTER TABLE logistic_company.task
+  ADD PRIMARY KEY (task_id);
+ALTER TABLE logistic_company.work_day
+  ADD PRIMARY KEY (employee_id, week_day);
+ALTER TABLE logistic_company.day_off
+  ADD PRIMARY KEY (day_off_id);
 
 
 ALTER TABLE "logistic_company"."person_role"
   ADD FOREIGN KEY ("role_id") REFERENCES "logistic_company"."role" ("role_id");
-
 ALTER TABLE "logistic_company"."person_role"
   ADD FOREIGN KEY ("person_id") REFERENCES "logistic_company"."person" ("person_id") ON DELETE CASCADE;
 
@@ -223,7 +235,6 @@ ALTER TABLE "logistic_company"."person"
 
 ALTER TABLE "logistic_company"."order"
   ADD FOREIGN KEY ("office_id") REFERENCES "logistic_company"."office" ("office_id");
-
 ALTER TABLE "logistic_company"."order"
   ADD FOREIGN KEY ("order_status_id") REFERENCES "logistic_company"."order_status" ("order_status_id");
 
@@ -232,6 +243,26 @@ ALTER TABLE "logistic_company"."office"
 
 ALTER TABLE "logistic_company"."order"
   ADD FOREIGN KEY ("courier_id") REFERENCES "logistic_company"."person" ("person_id");
+ALTER TABLE "logistic_company"."order"
+  ADD FOREIGN KEY ("sender_address_id") REFERENCES "logistic_company"."address" ("address_id");
+ALTER TABLE "logistic_company"."order"
+  ADD FOREIGN KEY ("receiver_address_id") REFERENCES "logistic_company"."address" ("address_id");
+ALTER TABLE "logistic_company"."order"
+  ADD FOREIGN KEY ("sender_contact_id") REFERENCES "logistic_company"."contact" ("contact_id");
+ALTER TABLE "logistic_company"."order"
+  ADD FOREIGN KEY ("receiver_contact_id") REFERENCES "logistic_company"."contact" ("contact_id");
+
+ALTER TABLE "logistic_company"."order"
+  ADD FOREIGN KEY ("receiver_contact_id") REFERENCES "logistic_company"."contact" ("contact_id");
+
+ALTER TABLE "logistic_company"."order"
+  ADD FOREIGN KEY ("receiver_address_id") REFERENCES "logistic_company"."address" ("address_id");
+
+ALTER TABLE "logistic_company"."order"
+  ADD FOREIGN KEY ("sender_contact_id") REFERENCES "logistic_company"."contact" ("contact_id");
+
+ALTER TABLE "logistic_company"."order"
+  ADD FOREIGN KEY ("sender_address_id") REFERENCES "logistic_company"."address" ("address_id");
 
 ALTER TABLE "logistic_company"."order"
   ADD FOREIGN KEY ("receiver_contact_id") REFERENCES "logistic_company"."contact" ("contact_id");
@@ -248,6 +279,12 @@ ALTER TABLE "logistic_company"."order"
 ALTER TABLE logistic_company.registration_link
   ADD FOREIGN KEY (person_id) REFERENCES logistic_company.person (person_id);
 
+ALTER TABLE logistic_company.task
+  ADD FOREIGN KEY ("order_id") REFERENCES "logistic_company"."order" ("order_id");
+ALTER TABLE logistic_company.task
+  ADD FOREIGN KEY ("employee_id") REFERENCES "logistic_company"."person" ("person_id");
+ALTER TABLE logistic_company.day_off
+  ADD FOREIGN KEY (employee_id) REFERENCES logistic_company.person (person_id);
 
 CREATE FUNCTION delete_old_rows()
   RETURNS TRIGGER

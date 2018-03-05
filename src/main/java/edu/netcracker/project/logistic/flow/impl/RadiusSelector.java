@@ -48,10 +48,10 @@ public class RadiusSelector extends FlowBuilderImpl {
         Order pivot = pickNextOrder();
         if(pivot != null) {
             resultSequence.add(pivot);
-            center = pivot.getReceiver().getAddress().getLocation();
+            center = pivot.getReceiverAddress().getLocation();
             candidates = new PriorityQueue<>(11, (o1, o2) -> {
-                LatLng l1 = o1.getReceiver().getAddress().getLocation();
-                LatLng l2 = o2.getReceiver().getAddress().getLocation();
+                LatLng l1 = o1.getReceiverAddress().getLocation();
+                LatLng l2 = o2.getReceiverAddress().getLocation();
                 Double dist1 = distance(l1, center);
                 Double dist2 = distance(l2, center);
                 dist1 = updateOrderDistanceIfVip(this, o1, dist1);
@@ -116,7 +116,7 @@ public class RadiusSelector extends FlowBuilderImpl {
     private boolean canBePicked(Order o){
         if(resultSequence.size() >= maxOrderCount)
             return false;
-        if(searchRadius <= distance(o.getReceiver().getAddress().getLocation(), office.getAddress().getLocation()))
+        if(searchRadius <= distance(o.getReceiverAddress().getLocation(), office.getAddress().getLocation()))
             return false;
         //TODO: make bigger after updating other classes
         return true;
@@ -132,7 +132,7 @@ public class RadiusSelector extends FlowBuilderImpl {
     public List<Order> calculatePath() {
         LatLng[] waypoints = new LatLng[resultSequence.size()];
         for(int i = 0; i < waypoints.length; i++)
-            waypoints[i] = resultSequence.get(i).getReceiver().getAddress().getLocation();
+            waypoints[i] = resultSequence.get(i).getReceiverAddress().getLocation();
 
         TravelMode mode = TravelMode.WALKING;
         switch(courierToPick){
@@ -157,7 +157,7 @@ public class RadiusSelector extends FlowBuilderImpl {
                 .path(new StaticMap.Path(StaticMap.Path.Style.DEFAULT,path.toArray(new LatLng[]{})));
 
         for(Order o : resultSequence)
-            staticMap.marker(o.getReceiver().getAddress().getName());
+            staticMap.marker(o.getReceiverAddress().getName());
 
         List<Order> return_value = new ArrayList<>(waypoints.length);
         for(int i : directionsResult.routes[0].waypointOrder)
