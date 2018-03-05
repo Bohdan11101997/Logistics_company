@@ -251,23 +251,31 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
         return null;
     }
 
+    @Override
     public void clear() {
         walkOrders.clear();
         driveOrders.clear();
         walkCouriers.clear();
         driveCouriers.clear();
         optimize = false;
+        center = office.getAddress().getLocation();
     }
 
+    @Override
     public abstract List<Order> calculatePath();
 
+    @Override
     public abstract List<Order> confirmCourier();
 
+    @Override
     public abstract List<Order> getOrdersSequence();
 
+    @Override
     public abstract List<LatLng> getPath();
 
+    @Override
     public abstract StaticMap getStaticMap();
 
+    @Override
     public abstract boolean process();
 }

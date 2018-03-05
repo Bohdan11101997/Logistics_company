@@ -41,6 +41,8 @@ public interface FlowBuilder {
 
     Queue<Person> getCouriers(CourierType type);
 
+    void clear();
+
     //calculatings
     List<Order> calculatePath();
 
