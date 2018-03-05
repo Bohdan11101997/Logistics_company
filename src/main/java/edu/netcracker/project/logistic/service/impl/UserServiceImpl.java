@@ -27,24 +27,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Person update(Person person) {
-
-        Optional<Person> optionalPersonSaved = findOne(person.getId());
-        Person personSaved = new Person();
-
-
-        if (optionalPersonSaved.isPresent()){
-            personSaved = optionalPersonSaved.get();
-        }
-
-        personSaved.setUserName(person.getUserName());
+        personCrudDao.save(person);
         Contact contact = person.getContact();
-        contact.setContactId(personSaved.getContact().getContactId());
-        personSaved.setContact(contact);
-
-        personCrudDao.save(personSaved);
         contactDao.save(contact);
-
-        return personSaved;
+        return person;
     }
 
     @Override

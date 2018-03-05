@@ -8,9 +8,12 @@ import edu.netcracker.project.logistic.service.PersonService;
 import edu.netcracker.project.logistic.service.UserService;
 import edu.netcracker.project.logistic.validation.UpdateUserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,13 +33,18 @@ public class UserController {
     private UpdateUserValidator validator;
     private SmartValidator userFormValidator;
     private PasswordEncoder passwordEncoder;
+    private UserDetailsService userDetailsService;
 
     @Autowired
-    public UserController(UserService userService, UpdateUserValidator validator, SmartValidator userFormValidator, PasswordEncoder passwordEncoder){
+    AuthenticationManager authenticationManager;
+
+    @Autowired
+    public UserController(UserService userService, UpdateUserValidator validator, SmartValidator userFormValidator, PasswordEncoder passwordEncoder, UserDetailsService userDetailsService){
         this.userService = userService;
         this.validator = validator;
         this.userFormValidator = userFormValidator;
         this.passwordEncoder = passwordEncoder;
+        this.userDetailsService = userDetailsService;
     }
 
     @GetMapping("/personal")
@@ -151,7 +159,16 @@ public class UserController {
         person.setPassword(newPasswordEncoded);
         userService.update(person);
 
-        // autologin
+        UserDetails userDetails = userDetailsService.loadUserByUsername(person.getUserName());
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+                new UsernamePasswordAuthenticationToken(userDetails, newPassword, userDetails.getAuthorities());
+
+        authenticationManager.authenticate(usernamePasswordAuthenticationToken);
+
+        if (usernamePasswordAuthenticationToken.isAuthenticated()){
+            SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+        }
+
 
         return "redirect:/user/change/password?save";
     }
