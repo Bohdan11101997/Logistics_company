@@ -5,6 +5,7 @@ import edu.netcracker.project.logistic.model.Contact;
 import edu.netcracker.project.logistic.model.Person;
 import edu.netcracker.project.logistic.model.UserForm;
 import edu.netcracker.project.logistic.service.PersonService;
+import edu.netcracker.project.logistic.service.SecurityService;
 import edu.netcracker.project.logistic.service.UserService;
 import edu.netcracker.project.logistic.validation.UpdateUserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,18 +34,17 @@ public class UserController {
     private UpdateUserValidator validator;
     private SmartValidator userFormValidator;
     private PasswordEncoder passwordEncoder;
-    private UserDetailsService userDetailsService;
+    private SecurityService securityService;
 
     @Autowired
-    AuthenticationManager authenticationManager;
-
-    @Autowired
-    public UserController(UserService userService, UpdateUserValidator validator, SmartValidator userFormValidator, PasswordEncoder passwordEncoder, UserDetailsService userDetailsService){
+    public UserController(UserService userService, UpdateUserValidator validator,
+                          SmartValidator userFormValidator, PasswordEncoder passwordEncoder,
+                          SecurityService securityService){
         this.userService = userService;
         this.validator = validator;
         this.userFormValidator = userFormValidator;
         this.passwordEncoder = passwordEncoder;
-        this.userDetailsService = userDetailsService;
+        this.securityService = securityService;
     }
 
     @GetMapping("/personal")
@@ -135,22 +135,24 @@ public class UserController {
                                   Authentication authentication,
                                   BindingResult bindingResult){
 
+        String oldPassword = (String) authentication.getCredentials();
+        String oldPasswordFromForm = changePasswordForm.getOldPassword();
+
+        // validation
+        if (!oldPassword.equals(oldPasswordFromForm)){
+            bindingResult.rejectValue("oldPassword", "Password.Not.Match");
+        }
+
         if (bindingResult.hasErrors()){
             return "user/user_change_password";
         }
 
         String username = authentication.getName();
+        // change for single password
         Optional<Person> optionalPerson = userService.findOne(username);
 
         if (!optionalPerson.isPresent()){
             return "/error/403";
-        }
-
-        String oldPassword = (String) authentication.getCredentials();
-        String oldPasswordFromForm = changePasswordForm.getOldPassword();
-        if (!oldPassword.equals(oldPasswordFromForm)){
-            bindingResult.rejectValue("oldPassword", "Password.Not.Match");
-            return "user/user_change_password";
         }
 
         Person person = optionalPerson.get();
@@ -159,16 +161,7 @@ public class UserController {
         person.setPassword(newPasswordEncoded);
         userService.update(person);
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(person.getUserName());
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                new UsernamePasswordAuthenticationToken(userDetails, newPassword, userDetails.getAuthorities());
-
-        authenticationManager.authenticate(usernamePasswordAuthenticationToken);
-
-        if (usernamePasswordAuthenticationToken.isAuthenticated()){
-            SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-        }
-
+        securityService.autoLogIn(username, newPassword);
 
         return "redirect:/user/change/password?save";
     }
