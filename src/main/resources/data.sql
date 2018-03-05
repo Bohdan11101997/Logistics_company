@@ -18,6 +18,7 @@ INSERT INTO role(role_id, role_name, is_employee_role) VALUES (2, 'ROLE_USER', F
 INSERT INTO role(role_id, role_name, is_employee_role) VALUES (3, 'ROLE_UNCONFIRMED', FALSE);
 INSERT INTO role(role_id, role_name, is_employee_role) VALUES (4, 'ROLE_MANAGER', TRUE);
 INSERT INTO role(role_id, role_name, is_employee_role) VALUES (5, 'ROLE_COURIER', TRUE);
+INSERT INTO role(role_id, role_name, is_employee_role) VALUES (6, 'ROLE_VIP_USER', FALSE);
 
 INSERT INTO person_role(person_id, role_id) VALUES (1,1);
 INSERT INTO person_role(person_id, role_id) VALUES (2,3);

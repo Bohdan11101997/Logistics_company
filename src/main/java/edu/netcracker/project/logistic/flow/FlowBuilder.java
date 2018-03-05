@@ -1,5 +1,7 @@
 package edu.netcracker.project.logistic.flow;
 
+import edu.com.google.maps.StaticMap;
+import edu.com.google.maps.model.LatLng;
 import edu.netcracker.project.logistic.model.Order;
 import edu.netcracker.project.logistic.model.Person;
 
@@ -38,6 +40,19 @@ public interface FlowBuilder {
 
     Queue<Person> getCouriers(CourierType type);
 
+    //calculatings
+    List<Order> calculatePath();
+
+    List<Order> confirmCourier();
+
+    List<Order> getOrdersSequence();
+
+    List<LatLng> getPath();
+
+    StaticMap getStaticMap();
+
+    void process();
+
     //TODO: give a better name
     enum FlowResultType {
         PathOnly,
@@ -50,11 +65,8 @@ public interface FlowBuilder {
         Driver
     }
 
-    //TODO: is splitting on two different enums needed?
     enum OrderType {
         Luggage,
-        Freight,
-        VIPLuggage,
-        VIPFreight
+        Freight
     }
 }
