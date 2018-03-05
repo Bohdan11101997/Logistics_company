@@ -2,8 +2,8 @@ package edu.netcracker.project.logistic.model;
 
 public class Task {
     private Long id;
-    private Person employee;
-    private Order order;
+    private Long employeeId;
+    private Long orderId;
     private Boolean isCompleted;
 
     public Long getId() {
@@ -14,20 +14,20 @@ public class Task {
         this.id = id;
     }
 
-    public Person getEmployee() {
-        return employee;
+    public Long getEmployeeId() {
+        return employeeId;
     }
 
-    public void setEmployee(Person employee) {
-        this.employee = employee;
+    public void setEmployeeId(Long employeeId) {
+        this.employeeId = employeeId;
     }
 
-    public Order getOrder() {
-        return order;
+    public Long getOrderId() {
+        return orderId;
     }
 
-    public void setOrder(Order order) {
-        this.order = order;
+    public void setOrderId(Long orderId) {
+        this.orderId = orderId;
     }
 
     public Boolean getCompleted() {

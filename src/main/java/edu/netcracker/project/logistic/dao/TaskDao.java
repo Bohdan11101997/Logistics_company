@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface TaskDao extends CrudDao<Task, Long> {
     List<Task> findUncompleted();
+    List<Task> findUncompletedByEmployeeId(Long employeeId);
 }

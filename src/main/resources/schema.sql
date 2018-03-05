@@ -26,7 +26,7 @@ DROP SCHEMA IF EXISTS "logistic_company" CASCADE;
 
 CREATE SCHEMA "logistic_company";
 
-CREATE TYPE logistic_company.WEEK_DAY AS ENUM ('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday');
+CREATE TYPE logistic_company.WEEK_DAY AS ENUM ('MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY');
 
 CREATE SEQUENCE "logistic_company"."main_seq_id"
   INCREMENT 1
@@ -91,7 +91,7 @@ CREATE TABLE "logistic_company"."work_day"
 (
   "employee_id" INT4     NOT NULL,
   "week_day"    WEEK_DAY NOT NULL,
-  "begin_time"  TIME     NOT NULL,
+  "start_time"  TIME     NOT NULL,
   "end_time"    TIME     NOT NULL
 );
 

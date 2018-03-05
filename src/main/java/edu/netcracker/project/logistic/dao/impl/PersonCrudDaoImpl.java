@@ -133,7 +133,7 @@ public class PersonCrudDaoImpl implements PersonCrudDao, QueryDao, RowMapper<Per
         Person person;
         try {
             person = jdbcTemplate.queryForObject(
-                    getFindOneQuery(),
+                    getFindByContactIdQuery(),
                     new Object[]{contactId},
                     this);
             return Optional.of(person);
@@ -295,4 +295,6 @@ public class PersonCrudDaoImpl implements PersonCrudDao, QueryDao, RowMapper<Per
     private String getFindByRoleIdQuery() {
         return queryService.getQuery("select.person.by.role_id");
     }
+
+    private String getFindByContactIdQuery() { return queryService.getQuery("select.person.by.contact_id"); }
 }
