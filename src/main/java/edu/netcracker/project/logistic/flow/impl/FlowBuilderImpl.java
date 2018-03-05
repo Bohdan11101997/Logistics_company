@@ -4,10 +4,12 @@ import edu.com.google.maps.StaticMap;
 import edu.com.google.maps.model.LatLng;
 import edu.netcracker.project.logistic.dao.RoleCrudDao;
 import edu.netcracker.project.logistic.flow.FlowBuilder;
+import edu.netcracker.project.logistic.model.Office;
 import edu.netcracker.project.logistic.model.Order;
 import edu.netcracker.project.logistic.model.Person;
 import edu.netcracker.project.logistic.model.Role;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 //import org.apache.tomcat.util.collections.SynchronizedQueue;
 
 import java.util.*;
@@ -15,7 +17,7 @@ import java.util.concurrent.PriorityBlockingQueue;
 
 public abstract class FlowBuilderImpl implements FlowBuilder {
 
-    private boolean optimize = false;
+    protected boolean optimize = false;
 
     protected Queue<Order> walkOrders;
     protected Queue<Order> driveOrders;
@@ -24,20 +26,23 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
 
     protected RoleCrudDao roleCrudDao;
 
-    @Autowired
-    public FlowBuilderImpl(RoleCrudDao roleCrudDao) {
-        this.roleCrudDao = roleCrudDao;
+    protected Office office;
+    protected LatLng center;
 
-        init(this);
+    public FlowBuilderImpl(RoleCrudDao roleCrudDao, Office office) {
+        this.roleCrudDao = roleCrudDao;
+        this.office = office;
+        center = office.getAddress().getLocation();
+
+        init(this, this.office);
     }
 
-    private static void init(FlowBuilderImpl impl) {
-
+    private static void init(FlowBuilderImpl impl, Office office) {
         Comparator<Order> co = (Order o1, Order o2) -> {
             LatLng l1 = o1.getReceiver().getAddress().getLocation();
             LatLng l2 = o2.getReceiver().getAddress().getLocation();
-            Double dist1 = (l1.lat * l1.lat + l1.lng + l1.lng);
-            Double dist2 = (l2.lat * l2.lat + l2.lng + l2.lng);
+            Double dist1 = distance(l1, office.getAddress().getLocation());
+            Double dist2 = distance(l2, office.getAddress().getLocation());
             dist1 = updateOrderDistanceIfVip(impl, o1, dist1);
             dist2 = updateOrderDistanceIfVip(impl, o2, dist2);
             return Double.compare(dist1, dist2);
@@ -58,7 +63,12 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
 
     }
 
-    private static double updateOrderDistanceIfVip(FlowBuilderImpl impl,Order o, double distance){
+    protected static double distance(LatLng a, LatLng b){
+        return Math.sqrt(Math.pow(a.lat-b.lat,2)
+                + Math.pow(a.lng-b.lng,2));
+    }
+
+    protected static double updateOrderDistanceIfVip(FlowBuilderImpl impl,Order o, double distance){
         boolean isVIP = false;
         for(Role role :
                 impl.roleCrudDao.getByPersonId(
@@ -73,7 +83,7 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
         return distance;
     }
 
-    private static OrderType decide(Order o) {
+    protected static OrderType decide(Order o) {
         //TODO: back after updating other classes
         return OrderType.Luggage;
     }
@@ -93,13 +103,13 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
         return false;
     }
 
-    private Person removeCourierFromQueue(Queue<Person> queue, long courier_id) {
+    protected Person removeCourierFromQueue(Queue<Person> queue, long courier_id) {
         Person p = getCourierFromQueue(queue, courier_id);
         queue.remove(p);
         return p;
     }
 
-    private Person getCourierFromQueue(Queue<Person> queue, long courier_id) {
+    protected Person getCourierFromQueue(Queue<Person> queue, long courier_id) {
         for (Person p : queue) {
             if (p.getId() == courier_id)
                 return p;
@@ -107,13 +117,13 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
         return null;
     }
 
-    private Order removeOrderFromQueue(Queue<Order> queue, long courier_id) {
+    protected Order removeOrderFromQueue(Queue<Order> queue, long courier_id) {
         Order o = getOrderFromQueue(queue, courier_id);
         queue.remove(o);
         return o;
     }
 
-    private Order getOrderFromQueue(Queue<Order> queue, long courier_id) {
+    protected Order getOrderFromQueue(Queue<Order> queue, long courier_id) {
         for (Order o : queue) {
             if (o.getId() == courier_id)
                 return o;
@@ -253,11 +263,11 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
 
     public abstract List<Order> confirmCourier();
 
-    public abstract  List<Order> getOrdersSequence();
+    public abstract List<Order> getOrdersSequence();
 
-    public abstract  List<LatLng> getPath();
+    public abstract List<LatLng> getPath();
 
-    public abstract  StaticMap getStaticMap();
+    public abstract StaticMap getStaticMap();
 
-    public abstract  void process();
+    public abstract boolean process();
 }

@@ -4,6 +4,7 @@ import edu.com.google.maps.StaticMap;
 import edu.com.google.maps.model.LatLng;
 import edu.netcracker.project.logistic.model.Order;
 import edu.netcracker.project.logistic.model.Person;
+import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 import java.util.List;
@@ -51,14 +52,16 @@ public interface FlowBuilder {
 
     StaticMap getStaticMap();
 
-    void process();
+    boolean process();
 
-    //TODO: give a better name
-    enum FlowResultType {
-        PathOnly,
-        DestinationsOnly,
-        PathAndDestinations
-    }
+    /*
+    * //TODO: give a better name
+    *enum FlowResultType {
+    *   PathOnly,
+    *    DestinationsOnly,
+    *    PathAndDestinations
+    *}
+    */
 
     enum CourierType {
         Walker,
