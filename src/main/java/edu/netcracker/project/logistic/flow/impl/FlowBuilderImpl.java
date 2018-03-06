@@ -1,8 +1,10 @@
 package edu.netcracker.project.logistic.flow.impl;
 
 import edu.com.google.maps.StaticMap;
-import edu.com.google.maps.model.LatLng;
+import edu.com.google.maps.errors.ApiException;
+import edu.com.google.maps.model.*;
 import edu.netcracker.project.logistic.flow.FlowBuilder;
+import edu.netcracker.project.logistic.maps_wrapper.GoogleApiRequest;
 import edu.netcracker.project.logistic.model.Office;
 import edu.netcracker.project.logistic.model.Order;
 import edu.netcracker.project.logistic.model.Person;
@@ -10,6 +12,7 @@ import edu.netcracker.project.logistic.model.Role;
 import edu.netcracker.project.logistic.service.RoleService;
 //import org.apache.tomcat.util.collections.SynchronizedQueue;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.PriorityBlockingQueue;
 
@@ -26,6 +29,9 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
 
     protected final Office office;
     protected LatLng center;
+
+    protected long distance;
+    protected long duration;
 
     protected String errorMessage = "No error";
 
@@ -67,6 +73,32 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
         return Math.sqrt(Math.pow(a.lat - b.lat, 2)
                 + Math.pow(a.lng - b.lng, 2));
     }
+    protected static long mapDistance(LatLng a, LatLng b, TravelMode travelMode){
+        DistanceMatrix req = null;
+        try {
+            req = GoogleApiRequest.DistanceMatrixApi()
+                    .origins(a)
+                    .destinations(b)
+                    .mode(travelMode == null ? TravelMode.DRIVING : travelMode)
+                    .await();
+        } catch (ApiException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        long distance = 0;
+        if(req != null) {
+            for(DistanceMatrixElement d :req.rows[0].elements){
+                distance+=d.distance.inMeters;
+            }
+            return distance;
+        }
+        else
+            return Long.MAX_VALUE;
+    }
+
 
     protected static double updateOrderDistanceIfVip(FlowBuilderImpl impl, Order o, double distance) {
         boolean isVIP = false;
@@ -283,6 +315,12 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
 
     @Override
     public abstract StaticMap getStaticMap();
+
+    @Override
+    public abstract long getDistance();
+
+    @Override
+    public abstract long getDuration();
 
     @Override
     public abstract boolean process();

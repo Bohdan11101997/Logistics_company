@@ -3,10 +3,7 @@ package edu.netcracker.project.logistic.flow.impl;
 import edu.com.google.maps.DirectionsApi;
 import edu.com.google.maps.StaticMap;
 import edu.com.google.maps.errors.ApiException;
-import edu.com.google.maps.model.DirectionsResult;
-import edu.com.google.maps.model.LatLng;
-import edu.com.google.maps.model.TravelMode;
-import edu.com.google.maps.model.Unit;
+import edu.com.google.maps.model.*;
 import edu.netcracker.project.logistic.maps_wrapper.GoogleApiRequest;
 import edu.netcracker.project.logistic.model.Office;
 import edu.netcracker.project.logistic.model.Order;
@@ -15,41 +12,61 @@ import edu.netcracker.project.logistic.service.RoleService;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.*;
 
 public class RadiusSelector extends FlowBuilderImpl {
     /*
     * //from super:
-    * protected RoleCrudDao roleCrudDao;
+    * protected RoleService roleService;
     * protected Office office;
     * protected LatLng center;
     * */
-    CourierType courierToPick;
-    Person courier;
+    private CourierType courierToPick;
+    private TravelMode travelMode;
+    private Person courier;
 
     private double searchRadius;
     private static final double radiusModifier = 1.5;
     private static final int maxOrderCount = 8;
     private int MAX_RADIUS_STEPS = 5;
 
-    PriorityQueue<Order> candidates;
+    private PriorityQueue<Order> candidates;
 
-    List<Order> resultSequence;
-    DirectionsResult directionsResult;
-    StaticMap staticMap;
+    private List<Order> resultSequence;
+    private DirectionsResult directionsResult;
+    private StaticMap staticMap;
 
-    List<LatLng> path;
+    private List<LatLng> path;
+
+    private URL[] icons;
 
     public RadiusSelector(RoleService roleService, Office office) {
         super(roleService, office);
         resultSequence = new LinkedList<>();
         center = office.getAddress().getLocation();
-        courierToPick = CourierType.Walker;
+        courierToPick = CourierType.Driver;
         newPath();
+
+        try {
+            icons = new URL[]{//TODO: max different icons - 5: rework
+                    new URL("https://image.flaticon.com/icons/png/128/46/46021.png"),         //0 - warehouse
+                    new URL("https://image.flaticon.com/icons/png/128/45/45880.png"),         //1 - car
+                    new URL("https://image.flaticon.com/icons/png/128/709/709790.png"),       //2 - carVIP
+                    new URL("https://image.flaticon.com/icons/png/128/93/93375.png"),         //3 - courier
+                    new URL("https://image.flaticon.com/icons/png/128/93/93381.png"),         //4 - courierCar
+                    new URL("https://image.flaticon.com/icons/png/128/45/45968.png"),         //5 - personal
+                    new URL("https://image.flaticon.com/icons/png/128/702/702441.png")        //6 - personalVIP
+            };
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void newPath(){
         Order pivot = pickNextOrder();
+        duration = 0;
+        distance = 0;
         if(pivot != null) {
             resultSequence.add(pivot);
             center = pivot.getReceiverAddress().getLocation();
@@ -62,14 +79,20 @@ public class RadiusSelector extends FlowBuilderImpl {
                 dist2 = updateOrderDistanceIfVip(this, o2, dist2);
                 return Double.compare(dist1, dist2);
             });
-            searchRadius = distance(office.getAddress().getLocation(), center);
 
             switch(courierToPick){
                 case Driver:
+                    travelMode = TravelMode.DRIVING;
                     candidates.addAll(driveOrders);
+                    candidates.addAll(walkOrders);
+                    break;
                 case Walker:
                     candidates.addAll(walkOrders);
+                    travelMode = TravelMode.WALKING;
+                    break;
             }
+
+            searchRadius = mapDistance(office.getAddress().getLocation(), center,travelMode);
         }
     }
 
@@ -83,12 +106,14 @@ public class RadiusSelector extends FlowBuilderImpl {
             case Walker:
                 if(walkCouriers.isEmpty()) {
                     courierToPick = CourierType.Driver;
+                    travelMode = TravelMode.DRIVING;
                     return nextCourier(level+1);
                 }
                 return walkCouriers.poll();
             case Driver:
                 if(driveCouriers.isEmpty()) {
                     courierToPick = CourierType.Walker;
+                    travelMode = TravelMode.WALKING;
                     return nextCourier(level+1);
                 }
                 return driveCouriers.poll();
@@ -120,8 +145,13 @@ public class RadiusSelector extends FlowBuilderImpl {
             return false;
         if(resultSequence.size() >= maxOrderCount)
             return false;
-        if(searchRadius <= distance(o.getReceiverAddress().getLocation(), office.getAddress().getLocation()))
+
+        if(searchRadius <= mapDistance(center,o.getReceiverAddress().getLocation(),travelMode))
             return false;
+        /*
+         * if(searchRadius <= distance(o.getReceiverAddress().getLocation(), center))
+         *    return false;
+         */
         //TODO: make bigger after updating other classes
         return true;
     }
@@ -143,49 +173,59 @@ public class RadiusSelector extends FlowBuilderImpl {
         for(int i = 0; i < waypoints.length; i++)
             waypoints[i] = resultSequence.get(i).getReceiverAddress().getLocation();
 
-        TravelMode mode = TravelMode.WALKING;
+
         switch(courierToPick){
             case Walker:
-                mode = TravelMode.WALKING;
+                travelMode = TravelMode.WALKING;
                 break;
             case Driver:
-                mode = TravelMode.DRIVING;
+                travelMode = TravelMode.DRIVING;
                 break;
         }
 
         try {
             directionsResult = GoogleApiRequest.DirectionsApi()
                     .origin(office.getAddress().getLocation())
-                    .destination(waypoints[waypoints.length-1])//TODO: organize better
+                    .destination(office.getAddress().getLocation())
                     .units(Unit.METRIC)
                     .avoid(DirectionsApi.RouteRestriction.FERRIES)
                     .avoid(DirectionsApi.RouteRestriction.TOLLS)
                     .waypoints(waypoints)
                     .optimizeWaypoints(optimize)
-                    .mode(mode)
+                    .mode(travelMode)
                     .await();
-        } catch (ApiException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (ApiException | IOException | InterruptedException e) {
             e.printStackTrace();
         }
         path = directionsResult.routes[0].overviewPolyline.decodePath();
-        staticMap = GoogleApiRequest.StaticMap().center(new StaticMap.GeoPoint(center.lat,center.lng))
+        staticMap = GoogleApiRequest.StaticMap()
+                .center(new StaticMap.GeoPoint(center.lat,center.lng))
                 .path(new StaticMap.Path(StaticMap.Path.Style.DEFAULT,path.toArray(new LatLng[]{})));
         //TODO: set via interface
-        staticMap.size(600,600)
-                 .scale(4);
+        staticMap.size(640,640)
+                 .scale(2);
 
-        staticMap.marker(new StaticMap.GeoPoint(office.getAddress().getLocation().lat,office.getAddress().getLocation().lng));
+        //duration & distance
+        for(DirectionsLeg l : directionsResult.routes[0].legs){
+            duration+=l.duration.inSeconds;
+            distance+=l.distance.inMeters;
+        }
+
+
+        //warehouse marker
+        staticMap.marker(new StaticMap.Marker.Style.Builder().icon(icons[0]).color(0x0f0f0f).build(),
+                new StaticMap.GeoPoint(office.getAddress().getLocation().lat,office.getAddress().getLocation().lng));
+        //client markers
+        List<StaticMap.GeoPoint> markers = new ArrayList<>();
         for(Order o : resultSequence)
-            //staticMap.marker(o.getReceiverAddress().getName());
-            staticMap.marker(
-                    new StaticMap.GeoPoint(
-                            o.getReceiverAddress().getLocation().lat,o.getReceiverAddress().getLocation().lng
-                    )
+            markers.add(new StaticMap.GeoPoint(
+                    o.getReceiverAddress().getLocation().lat, o.getReceiverAddress().getLocation().lng)
             );
+            //staticMap.marker(o.getReceiverAddress().getName());
+        staticMap.marker(
+                new StaticMap.Marker.Style.Builder().label('P').color(0xff0000).build(),
+                markers.toArray(new StaticMap.GeoPoint[] {})
+                );
 
         List<Order> return_value = new ArrayList<>(waypoints.length);
         for(int i : directionsResult.routes[0].waypointOrder)
@@ -225,8 +265,24 @@ public class RadiusSelector extends FlowBuilderImpl {
     }
 
     @Override
+    public long getDistance(){
+        if(distance == 0){
+            calculatePath();
+        }
+        return distance;
+    }
+
+    @Override
+    public long getDuration(){
+        if(duration == 0){
+            calculatePath();
+        }
+        return duration;
+    }
+
+    @Override
     public boolean process() {
-        for(int i = 0; i < 5 && candidates == null; i++){
+        for(int i = 0; i < MAX_RADIUS_STEPS && candidates == null; i++){
             searchRadius*=radiusModifier;
             newPath();
         }
@@ -236,7 +292,7 @@ public class RadiusSelector extends FlowBuilderImpl {
             return false;
         }
 
-        for(int i = 0; i < 5 && candidates.size()==0; i++){
+        for(int i = 0; i < MAX_RADIUS_STEPS && candidates.size()==0; i++){
             searchRadius*=radiusModifier;
             newPath();
         }
@@ -252,8 +308,10 @@ public class RadiusSelector extends FlowBuilderImpl {
             return false;
         }
 
-        for(int i = 0; i < 5; i++)
-            while(null != pickNextOrder());
+        for(int i = 0; i < MAX_RADIUS_STEPS; i++) {
+            searchRadius *= radiusModifier;
+            while (null != pickNextOrder()) ;
+        }
 
         resultSequence = calculatePath();
         confirmCourier();

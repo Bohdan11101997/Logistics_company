@@ -42,7 +42,7 @@ public class FlowController {
         office.setAddress(new Address((long)(404), new LatLng(50.420506, 30.529369)));//our NetCrackerOffice
 
         class OrderGenerator{
-            private static final double radius = 0.400;
+            private static final double radius = 0.125;//in map values - degrees
             public List<Order> generate(int count){
                 List<Order> return_value = new ArrayList<>(count);
                 for(int i = 0; i < count; i++){
@@ -51,8 +51,8 @@ public class FlowController {
                     o.setCreationDay(LocalDate.now());
                     o.setCourier(null);
                     o.setReceiverAddress(new Address((long)(604+i),new LatLng(
-                            Math.random()*radius+office.getAddress().getLocation().lat,
-                            Math.random()*radius+office.getAddress().getLocation().lng
+                            (Math.random()*2-1)*radius+office.getAddress().getLocation().lat,
+                            (Math.random()*2-1)*radius+office.getAddress().getLocation().lng
                     )));
                     o.setSenderAddress(office.getAddress());
                     o.setOffice(office);
@@ -87,6 +87,8 @@ public class FlowController {
 
         try {
             System.out.println("End of flow building.");
+            System.out.println("Total distance: "+fb.getDistance()+"m");
+            System.out.println("Total duration: "+fb.getDuration()*1.0/60/60+"h");
             return "redirect:"+fb.getStaticMap().toURL().toString();
         } catch (MalformedURLException e) {
             return "redirect:error/300";

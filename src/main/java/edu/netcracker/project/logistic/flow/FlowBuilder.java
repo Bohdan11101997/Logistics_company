@@ -1,6 +1,8 @@
 package edu.netcracker.project.logistic.flow;
 
 import edu.com.google.maps.StaticMap;
+import edu.com.google.maps.model.Distance;
+import edu.com.google.maps.model.Duration;
 import edu.com.google.maps.model.LatLng;
 import edu.netcracker.project.logistic.model.Order;
 import edu.netcracker.project.logistic.model.Person;
@@ -53,6 +55,12 @@ public interface FlowBuilder {
     List<LatLng> getPath();
 
     StaticMap getStaticMap();
+
+    //in meters
+    long getDistance();
+
+    //in seconds
+    long getDuration();
 
     boolean process();
 
