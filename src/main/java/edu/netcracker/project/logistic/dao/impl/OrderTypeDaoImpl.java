@@ -3,6 +3,7 @@ package edu.netcracker.project.logistic.dao.impl;
 import edu.netcracker.project.logistic.dao.OrderTypeDao;
 import edu.netcracker.project.logistic.model.OrderType;
 import edu.netcracker.project.logistic.service.QueryService;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -12,6 +13,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -79,7 +82,27 @@ public class OrderTypeDaoImpl implements OrderTypeDao, RowMapper<OrderType> {
 
     @Override
     public Optional<OrderType> findOne(Long aLong) {
-        return Optional.empty();
+        try {
+            OrderType orderType = jdbcTemplate.queryForObject(
+                    getFindOneQuery(),
+                    this
+            );
+            return Optional.of(orderType);
+        } catch (EmptyResultDataAccessException ex) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public List<OrderType> findAll() {
+        try {
+            return jdbcTemplate.query(
+                    getFindAllQuery(),
+                    this
+            );
+        } catch (EmptyResultDataAccessException ex) {
+            return Collections.emptyList();
+        }
     }
 
     private String getUpsertQuery() {
@@ -92,5 +115,13 @@ public class OrderTypeDaoImpl implements OrderTypeDao, RowMapper<OrderType> {
 
     private String getDeleteQuery() {
         return queryService.getQuery("delete.order_type");
+    }
+
+    private String getFindOneQuery() {
+        return queryService.getQuery("select.order_type");
+    }
+
+    private String getFindAllQuery() {
+        return queryService.getQuery("all.order_type");
     }
 }
