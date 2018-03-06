@@ -68,14 +68,6 @@ CREATE TABLE "logistic_company"."person_role"
   "role_id"   INT4
 );
 
-CREATE TABLE "logistic_company"."tasks_list"
-(
-  "task_id"       INT4 DEFAULT nextval('main_seq_id' :: REGCLASS)    NOT NULL,
-  "description"   VARCHAR(60) COLLATE "default"                 NOT NULL,
-  "is_complete"   BOOLEAN                                       NOT NULL,
-  "person_id"     INT4                                           NOT NULL,
-  "order_id"      INT4                                           NOT NULL
-);
 
 CREATE TABLE "logistic_company"."advertisement"
 (
