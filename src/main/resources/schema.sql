@@ -179,8 +179,6 @@ ALTER TABLE logistic_company.registration_link
 
 ALTER TABLE "logistic_company"."order_type"
   ADD PRIMARY KEY ("order_type_id");
-ALTER TABLE "logistic_company"."tasks_list"
-  ADD PRIMARY KEY ("task_id");
 ALTER TABLE "logistic_company"."person"
   ADD PRIMARY KEY ("person_id");
 ALTER TABLE "logistic_company"."role"
@@ -321,4 +319,3 @@ $$;
 CREATE TRIGGER advertisement_delete_old_rows_trigger
   AFTER INSERT ON advertisement
   EXECUTE PROCEDURE advertisement_delete_old_rows();
-
