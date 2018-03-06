@@ -15,4 +15,6 @@ public interface PersonCrudDao extends CrudDao<Person, Long> {
     List<Person> findAllEmployees();
 
     List<Person> search(SearchForm searchForm);
+
+    Optional<Person> findOneByEmail(String email);
 }

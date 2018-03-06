@@ -1,7 +1,7 @@
 INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (1, 'Bohdan', 'Zinkevich', '111-11-11', 'bohdan.zsnkevich@ukr.n23et');
 INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (2, 'Bohdan', 'Zinkevich', '222-22-22', 'bohdan.zsnkevich@ukr.net2');
 INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (3, 'Bohdan', 'Zinkevich', '333-33-33', 'bohdan.zsnkevich@ukr.net3');
-INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (4, 'stanis', 'stanis', '444-44-44', 'stanis.stanis@ukr.net');
+INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (4, 'stanis', 'stanis', '444-44-44', 'its_an_omen@ukr.net');
 
 INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (5, 'stanis1', 'stanis1', '555-55-55', 'stanis1.stanis1@ukr.net');
 
@@ -39,3 +39,5 @@ INSERT INTO advertisement_type(type_advertisement_id, advertisement_name) VALUES
 INSERT INTO address(address_id, address_name) VALUES (1,'sdsdsdsdsdds');
 INSERT INTO office(office_id ,name,address_id) VALUES (1, 'werwerwer', 1);
 INSERT INTO office(office_id ,name,address_id) VALUES (2, 'dddddddddd', 1);
+
+INSERT INTO reset_password(person_id, reset_token) VALUES (4, '47a95c8c-a5d1-4984-9ce5-904ecd81e637');

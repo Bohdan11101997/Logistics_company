@@ -12,6 +12,7 @@ DROP TABLE IF EXISTS "logistic_company"."role" CASCADE;
 DROP TABLE IF EXISTS "logistic_company"."office" CASCADE;
 DROP TABLE IF EXISTS "logistic_company"."order_status" CASCADE;
 DROP TABLE IF EXISTS "logistic_company"."tasks_list";
+DROP TABLE IF EXISTS "logistic_company"."reset_password" CASCADE ;
 
 
 DROP FUNCTION IF EXISTS logistic_company.delete_old_rows() CASCADE;
@@ -53,6 +54,12 @@ CREATE TABLE "logistic_company"."person" (
   "registration_date" TIMESTAMP                                       NOT NULL DEFAULT NOW(),
   "manager_id"        INT,
   "contact_id"        INT4                                            NOT NULL
+);
+
+CREATE TABLE "logistic_company"."reset_password" (
+  "person_id"         INT4                                            NOT NULL,
+  -- change later for CHAR(36)
+  "reset_token"       CHAR(36)                                        NOT NULL
 );
 
 CREATE TABLE "logistic_company"."role" (
@@ -167,7 +174,9 @@ ALTER TABLE "logistic_company"."contact"
 ALTER TABLE "logistic_company"."contact"
   ADD UNIQUE ("phone_number");
 ALTER TABLE logistic_company.registration_link
-  ADD UNIQUE (person_id);
+  ADD UNIQUE ("person_id");
+ALTER TABLE logistic_company.reset_password
+  ADD UNIQUE ("reset_token");
 
 ALTER TABLE "logistic_company"."order"
   ADD PRIMARY KEY ("order_id");
@@ -246,6 +255,9 @@ ALTER TABLE "logistic_company"."order"
   ADD FOREIGN KEY ("sender_address_id") REFERENCES "logistic_company"."address" ("address_id");
 
 ALTER TABLE logistic_company.registration_link
+  ADD FOREIGN KEY (person_id) REFERENCES logistic_company.person (person_id);
+
+ALTER TABLE logistic_company.reset_password
   ADD FOREIGN KEY (person_id) REFERENCES logistic_company.person (person_id);
 
 

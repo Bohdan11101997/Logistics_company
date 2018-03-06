@@ -5,8 +5,6 @@ import edu.netcracker.project.logistic.model.Person;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
 
-
-@Service
 public interface PersonService {
     void savePerson(Person person);
 
@@ -17,4 +15,6 @@ public interface PersonService {
     Optional<Person> findOne(String username);
 
     boolean exists(Long aLong);
+
+    Optional<Person> findOneByEmail(String email);
 }

@@ -45,4 +45,9 @@ public class PersonServiceImpl implements PersonService {
     public boolean exists(Long aLong) {
         return personCrudDao.contains(aLong);
     }
+
+    @Override
+    public Optional<Person> findOneByEmail(String email) {
+        return personCrudDao.findOneByEmail(email);
+    }
 }
