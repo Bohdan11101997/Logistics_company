@@ -1,4 +1,4 @@
-INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (1, 'Bohdan', 'Zinkevich', '111-11-11', 'bohdan.zsnkevich@ukr.n23et');
+INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (1, 'Bohdan', 'Zinkevich', '111-11-11', 'bohdan.zsnkevich@ukr.n23w35eet');
 INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (2, 'Bohdan', 'Zinkevich', '222-22-22', 'bohdan.zsnkevich@ukr.net2');
 INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (3, 'Bohdan', 'Zinkevich', '333-33-33', 'bohdan.zsnkevich@ukr.net3');
 INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (4, 'stanis', 'stanis', '444-44-44', 'stanis.stanis@ukr.net');

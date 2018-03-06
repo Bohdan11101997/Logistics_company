@@ -91,16 +91,6 @@ public class AddressDaoImpl implements AddressDao, QueryDao, RowMapper<Address> 
         }
     }
 
-    public Address findOne1(Long aLong) {
-
-        Address address = jdbcTemplate.queryForObject(
-                getFindOneQuery(),
-                new Object[]{aLong},
-                this);
-        logger.info("Find1 address");
-        return address;
-
-    }
 
     @Override
     public String getInsertQuery() {
