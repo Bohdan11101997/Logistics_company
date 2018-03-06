@@ -12,7 +12,8 @@ Environment configuration is made using Spring Boot configuration files. List of
 All connection parameters (*spring.datasource.\**) are specified in [application.properties](src/main/resources/application.properties) file.
 
 ### SMTP server
-Mail server parameters (*spring.mail.\**) are specified in [mail.properties](src/main/resources/mail.properties).
+Mail server parameters (*spring.mail.\**) must be specified in **mail.properties** file, which should be placed in resources folder.
+[application.properties](src/main/resources/application.properties) include sample configuration for mail server, which would be overridden by **mail.properties**. 
 
 ### Bootstrap
 For local usage these files must be placed in *src/main/resources/static/local/* folder.
