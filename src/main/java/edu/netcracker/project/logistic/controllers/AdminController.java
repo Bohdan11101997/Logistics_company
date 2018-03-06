@@ -177,9 +177,20 @@ public class AdminController {
     @PostMapping("/crud/employee/{id}")
     public String updateEmployee(@PathVariable long id, Model model,
                                  @ModelAttribute("employee") Person employee,
-                                 BindingResult result) {
+                                 BindingResult result, Principal principal) {
         employee.setId(id);
         employeeValidator.validateUpdateData(employee, result);
+        Optional<Person> opt = employeeService.findOne(principal.getName());
+        if (!opt.isPresent()) {
+            return "error/500";
+        }
+        Person account = opt.get();
+        boolean adminRoleLeft =
+                employee.getRoles().stream().anyMatch(r -> r.getRoleName().equals("ROLE_ADMIN"));
+        if (account.getId().equals(id) && !adminRoleLeft) {
+            model.addAttribute("message", "Can't remove admin role from own account");
+            return "error/400";
+        }
         if (result.hasErrors()) {
             List<Role> employeeRoles = roleService.findEmployeeRoles();
             model.addAttribute("newEmployee", false);

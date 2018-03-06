@@ -58,10 +58,12 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
         Person existing = opt.get();
         Long contactId = existing.getContact().getContactId();
-        Contact updatedContact = existing.getContact();
+        Contact updatedContact = employee.getContact();
         updatedContact.setContactId(contactId);
+        existing.setRoles(employee.getRoles());
         contactDao.save(updatedContact);
-        return employee;
+        personDao.save(existing);
+        return existing;
     }
 
     @Transactional
