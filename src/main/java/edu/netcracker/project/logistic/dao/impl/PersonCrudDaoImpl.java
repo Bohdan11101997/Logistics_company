@@ -20,7 +20,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -231,11 +233,15 @@ public class PersonCrudDaoImpl implements PersonCrudDao, QueryDao, RowMapper<Per
         LocalDateTime from = searchForm.getFrom();
         if (from == null) {
             from = LocalDateTime.MIN;
+        } else {
+            from = from.with(LocalTime.MIN);
         }
 
         LocalDateTime to = searchForm.getTo();
         if (to == null) {
             to = LocalDateTime.now();
+        } else {
+            to = to.with(LocalTime.MAX);
         }
 
         Map<String, Object> paramMap = new HashMap<>(5);

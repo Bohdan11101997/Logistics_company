@@ -4,9 +4,9 @@ import edu.com.google.maps.model.LatLng;
 import edu.netcracker.project.logistic.maps_wrapper.GoogleApiRequest;
 
 public class Address {
-    Long id;
-    String name;
-    LatLng location;
+    private Long id;
+    private String name;
+    private LatLng location;
 
     public Address(String name) {
         this.name = name;

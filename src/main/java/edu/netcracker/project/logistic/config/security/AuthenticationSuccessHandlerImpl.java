@@ -53,7 +53,7 @@ public class AuthenticationSuccessHandlerImpl implements AuthenticationSuccessHa
             String authority = grantedAuthority.getAuthority();
 
                  if (authority.equals("ROLE_USER") ||  authority.equals("ROLE_VIP_USER") || authority.equals("ROLE_ADMIN")
-                     || authority.equals("ROLE_MANAGER") || authority.equals("ROLE_COURIER") || authority.equals("ROLE_CALL_CENTER_AGENT") ){
+                     || authority.equals("ROLE_MANAGER") || authority.equals("ROLE_COURIER") || authority.equals("ROLE_CALL_CENTER") ){
                      isRoleExist = true;
             }
         }

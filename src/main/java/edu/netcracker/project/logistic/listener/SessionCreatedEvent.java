@@ -4,6 +4,7 @@ import edu.netcracker.project.logistic.model.Person;
 import edu.netcracker.project.logistic.processing.TaskProcessor;
 import edu.netcracker.project.logistic.service.PersonService;
 import org.springframework.context.ApplicationListener;
+import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
@@ -17,7 +18,7 @@ import java.security.Principal;
 
 
 @Component
-public class SessionCreatedEvent implements ApplicationListener<HttpSessionCreatedEvent> {
+public class SessionCreatedEvent implements ApplicationListener<AuthenticationSuccessEvent> {
     private PersonService personService;
     private TaskProcessor taskProcessor;
 
@@ -27,14 +28,14 @@ public class SessionCreatedEvent implements ApplicationListener<HttpSessionCreat
     }
 
     @Override
-    public void onApplicationEvent(HttpSessionCreatedEvent event) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    public void onApplicationEvent(AuthenticationSuccessEvent event) {
+        Authentication auth = event.getAuthentication();
         boolean callCenterAgent = false;
         String username = null;
-        for (GrantedAuthority authority: auth.getAuthorities()) {
+        for (GrantedAuthority authority : auth.getAuthorities()) {
             if (authority.getAuthority().equals("ROLE_CALL_CENTER")) {
                 callCenterAgent = true;
-                username = ((User)auth.getPrincipal()).getUsername();
+                username = ((User) auth.getPrincipal()).getUsername();
             }
         }
         if (callCenterAgent) {

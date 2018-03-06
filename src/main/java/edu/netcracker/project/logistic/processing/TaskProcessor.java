@@ -120,7 +120,7 @@ public class TaskProcessor {
 
     private void prepareQueues() {
         List<OrderContactData> notProcessedOrders = orderContactDataDao.findNotProcessed();
-        for (OrderContactData data: notProcessedOrders) {
+        for (OrderContactData data : notProcessedOrders) {
             createTask(data);
         }
     }
@@ -172,6 +172,7 @@ public class TaskProcessor {
 
         task.setEmployeeId(employeeId);
         taskDao.save(task);
+        logger.info("Assigned task #{} to employee {}", task.getId(), employeeId);
         employeeEntry.tasksAssigned += 1;
         workerQueue.put(employeeEntry);
     }
@@ -213,7 +214,7 @@ public class TaskProcessor {
     @Transactional
     public void removeAgent(Long employeeId) {
         List<Task> uncompletedByEmployee = taskDao.findUncompletedByEmployeeId(employeeId);
-        for (Task t: uncompletedByEmployee) {
+        for (Task t : uncompletedByEmployee) {
             t.setEmployeeId(null);
             taskDao.delete(t.getId());
             t.setId(null);
@@ -235,7 +236,8 @@ public class TaskProcessor {
         String priority = "NORMAL";
         Person sender = opt.get();
         for (Role r : sender.getRoles()) {
-            if (r.getPriority().equals("VIP")) {
+            String rolePriority = r.getPriority();
+            if (rolePriority != null && rolePriority.equals("VIP")) {
                 priority = "VIP";
             }
         }

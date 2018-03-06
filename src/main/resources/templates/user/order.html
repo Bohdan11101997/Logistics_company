@@ -1,0 +1,136 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="fragments/header :: header-bootstrap-config"/>
+    <th:block th:replace="fragments/header :: header-bootstrap-config-IE"/>
+    <title>Create new order</title>
+    <link rel="stylesheet" th:href="@{/css/left_menu.css}" type="text/css" href="/static/css/left_menu.css"/>
+
+    <style>
+        #order-size input {
+            margin-bottom: 5px;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+<div class="row">
+    <div th:replace="fragments/left_menu :: left-menu-header">
+    </div>
+
+    <!-- Main Content -->
+    <div class="container-fluid">
+        <div class="side-body">
+            <div class="row">
+                <h1 class="text-center">Create new order</h1>
+
+                <div>
+                    <form th:method="post" th:action="@{/user/order}"
+                          th:object="${order}">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">Cargo details</div>
+                            <div class="panel-body">
+                                <div class="form-group required">
+                                    <label for="order-type" class="control-label">Order type</label>
+                                    <select id="order-type" class="form-control">
+                                        th:field="*{orderType}">
+                                        <option th:each="type: ${orderTypes}"
+                                        th:value="${type.id}"
+                                        th:text="${{type}}">Order Type</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="weight" class="control-label">Weight (kg)</label>
+                                    <input id="weight" class="form-control"
+                                           pattern="\d{1,}(.\d{1,})*" title="Decimal value representing order weight"
+                                           th:field="*{weight}"/>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label">Size (cm)</label>
+                                    <div id="order-size" class="form-inline">
+                                        <input type="number" id="width" class="form-control" placeholder="Width"
+                                               title="Width"
+                                               th:field="*{width}"/>
+                                        <input type="number" id="height" class="form-control" placeholder="Height"
+                                               title="Height" th:field="*{height}"/>
+                                        <input type="number" id="length" class="form-control" placeholder="Length"
+                                               title="Length" th:field="*{length}"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="panel panel-default">
+                            <div class="panel-heading">Route</div>
+                            <div class="panel-body">
+                                <div class="form-group required">
+                                    <label for="receiver-address" class="control-label">Sender address</label>
+                                    <input type="text" id="receiver-address" class="form-control"
+                                           th:field="*{senderAddress.name}"/>
+                                </div>
+
+                                <div class="form-group required">
+                                    <label for="sender-address" class="control-label">Receiver address</label>
+                                    <input type="text" id="sender-address" class="form-control"
+                                           th:field="*{receiverAddress.name}"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="panel panel-default">
+                            <div class="panel-heading">Receiver Contact Data</div>
+                            <div class="panel-body">
+                                <div class="form-group required">
+                                    <label for="firstName" class="control-label">First Name</label>
+                                    <input type="text" class="form-control" id="firstName"
+                                           required="required" minlength="1" maxlength="45"
+                                           th:field="*{receiverContact.firstName}"/>
+                                </div>
+
+                                <div class="form-group required">
+                                    <label for="lastName" class="control-label">Last Name</label>
+                                    <input type="text" class="form-control" id="lastName"
+                                           required="required" minlength="1" maxlength="45"
+                                           th:field="*{receiverContact.lastName}"/>
+                                </div>
+
+                                <div class="form-group required"
+                                     th:classappend="${#fields.hasErrors('receiverContact.email')}? 'has-error'">
+                                    <label for="email" class="control-label">E-mail</label>
+                                    <input type="email" class="form-control" id="email" placeholder=""
+                                           required="required" minlength="6" maxlength="254"
+                                           th:field="*{receiverContact.email}"/>
+                                </div>
+
+                                <div class="form-group required"
+                                     th:classappend="${#fields.hasErrors('receiverContact.phoneNumber')}? 'has-error'">
+                                    <label for="phone" class="control-label">Phone</label>
+                                    <input type="text" class="form-control" id="phone" placeholder=""
+                                           required="required" minlength="7" maxlength="15"
+                                           th:field="*{receiverContact.phoneNumber}"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 3em;" class="form-group">
+                            <button class="btn btn-primary">Create</button>
+                            <button class="btn btn-info" th:action="@{/user/order/draft}">Draft</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block th:replace="fragments/footer :: footer"/>
+<th:block th:replace="fragments/left_menu :: left-menu-footer"/>
+
+<script type="text/javascript">
+    document.getElementById('user_create_new_order').className = 'active';
+</script>
+
+</body>
+</html>
