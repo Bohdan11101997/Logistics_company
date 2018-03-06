@@ -34,8 +34,5 @@ out/
 .idea/**/tasks.xml
 .idea/dictionaries
 
-# Project sensitive data
-src/main/resources/mail.properties
-
 # Local files for boostsrap and jquery
 src/main/resources/static/local/
