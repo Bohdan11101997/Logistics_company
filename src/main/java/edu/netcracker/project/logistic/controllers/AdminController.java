@@ -154,7 +154,7 @@ public class AdminController {
         List<Person> employees = employeeService.search(searchForm);
         model.addAttribute("employees", employees);
         model.addAttribute("availableRoles", roleService.findEmployeeRoles());
-        return "/admin/admin_employees";
+        return "/admin_employees";
     }
 
     @GetMapping("/crud/employee/{id}")
