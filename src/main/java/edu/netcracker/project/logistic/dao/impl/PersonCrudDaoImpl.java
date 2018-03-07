@@ -222,13 +222,17 @@ public class PersonCrudDaoImpl implements PersonCrudDao, QueryDao, RowMapper<Per
         }
     }
 
+    private String prepareSearchString(String input) {
+        return "%" + input.replace("%", "\\%") + "%";
+    }
+
     @Override
     public List<Person> search(SearchForm searchForm) {
         String firstName = searchForm.getFirstName();
-        firstName = firstName == null ? "%%" : String.format("%%%s%%", firstName);
+        firstName = firstName == null ? "%%" : prepareSearchString(firstName);
 
         String lastName = searchForm.getLastName();
-        lastName = lastName == null ? "%%" : String.format("%%%s%%", lastName);
+        lastName = lastName == null ? "%%" : prepareSearchString(lastName);
 
         LocalDateTime from = searchForm.getFrom();
         if (from == null) {
