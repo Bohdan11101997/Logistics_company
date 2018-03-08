@@ -12,6 +12,7 @@ DROP TABLE IF EXISTS "logistic_company"."role" CASCADE;
 DROP TABLE IF EXISTS "logistic_company"."office" CASCADE;
 DROP TABLE IF EXISTS "logistic_company"."order_status" CASCADE;
 DROP TABLE IF EXISTS "logistic_company"."task" CASCADE;
+DROP TABLE IF EXISTS "logistic_company"."courier_data"CASCADE ;
 
 
 DROP FUNCTION IF EXISTS logistic_company.delete_old_rows() CASCADE;
@@ -26,7 +27,7 @@ DROP SCHEMA IF EXISTS "logistic_company" CASCADE;
 CREATE SCHEMA "logistic_company";
 
 CREATE TYPE logistic_company.WEEK_DAY AS ENUM ('MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY');
-
+CREATE TYPE logistic_company.COURIER_STATUS AS ENUM ('on_way');
 CREATE SEQUENCE "logistic_company"."main_seq_id"
   INCREMENT 1
   MINVALUE 1
@@ -44,6 +45,13 @@ CREATE TABLE "logistic_company"."contact" (
   "last_name"    VARCHAR(45) COLLATE "default"                   NOT NULL,
   "phone_number" VARCHAR(45) COLLATE "default"                   NOT NULL,
   "email"        VARCHAR(45) COLLATE "default"                   NOT NULL
+);
+
+CREATE TABLE "logistic_company"."courier_data"
+(
+  "person_id"             INT4,
+  "courier_status"        COURIER_STATUS,
+  "courier_last_location" VARCHAR(45) COLLATE "default" NOT NULL
 );
 
 CREATE TABLE "logistic_company"."person" (
@@ -177,6 +185,7 @@ ALTER TABLE "logistic_company"."contact"
 ALTER TABLE logistic_company.registration_link
   ADD UNIQUE (person_id);
 
+
 ALTER TABLE "logistic_company"."order_type"
   ADD PRIMARY KEY ("order_type_id");
 ALTER TABLE "logistic_company"."person"
@@ -208,6 +217,9 @@ ALTER TABLE logistic_company.work_day
 ALTER TABLE logistic_company.day_off
   ADD PRIMARY KEY (day_off_id);
 
+
+ALTER TABLE "logistic_company"."courier_data"
+  ADD  FOREIGN KEY("person_id") REFERENCES  "logistic_company"."person"(person_id);
 
 ALTER TABLE "logistic_company"."person_role"
   ADD FOREIGN KEY ("role_id") REFERENCES "logistic_company"."role" ("role_id");
