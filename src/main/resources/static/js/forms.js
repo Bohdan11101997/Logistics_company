@@ -12,14 +12,43 @@ function clearErrorStyles(input) {
     var children = parent.children;
     var removalNeeded = false;
     for (var i = 0; i < children.length; i++) {
+        if (children[i].classList.contains('help-block')) removalNeeded = true;
         if (removalNeeded) {
             parent.removeChild(children[i]);
         }
-        if (children[i] === input) removalNeeded = true;
     }
 }
 
-function createMultiSelect(selector) {
+
+function onSearchDateClick(searchDate) {
+    clearErrorStyles(searchDate);
+    var type = searchDate.id === 'from-date' ? 'from' : 'to';
+    if (type === 'from') {
+        var fromDate = searchDate.valueAsDate;
+        var to = document.getElementById('to-date');
+        var toDate = to.valueAsDate;
+        if (toDate === null || fromDate <= toDate) {
+            searchDate.setCustomValidity('');
+            to.setCustomValidity('');
+        }
+        else {
+            searchDate.setCustomValidity('From date must be earlier than To')
+        }
+    } else {
+        var toDate = searchDate.valueAsDate;
+        var from = document.getElementById('from-date');
+        var fromDate = from.valueAsDate;
+        if (fromDate === null || fromDate <= toDate) {
+            searchDate.setCustomValidity('');
+            from.setCustomValidity('');
+        }
+        else {
+            searchDate.setCustomValidity('From date must be earlier than To')
+        }
+    }
+}
+
+function createMultiSelect(selector, selectAll) {
     var el = $(selector);
     var elContainer = null;
 
@@ -45,15 +74,22 @@ function createMultiSelect(selector) {
                 elContainer = container[0];
                 setTimeout(function () {
                     var values = [];
-                    el.find("option").each(function () {
-                        values.push(this.selected);
-                    });
-                    var noneSelected = values.every(function (val) {
-                        return val === false;
-                    });
-                    if (noneSelected) {
-                        var firstValue = el.find("option").first().val();
-                        el.multiselect("select", firstValue);
+                    if (selectAll) {
+                        el.find("option").each(function () {
+                            values.push(this.value);
+                        });
+                        el.multiselect("select", values);
+                    } else {
+                        el.find("option").each(function () {
+                            values.push(this.selected);
+                        });
+                        var noneSelected = values.every(function (val) {
+                            return val === false;
+                        });
+                        if (noneSelected) {
+                            var firstValue = el.find("option").first().val();
+                            el.multiselect("select", firstValue);
+                        }
                     }
                 }, 0);
             }
