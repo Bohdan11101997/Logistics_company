@@ -1,9 +1,9 @@
 package edu.netcracker.project.logistic.flow.impl;
 
-import edu.com.google.maps.DirectionsApi;
-import edu.com.google.maps.StaticMap;
-import edu.com.google.maps.errors.ApiException;
-import edu.com.google.maps.model.*;
+import com.google.maps.*;
+import com.google.maps.errors.ApiException;
+import com.google.maps.model.*;
+import edu.netcracker.project.logistic.maps_wrapper.StaticMap;
 import edu.netcracker.project.logistic.maps_wrapper.GoogleApiRequest;
 import edu.netcracker.project.logistic.model.Office;
 import edu.netcracker.project.logistic.model.Order;
@@ -92,7 +92,7 @@ public class RadiusSelector extends FlowBuilderImpl {
                     break;
             }
 
-            searchRadius = mapDistance(office.getAddress().getLocation(), center,travelMode);
+            searchRadius = mapDistance(office.getAddress().getLocation(), center, travelMode);
         }
     }
 
@@ -215,22 +215,35 @@ public class RadiusSelector extends FlowBuilderImpl {
         //warehouse marker
         staticMap.marker(new StaticMap.Marker.Style.Builder().icon(icons[0]).color(0x0f0f0f).build(),
                 new StaticMap.GeoPoint(office.getAddress().getLocation().lat,office.getAddress().getLocation().lng));
-        //client markers
-        List<StaticMap.GeoPoint> markers = new ArrayList<>();
-        for(Order o : resultSequence)
-            markers.add(new StaticMap.GeoPoint(
-                    o.getReceiverAddress().getLocation().lat, o.getReceiverAddress().getLocation().lng)
-            );
-            //staticMap.marker(o.getReceiverAddress().getName());
-        staticMap.marker(
-                new StaticMap.Marker.Style.Builder().label('P').color(0xff0000).build(),
-                markers.toArray(new StaticMap.GeoPoint[] {})
-                );
 
         List<Order> return_value = new ArrayList<>(waypoints.length);
         for(int i : directionsResult.routes[0].waypointOrder)
             return_value.add(resultSequence.get(i));
+
         resultSequence = return_value;
+        //client markers
+        List<StaticMap.GeoPoint> markers = new ArrayList<>();
+        {
+            int index = 0;
+            for (Order o : resultSequence) {
+                markers.add(new StaticMap.GeoPoint(
+                        o.getReceiverAddress().getLocation().lat, o.getReceiverAddress().getLocation().lng)
+                );
+                staticMap.marker(
+                        new StaticMap.Marker.Style.Builder().label((char) ((index++) % 10 + '0')).color(0xff0000).build(),
+                        new StaticMap.GeoPoint(
+                                o.getReceiverAddress().getLocation().lat, o.getReceiverAddress().getLocation().lng)
+                );
+                //staticMap.marker(o.getReceiverAddress().getName());
+            }
+        /*
+        staticMap.marker(
+                new StaticMap.Marker.Style.Builder().label('P').color(0xff0000).build(),
+                markers.toArray(new StaticMap.GeoPoint[] {})
+                );
+        */
+        }
+
         return resultSequence;
     }
 

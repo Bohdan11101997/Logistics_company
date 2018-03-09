@@ -1,8 +1,8 @@
-package edu.com.google.maps;
+package edu.netcracker.project.logistic.maps_wrapper;
 
-import edu.com.google.maps.internal.PolyLine;
-import edu.com.google.maps.internal.UrlBuilder;
-import edu.com.google.maps.model.LatLng;
+import edu.netcracker.project.logistic.maps_wrapper.PolyLine;
+import edu.netcracker.project.logistic.maps_wrapper.UrlBuilder;
+import com.google.maps.model.LatLng;
 //import org.intellji.annotations.Nullable;
 
 import java.net.MalformedURLException;
@@ -272,6 +272,10 @@ public final class StaticMap {
         this.markers.add(new MarkerGroup(style, markers));
         return this;
     }
+    public StaticMap marker(Marker.Style style, LatLng...markers) {
+        this.markers.add(new MarkerGroup(style, GeoPoint.toGeoPoint(markers)));
+        return this;
+    }
 
     /**
      * Query for the current markers.
@@ -301,6 +305,10 @@ public final class StaticMap {
      */
     public StaticMap path(GeoPoint...points) {
         path(null, points);
+        return this;
+    }
+    public StaticMap path(LatLng...points) {
+        path(null, GeoPoint.toGeoPoint(points));
         return this;
     }
 
@@ -573,6 +581,13 @@ public final class StaticMap {
             return address;
         }
 
+        public static GeoPoint[] toGeoPoint(LatLng... latlng){
+            GeoPoint[] return_value = new GeoPoint[latlng.length];
+            for(int i = 0; i < latlng.length; i++)
+                return_value[i] = new GeoPoint(latlng[i],null);
+            return return_value;
+        }
+
         @Override
         public String toString() {
             if(hasCoordinates())
@@ -598,6 +613,13 @@ public final class StaticMap {
         //@Nullable
         public final Marker.Style style;
         public final GeoPoint[] points;
+
+
+        MarkerGroup(/*@Nullable*/ Marker.Style style, LatLng... points) {
+            if(points == null || points.length == 0) throw new IllegalArgumentException("markers can't be empty");
+            this.style = style;
+            this.points = GeoPoint.toGeoPoint(points);
+        }
 
         MarkerGroup(/*@Nullable*/ Marker.Style style, GeoPoint... points) {
             if(points == null || points.length == 0) throw new IllegalArgumentException("markers can't be empty");
@@ -819,9 +841,7 @@ public final class StaticMap {
         public Path(/*@Nullable*/ Style style, LatLng...points) {
             if(points == null || points.length == 0) throw new IllegalArgumentException("you must specify geopoints");
             this.style = style;
-            this.points = new GeoPoint[points.length];
-            for(int i = 0; i < points.length; i++)
-                this.points[i] = new GeoPoint(points[i],null);
+            this.points = GeoPoint.toGeoPoint(points);
         }
 
         @Override

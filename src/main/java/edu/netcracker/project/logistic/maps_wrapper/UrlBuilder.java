@@ -1,4 +1,4 @@
-package edu.com.google.maps.internal;
+package edu.netcracker.project.logistic.maps_wrapper;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;

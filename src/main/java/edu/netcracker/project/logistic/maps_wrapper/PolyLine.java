@@ -1,6 +1,6 @@
-package edu.com.google.maps.internal;
+package edu.netcracker.project.logistic.maps_wrapper;
 
-import edu.com.google.maps.StaticMap;
+import edu.netcracker.project.logistic.maps_wrapper.StaticMap;
 
 final public class PolyLine {
 

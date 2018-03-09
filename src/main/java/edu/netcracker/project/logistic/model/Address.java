@@ -1,6 +1,6 @@
 package edu.netcracker.project.logistic.model;
 
-import edu.com.google.maps.model.LatLng;
+import com.google.maps.model.LatLng;
 import edu.netcracker.project.logistic.maps_wrapper.GoogleApiRequest;
 
 public class Address {

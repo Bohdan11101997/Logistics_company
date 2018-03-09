@@ -1,6 +1,6 @@
 package edu.netcracker.project.logistic.controllers;
 
-import edu.com.google.maps.model.LatLng;
+import com.google.maps.model.LatLng;
 import edu.netcracker.project.logistic.flow.FlowBuilder;
 import edu.netcracker.project.logistic.flow.impl.RadiusSelector;
 import edu.netcracker.project.logistic.model.*;

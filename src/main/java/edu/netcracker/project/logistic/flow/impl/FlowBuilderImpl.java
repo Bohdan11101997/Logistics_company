@@ -1,8 +1,8 @@
 package edu.netcracker.project.logistic.flow.impl;
 
-import edu.com.google.maps.StaticMap;
-import edu.com.google.maps.errors.ApiException;
-import edu.com.google.maps.model.*;
+import edu.netcracker.project.logistic.maps_wrapper.StaticMap;
+import com.google.maps.errors.ApiException;
+import com.google.maps.model.*;
 import edu.netcracker.project.logistic.flow.FlowBuilder;
 import edu.netcracker.project.logistic.maps_wrapper.GoogleApiRequest;
 import edu.netcracker.project.logistic.model.Office;
@@ -81,13 +81,10 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
                     .destinations(b)
                     .mode(travelMode == null ? TravelMode.DRIVING : travelMode)
                     .await();
-        } catch (ApiException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
+
         long distance = 0;
         if(req != null) {
             for(DistanceMatrixElement d :req.rows[0].elements){
