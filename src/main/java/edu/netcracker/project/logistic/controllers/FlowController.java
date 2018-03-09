@@ -1,8 +1,14 @@
 package edu.netcracker.project.logistic.controllers;
 
+import com.google.maps.DirectionsApi;
+import com.google.maps.errors.ApiException;
+import com.google.maps.model.DistanceMatrix;
+import com.google.maps.model.DistanceMatrixElementStatus;
 import com.google.maps.model.LatLng;
+import com.google.maps.model.TravelMode;
 import edu.netcracker.project.logistic.flow.FlowBuilder;
 import edu.netcracker.project.logistic.flow.impl.RadiusSelector;
+import edu.netcracker.project.logistic.maps_wrapper.GoogleApiRequest;
 import edu.netcracker.project.logistic.model.*;
 import edu.netcracker.project.logistic.service.EmployeeService;
 import edu.netcracker.project.logistic.service.OfficeService;
@@ -13,6 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -43,20 +50,43 @@ public class FlowController {
 
         class OrderGenerator{
             private static final double radius = 0.125;//in map values - degrees
+            private TravelMode travelMode = TravelMode.WALKING;
+
+            public OrderGenerator setTravelMode(TravelMode travelMode){
+                this.travelMode = travelMode;
+                return this;
+            }
+
             public List<Order> generate(int count){
                 List<Order> return_value = new ArrayList<>(count);
-                for(int i = 0; i < count; i++){
+                for(int i = 0; i < count; i++) {
                     Order o = new Order();
-                    o.setId((long)(404+i));
+                    o.setId((long) (404 + i));
                     o.setCreationDay(LocalDate.now());
                     o.setCourier(null);
-                    o.setReceiverAddress(new Address((long)(604+i),new LatLng(
-                            (Math.random()*2-1)*radius+office.getAddress().getLocation().lat,
-                            (Math.random()*2-1)*radius+office.getAddress().getLocation().lng
-                    )));
+
+                    DistanceMatrix result = null;
+                    do {
+                        o.setReceiverAddress(new Address((long) (604 + i), new LatLng(
+                                (Math.random() * 2 - 1) * radius + office.getAddress().getLocation().lat,
+                                (Math.random() * 2 - 1) * radius + office.getAddress().getLocation().lng
+                        )));
+                        try {
+                            result = GoogleApiRequest.DistanceMatrixApi()
+                                    .origins(office.getAddress().getLocation())
+                                    .destinations(o.getReceiverAddress().getLocation())
+                                    .mode(travelMode)
+                                    .avoid(DirectionsApi.RouteRestriction.FERRIES)
+                                    .avoid(DirectionsApi.RouteRestriction.TOLLS)
+                                    .await();
+                        } catch (ApiException | InterruptedException | IOException e) {
+                            e.printStackTrace();
+                        }
+                    } while (result == null || result.rows[0].elements[0].status != DistanceMatrixElementStatus.OK);
+
                     o.setSenderAddress(office.getAddress());
                     o.setOffice(office);
-                    o.setOrderStatus(new OrderStatus((long)(1),"testing"));
+                    o.setOrderStatus(new OrderStatus((long) (1), "testing"));
                     o.setReceiverContact(new Contact());
                     o.setSenderContact(new Contact());
 
@@ -69,8 +99,8 @@ public class FlowController {
 
         System.out.println("Begin flow building");
         FlowBuilder fb = new RadiusSelector(roleService, office);
-        fb.add(new OrderGenerator().generate(10), FlowBuilder.OrderType.Luggage);
-        fb.add(new OrderGenerator().generate(10), FlowBuilder.OrderType.Freight);
+        fb.add(new OrderGenerator().setTravelMode(TravelMode.WALKING).generate(10), FlowBuilder.OrderType.Luggage);
+        fb.add(new OrderGenerator().setTravelMode(TravelMode.DRIVING).generate(10), FlowBuilder.OrderType.Freight);
 
         Set<Role> couriers = new HashSet<>();
         //TODO: priority???
@@ -80,6 +110,7 @@ public class FlowController {
         fb.add(new Person("Courier#3", "loggedin", LocalDateTime.now(), new Contact(), couriers), FlowBuilder.CourierType.Walker);
         fb.add(new Person("Courier#4", "loggedin", LocalDateTime.now(), new Contact(), couriers), FlowBuilder.CourierType.Driver);
         fb.optimize(true);
+
         if(!fb.process()) {
             System.out.println(fb.getError());
             return "redirect:error/400";
