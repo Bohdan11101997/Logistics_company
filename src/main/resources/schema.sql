@@ -12,7 +12,7 @@ DROP TABLE IF EXISTS "logistic_company"."role" CASCADE;
 DROP TABLE IF EXISTS "logistic_company"."office" CASCADE;
 DROP TABLE IF EXISTS "logistic_company"."order_status" CASCADE;
 DROP TABLE IF EXISTS "logistic_company"."task" CASCADE;
-DROP TABLE IF EXISTS "logistic_company"."courier_data"CASCADE ;
+DROP TABLE IF EXISTS "logistic_company"."courier_data" CASCADE;
 
 
 DROP FUNCTION IF EXISTS logistic_company.delete_old_rows() CASCADE;
