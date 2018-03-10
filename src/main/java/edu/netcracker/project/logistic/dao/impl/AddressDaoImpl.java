@@ -6,6 +6,7 @@ import edu.netcracker.project.logistic.dao.QueryDao;
 import edu.netcracker.project.logistic.model.Address;
 import edu.netcracker.project.logistic.service.QueryService;
 
+import org.omg.CORBA.OBJECT_NOT_EXIST;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,26 +51,29 @@ public class AddressDaoImpl implements AddressDao, QueryDao, RowMapper<Address> 
     @Override
     public Address save(Address address) {
         boolean hasPrimaryKey = address.getId() != null;
-
-        if (hasPrimaryKey) {
-            jdbcTemplate.update(getUpsertQuery(), ps -> {
-                ps.setObject(1, address.getId());
-                ps.setObject(2, address.getName());
-            });
+        if (address.check(address.getName())) {
+            if (hasPrimaryKey) {
+                jdbcTemplate.update(getUpsertQuery(), ps -> {
+                    ps.setObject(1, address.getId());
+                    ps.setObject(2, address.getName());
+                });
+            } else {
+                GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
+                jdbcTemplate.update(psc -> {
+                    String query = getInsertQuery();
+                    PreparedStatement ps = psc.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+                    ps.setObject(1, address.getName());
+                    return ps;
+                }, keyHolder);
+                Number key = (Number) keyHolder.getKeys().get("address_id");
+                address.setId(key.longValue());
+            }
         } else {
-            GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
-            jdbcTemplate.update(psc -> {
-                String query = getInsertQuery();
-                PreparedStatement ps = psc.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-                ps.setObject(1, address.getName());
-                return ps;
-            }, keyHolder);
-            Number key = (Number) keyHolder.getKeys().get("address_id");
-            address.setId(key.longValue());
+        throw  new  NullPointerException("Address !exist");
         }
-        logger.info("Save address");
-        return address;
-    }
+            logger.info("Save address");
+            return address;
+        }
 
     @Override
     public void delete(Long aLong) {
@@ -77,6 +81,19 @@ public class AddressDaoImpl implements AddressDao, QueryDao, RowMapper<Address> 
         logger.info("Delete address");
     }
 
+
+    public Optional<Address> findOne(String address_name) {
+        try {
+            Address address = jdbcTemplate.queryForObject(
+                    getFindOneQueryByAddress_name(),
+                    new Object[]{address_name},
+                    this);
+            logger.info("Find address");
+            return Optional.of(address);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
 
     @Override
     public Optional<Address> findOne(Long aLong) {
@@ -113,6 +130,9 @@ public class AddressDaoImpl implements AddressDao, QueryDao, RowMapper<Address> 
         return queryService.getQuery("select.address");
     }
 
+    public String  getFindOneQueryByAddress_name() {
+        return queryService.getQuery("select.address.by.name");
+    }
 
     public boolean check(Address target, Address base){
         return base.check(target);

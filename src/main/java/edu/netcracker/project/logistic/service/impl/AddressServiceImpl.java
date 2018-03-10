@@ -28,4 +28,9 @@ public class AddressServiceImpl implements AddressService {
     public Optional<Address> findOne(Long aLong) {
         return addressDao.findOne(aLong);
     }
+
+    @Override
+    public Optional<Address> findOne(String address_name) {
+        return addressDao.findOne(address_name);
+    }
 }

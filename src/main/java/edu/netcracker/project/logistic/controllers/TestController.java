@@ -34,6 +34,9 @@ public class TestController {
     @Autowired
     ContactDao contactDao;
 
+    Address address;
+
+
     AddressDaoImpl addressDao;
     private RoleService roleService;
 
@@ -49,23 +52,16 @@ public class TestController {
     @RequestMapping(value = "/test")
     public String test(Model model) {
         Address address = new Address("м. Київ");
-        Address address1 = new Address((long) 3, "м. Житомир");
+        Address address1 = new Address((long) 3, "qwqw");
         addressService.save(address);
         addressService.save(address1);
-        addressService.findOne(3L);
 
-        LocalDateTime localDate = LocalDateTime.now();
+        System.out.println(address.check("qwqw"));
+
 //        Contact contact = new Contact(1L, "lol", "lol", "+2312312313");
 //        contactDao.save(contact);
 //        Person person1 = new Person("nick_name", "1121212", localDate, "sdfffsfsdf", contact);
 //        personService.savePerson(person1);
-        Office office = new Office("werewr", address1);
-        System.out.println(office);
-        officeDao.save(office);
-        officeDao.findOne(1L);
-        officeDao.contains(1L);
-        contactDao.findOne(1L);
-
 
         return "test";
     }

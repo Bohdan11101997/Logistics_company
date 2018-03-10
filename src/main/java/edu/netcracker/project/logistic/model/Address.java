@@ -46,7 +46,7 @@ public class Address {
     private static LatLng AdressToLocation(String name) {
         LatLng location;
         try {
-            location = GoogleApiRequest.GeocodingApi().address(name).await()[0].geometry.location;
+            location = GoogleApiRequest.GeocodingApi().address(name).region("Ukraine").await()[0].geometry.location;
         } catch (Exception e) {
             location = null;
         }
@@ -88,8 +88,8 @@ public class Address {
         this.location = location;
     }
 
-    public boolean check(String adress) {
-        return check(new Address(adress), TravelMode.WALKING);
+    public boolean check(String address) {
+        return check(new Address(address), TravelMode.WALKING);
     }
 
     public boolean check(String adress, TravelMode travelMode ) {
@@ -105,13 +105,17 @@ public class Address {
         try {
             result = GoogleApiRequest.DistanceMatrixApi()
                     .origins(with.getLocation())
-                    .destinations(this.getLocation())
+                    .destinations(with.getLocation())
                     .mode(travelMode)
                     .avoid(DirectionsApi.RouteRestriction.FERRIES)
                     .avoid(DirectionsApi.RouteRestriction.TOLLS)
                     .await();
         } catch (ApiException | InterruptedException | IOException e) {
             e.printStackTrace();
+        }
+        catch (NullPointerException e )
+        {
+            return false;
         }
     return (result != null && result.rows[0].elements[0].status == DistanceMatrixElementStatus.OK);
     }
