@@ -24,9 +24,13 @@ For local usage these files must be placed in *src/main/resources/static/local/*
 ## Usage
 
 ### Maven
-Use spring-boot-maven-plugin:
+Development environment:
 ```
 mvn spring-boot:run
+```
+Production environment:
+```
+mvn spring-boot:run -Dspring-boot.run.profiles=prod
 ```
 
 ### Packaged JAR file
