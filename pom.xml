@@ -32,6 +32,9 @@
                         <argument>--spring.config.location=classpath:/application.properties</argument>
                         <argument>--spring.config.location=classpath:/mail.properties</argument>
                     </arguments>
+                    <profiles>
+                        <profile>dev</profile>
+                    </profiles>
                 </configuration>
             </plugin>
 
