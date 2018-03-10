@@ -1,5 +1,6 @@
 package edu.netcracker.project.logistic.dao.impl;
 
+import com.google.maps.model.TravelMode;
 import edu.netcracker.project.logistic.dao.AddressDao;
 import edu.netcracker.project.logistic.dao.QueryDao;
 import edu.netcracker.project.logistic.model.Address;
@@ -113,4 +114,23 @@ public class AddressDaoImpl implements AddressDao, QueryDao, RowMapper<Address> 
     }
 
 
+    public boolean check(Address target, Address base){
+        return base.check(target);
+    }
+
+    public boolean check(String target, Address base){
+        return base.check(target);
+    }
+
+    public boolean check(String target, Address base, TravelMode travelMode){
+        return base.check(target,travelMode);
+    }
+
+    public boolean check(String target, String base){
+        return new Address(base).check(target);
+    }
+
+    public boolean check(String target, String base, TravelMode travelMode){
+        return new Address(base).check(target,travelMode);
+    }
 }

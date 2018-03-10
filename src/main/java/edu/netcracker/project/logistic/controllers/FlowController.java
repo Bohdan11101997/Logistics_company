@@ -19,7 +19,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -65,24 +64,12 @@ public class FlowController {
                     o.setCreationTime(LocalDateTime.now());
                     o.setCourier(null);
 
-                    DistanceMatrix result = null;
                     do {
                         o.setReceiverAddress(new Address((long) (604 + i), new LatLng(
                                 (Math.random() * 2 - 1) * radius + office.getAddress().getLocation().lat,
                                 (Math.random() * 2 - 1) * radius + office.getAddress().getLocation().lng
                         )));
-                        try {
-                            result = GoogleApiRequest.DistanceMatrixApi()
-                                    .origins(office.getAddress().getLocation())
-                                    .destinations(o.getReceiverAddress().getLocation())
-                                    .mode(travelMode)
-                                    .avoid(DirectionsApi.RouteRestriction.FERRIES)
-                                    .avoid(DirectionsApi.RouteRestriction.TOLLS)
-                                    .await();
-                        } catch (ApiException | InterruptedException | IOException e) {
-                            e.printStackTrace();
-                        }
-                    } while (result == null || result.rows[0].elements[0].status != DistanceMatrixElementStatus.OK);
+                    } while (!office.getAddress().check(o.getReceiverAddress(),travelMode));
 
                     o.setSenderAddress(office.getAddress());
                     o.setOffice(office);

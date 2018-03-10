@@ -1,7 +1,14 @@
 package edu.netcracker.project.logistic.model;
 
+import com.google.maps.DirectionsApi;
+import com.google.maps.errors.ApiException;
+import com.google.maps.model.DistanceMatrix;
+import com.google.maps.model.DistanceMatrixElementStatus;
 import com.google.maps.model.LatLng;
+import com.google.maps.model.TravelMode;
 import edu.netcracker.project.logistic.maps_wrapper.GoogleApiRequest;
+
+import java.io.IOException;
 
 public class Address {
     private Long id;
@@ -65,7 +72,10 @@ public class Address {
     }
 
     public void setName(String name) {
-        this.name = name;
+        if(this.name != name) {
+            this.location = null;
+            this.name = name;
+        }
     }
 
     public LatLng getLocation() {
@@ -76,6 +86,34 @@ public class Address {
 
     public void setLocation(LatLng location) {
         this.location = location;
+    }
+
+    public boolean check(String adress) {
+        return check(new Address(adress), TravelMode.WALKING);
+    }
+
+    public boolean check(String adress, TravelMode travelMode ) {
+        return check(new Address(adress), travelMode);
+    }
+
+    public boolean check(Address with) {
+        return check(with, TravelMode.WALKING);
+    }
+
+    public boolean check(Address with, TravelMode travelMode) {
+        DistanceMatrix result = null;
+        try {
+            result = GoogleApiRequest.DistanceMatrixApi()
+                    .origins(with.getLocation())
+                    .destinations(this.getLocation())
+                    .mode(travelMode)
+                    .avoid(DirectionsApi.RouteRestriction.FERRIES)
+                    .avoid(DirectionsApi.RouteRestriction.TOLLS)
+                    .await();
+        } catch (ApiException | InterruptedException | IOException e) {
+            e.printStackTrace();
+        }
+    return (result != null && result.rows[0].elements[0].status == DistanceMatrixElementStatus.OK);
     }
 
     @Override
