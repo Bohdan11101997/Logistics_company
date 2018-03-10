@@ -75,6 +75,20 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
         return courier;
     }
 
+    private OrderType mapOrderType(ResultSet rs) throws SQLException {
+        OrderType orderType = new OrderType();
+        orderType.setId(rs.getLong("order_type_id"));
+        if (orderType.getId() == null) {
+            return null;
+        }
+        orderType.setName(rs.getString("order_type_name"));
+        orderType.setMaxWeight(rs.getBigDecimal("max_weight"));
+        orderType.setMaxWidth(rs.getLong("max_width"));
+        orderType.setMaxHeight(rs.getLong("max_height"));
+        orderType.setMaxLength(rs.getLong("max_length"));
+        return orderType;
+    }
+
     @Override
     public Order mapRow(ResultSet rs, int rowNum) throws SQLException {
         Order order = new Order();
@@ -86,7 +100,6 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
         order.setWidth(rs.getLong("width"));
         order.setHeight(rs.getLong("height"));
         order.setLength(rs.getLong("length"));
-        order.setOrderTypeId(rs.getLong("order_type_id"));
 
         order.setSenderContact(mapContact(rs, "sender_"));
         order.setReceiverContact(mapContact(rs, "receiver_"));
@@ -98,6 +111,7 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
         orderStatus.setName(rs.getString("status_name"));
         order.setOrderStatus(orderStatus);
         order.setCourier(mapPerson(rs));
+        order.setOrderType(mapOrderType(rs));
 
         return order;
     }
@@ -114,7 +128,7 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
         ps.setObject(9, order.getSenderAddress() == null ? null : order.getSenderAddress().getId());
         ps.setObject(10, order.getOffice() == null ? null : order.getOffice().getOfficeId());
         ps.setLong(11, order.getOrderStatus().getId());
-        ps.setLong(12, order.getOrderTypeId());
+        ps.setObject(12, order.getOrderType() == null ? null : order.getOrderType().getId());
         ps.setBigDecimal(13, order.getWeight());
         ps.setLong(14, order.getWidth());
         ps.setLong(15, order.getHeight());

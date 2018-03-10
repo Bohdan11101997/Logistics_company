@@ -16,7 +16,7 @@ public class Order {
     private Address senderAddress;
     private Office office;
     private OrderStatus orderStatus;
-    private Long orderTypeId;
+    private OrderType orderType;
     private BigDecimal weight;
     private Long width;
     private Long height;
@@ -113,12 +113,12 @@ public class Order {
         this.orderStatus = orderStatus;
     }
 
-    public Long getOrderTypeId() {
-        return orderTypeId;
+    public OrderType getOrderType() {
+        return orderType;
     }
 
-    public void setOrderTypeId(Long orderTypeId) {
-        this.orderTypeId = orderTypeId;
+    public void setOrderType(OrderType orderType) {
+        this.orderType = orderType;
     }
 
     public BigDecimal getWeight() {
