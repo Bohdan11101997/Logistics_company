@@ -286,11 +286,11 @@ public class AdminController {
 
     @PostMapping("/crud/office")
     public String saveOffice(@ModelAttribute("office") OfficeForm officeForm) {
-
+        addressService.save(officeForm.getAddress());
         Office office = new Office(
                 officeForm.getOfficeId(),
                 officeForm.getName(),
-                addressService.findOne(officeForm.getAddress()).get()
+                addressService.findOne(officeForm.getAddress().getName()).get()
         );
         System.out.println(office);
         officeService.save(office);
