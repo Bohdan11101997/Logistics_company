@@ -12,6 +12,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -38,6 +39,7 @@ public class ResetPasswordServiceImpl implements ResetPasswordService {
         this.sender = sender;
     }
 
+    @Transactional
     @Override
     public void generateAndSendOnEmailResetToken(String email) throws MessagingException {
         Optional<Person> optionalPerson = personService.findOneByEmail(email);
@@ -67,7 +69,7 @@ public class ResetPasswordServiceImpl implements ResetPasswordService {
         msg.setFrom(from);
         msg.setTo(resetPasswordToken.getPerson().getContact().getEmail());
         msg.setText("To reset your password, click the link below:\n" + appUrl
-                + "/login/reset/password?token=" + resetPasswordToken.getResetToken(), false);
+                + "/password/reset?token=" + resetPasswordToken.getResetToken(), false);
 
         sender.send(mimeMessage);
 
@@ -78,6 +80,7 @@ public class ResetPasswordServiceImpl implements ResetPasswordService {
         return resetPasswordTokenDao.findOneByToken(resetToken);
     }
 
+    @Transactional
     @Override
     public void deleteResetPasswordTokenRowById(Long personId) {
         resetPasswordTokenDao.delete(personId);

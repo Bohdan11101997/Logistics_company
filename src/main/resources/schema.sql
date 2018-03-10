@@ -258,7 +258,8 @@ ALTER TABLE logistic_company.registration_link
   ADD FOREIGN KEY (person_id) REFERENCES logistic_company.person (person_id);
 
 ALTER TABLE logistic_company.reset_password
-  ADD FOREIGN KEY (person_id) REFERENCES logistic_company.person (person_id);
+  ADD FOREIGN KEY (person_id) REFERENCES logistic_company.person (person_id)
+  ON DELETE CASCADE;
 
 
 CREATE FUNCTION delete_old_rows()

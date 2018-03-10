@@ -27,22 +27,16 @@ public class UserController {
 
     private SmartValidator fieldValidator;
     private UpdateUserValidator updateUserValidator;
-    private CurrentPasswordValidator currentPasswordValidator;
     private UserService userService;
     private SecurityService securityService;
-    private PasswordEncoder passwordEncoder;
 
     @Autowired
     public UserController(SmartValidator fieldValidator, UpdateUserValidator updateUserValidator,
-                          CurrentPasswordValidator currentPasswordValidator, UserService userService,
-                          SecurityService securityService, PasswordEncoder passwordEncoder){
+                          UserService userService, SecurityService securityService) {
         this.fieldValidator = fieldValidator;
         this.updateUserValidator = updateUserValidator;
-        this.currentPasswordValidator = currentPasswordValidator;
         this.userService = userService;
         this.securityService = securityService;
-        this.passwordEncoder = passwordEncoder;
-
     }
 
     @GetMapping("/personal")
@@ -131,40 +125,4 @@ public class UserController {
 
     }
 
-    @GetMapping(value = "/change/password")
-    public String viewChangePassword(Model model){
-        ChangePasswordForm changePasswordForm = new ChangePasswordForm();
-        model.addAttribute("changePassword", changePasswordForm);
-        return "user/user_change_password";
-    }
-
-    @PostMapping(value = "/change/password")
-    public String saveNewPassword(@ModelAttribute("changePassword") ChangePasswordForm changePasswordForm,
-                                  BindingResult bindingResult){
-
-        String currentPasswordFromForm = changePasswordForm.getOldPassword();
-        currentPasswordValidator.validate(currentPasswordFromForm, bindingResult);
-
-        if (bindingResult.hasErrors()){
-            return "user/user_change_password";
-        }
-
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        // change for single password
-        Optional<Person> optionalPerson = userService.findOne(username);
-
-        if (!optionalPerson.isPresent()){
-            return "/error/403";
-        }
-
-        Person person = optionalPerson.get();
-        String newPassword = changePasswordForm.getNewPassword();
-        String newPasswordEncoded = passwordEncoder.encode(newPassword);
-        person.setPassword(newPasswordEncoded);
-        userService.update(person);
-
-        securityService.autoLogIn(username, newPassword);
-
-        return "redirect:/user/change/password?save";
-    }
 }
