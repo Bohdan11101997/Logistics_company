@@ -105,18 +105,18 @@ CREATE TABLE "logistic_company"."work_day"
 CREATE TABLE "logistic_company"."order"
 (
   "order_id"            INT4 DEFAULT nextval('main_seq_id' :: REGCLASS)    NOT NULL,
-  "creation_date"       TIMESTAMP                                          NOT NULL DEFAULT NOW(),
-  "delivery_time"       TIME                                               NOT NULL,
+  "creation_time"       TIMESTAMP                                          NOT NULL DEFAULT NOW(),
+  "delivery_time"       TIMESTAMP,
   "order_status_time"   TIMESTAMP                                          NOT NULL DEFAULT NOW(),
-  "courier_id"          INT4                                               NOT NULL,
-  "receiver_contact_id" INT4                                               NOT NULL,
-  "receiver_address_id" INT4                                               NOT NULL,
-  "sender_contact_id"   INT4                                               NOT NULL,
-  "sender_address_id"   INT4                                               NOT NULL,
-  "office_id"           INT4                                               NOT NULL,
-  "order_status_id"     INT4,
-  "order_type_id"       INT4                                               NOT NULL,
-  "weight"              NUMERIC(5, 1)                                      NOT NULL,
+  "courier_id"          INT4,
+  "receiver_contact_id" INT4,
+  "receiver_address_id" INT4,
+  "sender_contact_id"   INT4,
+  "sender_address_id"   INT4,
+  "office_id"           INT4,
+  "order_status_id"     INT4                                               NOT NULL,
+  "order_type_id"       INT4,
+  "weight"              NUMERIC(5, 1),
   "width"               INT4,
   "height"              INT4,
   "length"              INT4
@@ -219,7 +219,7 @@ ALTER TABLE logistic_company.day_off
 
 
 ALTER TABLE "logistic_company"."courier_data"
-  ADD  FOREIGN KEY("person_id") REFERENCES  "logistic_company"."person"(person_id);
+  ADD FOREIGN KEY ("person_id") REFERENCES "logistic_company"."person" (person_id);
 
 ALTER TABLE "logistic_company"."person_role"
   ADD FOREIGN KEY ("role_id") REFERENCES "logistic_company"."role" ("role_id");
@@ -319,15 +319,18 @@ CREATE TRIGGER trigger_delete_old_rows
 EXECUTE PROCEDURE delete_old_rows();
 
 
-CREATE FUNCTION advertisement_delete_old_rows() RETURNS trigger
-  LANGUAGE plpgsql
-  AS $$
+CREATE FUNCTION advertisement_delete_old_rows()
+  RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
 BEGIN
-  DELETE FROM advertisement WHERE show_end_date < NOW();
+  DELETE FROM advertisement
+  WHERE show_end_date < NOW();
   RETURN NEW;
 END;
 $$;
 
 CREATE TRIGGER advertisement_delete_old_rows_trigger
-  AFTER INSERT ON advertisement
-  EXECUTE PROCEDURE advertisement_delete_old_rows();
+  AFTER INSERT
+  ON advertisement
+EXECUTE PROCEDURE advertisement_delete_old_rows();

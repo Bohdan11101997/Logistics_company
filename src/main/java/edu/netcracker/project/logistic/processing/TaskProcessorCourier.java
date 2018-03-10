@@ -2,7 +2,6 @@ package edu.netcracker.project.logistic.processing;
 
 import edu.netcracker.project.logistic.dao.*;
 import edu.netcracker.project.logistic.model.*;
-import edu.netcracker.project.logistic.model.order.OrderContactData;
 import edu.netcracker.project.logistic.service.EmployeeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,7 +86,7 @@ public class TaskProcessorCourier {
 
         private BlockingQueue<edu.netcracker.project.logistic.processing.TaskProcessorCourier.EmployeeEntry> workerQueue;
         private BlockingQueue<TaskEntry> taskQueue;
-        private OrderContactDataDao orderContactDataDao;
+        private OrderDao orderDao;
         private RoleCrudDao roleDao;
         private TaskDao taskDao;
         private PersonCrudDao personDao;
@@ -95,10 +94,10 @@ public class TaskProcessorCourier {
         private WorkDayDao workDayDao;
         private SessionRegistry sessionRegistry;
 
-        public TaskProcessorCourier(OrderContactDataDao orderContactDataDao, RoleCrudDao roleDao, TaskDao taskDao,
-                             PersonCrudDao personDao, EmployeeService employeeService, WorkDayDao workDayDao,
-                             SessionRegistry sessionRegistry) {
-            this.orderContactDataDao = orderContactDataDao;
+        public TaskProcessorCourier(OrderDao orderDao, RoleCrudDao roleDao, TaskDao taskDao,
+                                    PersonCrudDao personDao, EmployeeService employeeService, WorkDayDao workDayDao,
+                                    SessionRegistry sessionRegistry) {
+            this.orderDao = orderDao;
             this.roleDao = roleDao;
             this.taskDao = taskDao;
             this.personDao = personDao;
@@ -120,8 +119,8 @@ public class TaskProcessorCourier {
         }
 
         private void prepareQueues() {
-            List<OrderContactData> notProcessedOrders = orderContactDataDao.findNotProcessed();
-            for (OrderContactData data : notProcessedOrders) {
+            List<Order> notProcessedOrders = orderDao.findNotProcessed();
+            for (Order data : notProcessedOrders) {
                 createTask(data);
             }
         }
@@ -219,14 +218,14 @@ public class TaskProcessorCourier {
                 t.setEmployeeId(null);
                 taskDao.delete(t.getId());
                 t.setId(null);
-                OrderContactData order = orderContactDataDao.findOne(t.getOrderId())
+                Order order = orderDao.findOne(t.getOrderId())
                         .orElseThrow(() -> new IllegalStateException("Order for task don't exists"));
                 createTask(order);
             }
             workerQueue.remove(new edu.netcracker.project.logistic.processing.TaskProcessorCourier.EmployeeEntry(employeeId));
         }
 
-        public void createTask(OrderContactData order) {
+        public void createTask(Order order) {
             Long contactId = order.getSenderContact().getContactId();
             Optional<Person> opt = personDao.findByContactId(contactId);
             if (!opt.isPresent()) {

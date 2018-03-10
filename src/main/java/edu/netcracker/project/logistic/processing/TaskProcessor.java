@@ -2,7 +2,6 @@ package edu.netcracker.project.logistic.processing;
 
 import edu.netcracker.project.logistic.dao.*;
 import edu.netcracker.project.logistic.model.*;
-import edu.netcracker.project.logistic.model.order.OrderContactData;
 import edu.netcracker.project.logistic.service.EmployeeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,7 +85,7 @@ public class TaskProcessor {
     private BlockingQueue<EmployeeEntry> workerQueue;
     private BlockingQueue<TaskEntry> taskQueue;
 
-    private OrderContactDataDao orderContactDataDao;
+    private OrderDao orderDao;
     private RoleCrudDao roleDao;
     private TaskDao taskDao;
     private PersonCrudDao personDao;
@@ -94,10 +93,10 @@ public class TaskProcessor {
     private WorkDayDao workDayDao;
     private SessionRegistry sessionRegistry;
 
-    public TaskProcessor(OrderContactDataDao orderContactDataDao, RoleCrudDao roleDao, TaskDao taskDao,
+    public TaskProcessor(OrderDao orderDao, RoleCrudDao roleDao, TaskDao taskDao,
                          PersonCrudDao personDao, EmployeeService employeeService, WorkDayDao workDayDao,
                          SessionRegistry sessionRegistry) {
-        this.orderContactDataDao = orderContactDataDao;
+        this.orderDao = orderDao;
         this.roleDao = roleDao;
         this.taskDao = taskDao;
         this.personDao = personDao;
@@ -119,8 +118,8 @@ public class TaskProcessor {
     }
 
     private void prepareQueues() {
-        List<OrderContactData> notProcessedOrders = orderContactDataDao.findNotProcessed();
-        for (OrderContactData data : notProcessedOrders) {
+        List<Order> notProcessedOrders = orderDao.findNotProcessed();
+        for (Order data : notProcessedOrders) {
             createTask(data);
         }
     }
@@ -218,14 +217,14 @@ public class TaskProcessor {
             t.setEmployeeId(null);
             taskDao.delete(t.getId());
             t.setId(null);
-            OrderContactData order = orderContactDataDao.findOne(t.getOrderId())
+            Order order = orderDao.findOne(t.getOrderId())
                     .orElseThrow(() -> new IllegalStateException("Order for task don't exists"));
             createTask(order);
         }
         workerQueue.remove(new EmployeeEntry(employeeId));
     }
 
-    public void createTask(OrderContactData order) {
+    public void createTask(Order order) {
         Long contactId = order.getSenderContact().getContactId();
         Optional<Person> opt = personDao.findByContactId(contactId);
         if (!opt.isPresent()) {

@@ -3,9 +3,9 @@ package edu.netcracker.project.logistic.service.impl;
 import edu.netcracker.project.logistic.dao.ContactDao;
 import edu.netcracker.project.logistic.dao.PersonCrudDao;
 import edu.netcracker.project.logistic.model.Contact;
+import edu.netcracker.project.logistic.model.Order;
 import edu.netcracker.project.logistic.model.Person;
 import edu.netcracker.project.logistic.model.Role;
-import edu.netcracker.project.logistic.model.order.OrderContactData;
 import edu.netcracker.project.logistic.processing.TaskProcessor;
 import edu.netcracker.project.logistic.service.PersonService;
 import edu.netcracker.project.logistic.service.UserService;
@@ -55,7 +55,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void createOrder(OrderContactData order) {
+    public void createOrder(Order order) {
         taskProcessor.createTask(order);
     }
 }

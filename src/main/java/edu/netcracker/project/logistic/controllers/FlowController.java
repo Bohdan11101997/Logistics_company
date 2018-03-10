@@ -62,7 +62,7 @@ public class FlowController {
                 for(int i = 0; i < count; i++) {
                     Order o = new Order();
                     o.setId((long) (404 + i));
-                    o.setCreationDay(LocalDate.now());
+                    o.setCreationTime(LocalDateTime.now());
                     o.setCourier(null);
 
                     DistanceMatrix result = null;
