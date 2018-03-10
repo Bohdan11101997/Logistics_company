@@ -1,11 +1,7 @@
 package edu.netcracker.project.logistic.controllers;
 
 import edu.netcracker.project.logistic.dao.OrderTypeDao;
-import edu.netcracker.project.logistic.model.ChangePasswordForm;
-import edu.netcracker.project.logistic.model.Contact;
-import edu.netcracker.project.logistic.model.Person;
-import edu.netcracker.project.logistic.model.UserForm;
-import edu.netcracker.project.logistic.model.order.OrderContactData;
+import edu.netcracker.project.logistic.model.*;
 import edu.netcracker.project.logistic.processing.TaskProcessor;
 import edu.netcracker.project.logistic.service.SecurityService;
 import edu.netcracker.project.logistic.service.UserService;
@@ -177,14 +173,14 @@ public class UserController {
 
     @GetMapping(value = "/order")
     public String createOrder(Model model) {
-        OrderContactData order = new OrderContactData();
+        Order order = new Order();
         model.addAttribute("order", order);
         model.addAttribute("orderTypes", orderTypeDao.findAll());
         return "user/order";
     }
 
     @PostMapping(value = "/order")
-    public String doCreateOrder(@ModelAttribute("order") OrderContactData order, Principal principal) {
+    public String doCreateOrder(@ModelAttribute("order") Order order, Principal principal) {
         Optional<Person> opt = userService.findOne(principal.getName());
         if (!opt.isPresent()) {
             return "error/500";
