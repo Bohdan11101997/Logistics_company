@@ -7,6 +7,7 @@ import edu.netcracker.project.logistic.maps_wrapper.GoogleApiRequest;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.Objects;
 
 public class Address {
     private Long id;
@@ -151,6 +152,16 @@ public class Address {
         {
             return false;
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Address that = (Address) o;
+        return Objects.equals(id, that.id) &&
+                name == that.name &&
+                Objects.equals(location, that.location);
     }
 
     @Override

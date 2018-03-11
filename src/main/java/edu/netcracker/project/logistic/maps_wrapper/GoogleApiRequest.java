@@ -78,7 +78,7 @@ public class GoogleApiRequest {
     private static boolean roll_keys() {
         if (out_of_keys)
             return false;
-        logger.info("Setting new API_KEY");
+        logger.warn("Setting new API_KEY");
         new_context(RESERVE_API_KEY);
         out_of_keys = true;
         return true;
@@ -115,7 +115,7 @@ public class GoogleApiRequest {
         requests_count++;
         if (check_request_limit()) throw new AppIdentityServiceFailureException("Run out of requests limits.");
 
-        logger.info("New Directions request.");
+        logger.info("New DirectionsApi request.");
 
         return DirectionsApi.newRequest(context);
     }
@@ -131,6 +131,9 @@ public class GoogleApiRequest {
     }
 
     private static boolean check_request_limit() {
-        return requests_count > request_quote_per_key && !roll_keys();
+        boolean return_value = requests_count > request_quote_per_key && !roll_keys();
+        if(return_value)
+            logger.error("Google Maps API_KEY quote wasted!");
+        return return_value;
     }
 }

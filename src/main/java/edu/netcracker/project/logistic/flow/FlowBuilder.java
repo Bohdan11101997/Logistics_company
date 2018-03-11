@@ -3,6 +3,7 @@ package edu.netcracker.project.logistic.flow;
 import edu.netcracker.project.logistic.maps_wrapper.StaticMap;
 import com.google.maps.model.LatLng;
 import edu.netcracker.project.logistic.model.Order;
+import edu.netcracker.project.logistic.model.OrderType;
 import edu.netcracker.project.logistic.model.Person;
 
 import java.util.Collection;
@@ -11,6 +12,14 @@ import java.util.Queue;
 
 public interface FlowBuilder {
 
+    double getMaxWalkableDistance();
+
+    void setMaxWalkableDistance(double maxWalkableDistance);
+
+    double getMaxDrivableDistance();
+
+    void setMaxDrivableDistance(double maxDrivableDistance);
+
     //TODO: assert is second parameter needed
     boolean add(Person courier, CourierType type);
 
@@ -18,11 +27,11 @@ public interface FlowBuilder {
 
     Person getCourier(long courier_id);
 
-    boolean add(Order order, OrderType type);
+    boolean add(Order order);
 
-    int add(Order[] orders, OrderType type);
+    int add(Order[] orders);
 
-    int add(Collection<Order> orders, OrderType type);
+    int add(Collection<Order> orders);
 
     Order removeOrder(long order_id);
 
@@ -34,7 +43,7 @@ public interface FlowBuilder {
 
     List<Order> getOrders();
 
-    Queue<Order> getOrders(OrderType type);
+    List<Order> getOrders(OrderType type);
 
     List<Person> getCouriers();
 
@@ -77,10 +86,5 @@ public interface FlowBuilder {
     enum CourierType {
         Walker,
         Driver
-    }
-    //TODO: move to order types
-    enum OrderType {
-        Luggage,
-        Freight
     }
 }
