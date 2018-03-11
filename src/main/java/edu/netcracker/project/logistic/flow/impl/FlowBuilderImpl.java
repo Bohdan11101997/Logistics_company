@@ -9,6 +9,7 @@ import edu.netcracker.project.logistic.model.*;
 import edu.netcracker.project.logistic.service.RoleService;
 //import org.apache.tomcat.util.collections.SynchronizedQueue;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.PriorityBlockingQueue;
 
@@ -69,7 +70,15 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
 
     private static void init(FlowBuilderImpl impl, Office office) {
         travelModeMap = new LinkedHashMap<>();
-        List<OrderType> orderTypes = impl.orderTypeDao.findAll();
+        List<OrderType> orderTypes = null;
+        try {
+            orderTypes = new ArrayList<>(impl.orderTypeDao.findAll());
+        } catch(NullPointerException e){
+            orderTypes = new ArrayList<>(3);
+            orderTypes.add(new OrderType((long)1, "Documents", new BigDecimal(1), (long)35, (long)25, (long)2));
+            orderTypes.add(new OrderType((long)2, "Package", new BigDecimal(30), (long)150, (long)150, (long)150));
+            orderTypes.add(new OrderType((long)3, "Cargo", new BigDecimal(1000), (long)170, (long)170, (long)300));
+        }
         for(OrderType ot : orderTypes)
             travelModeMap.put(ot, ot.getId() == 2 ? TravelMode.DRIVING : TravelMode.WALKING);
 
