@@ -267,6 +267,22 @@ public class PersonCrudDaoImpl implements PersonCrudDao, QueryDao, RowMapper<Per
     }
 
     @Override
+    public Optional<Person> findOneByEmail(String email) {
+        Person person;
+        try {
+            person = jdbcTemplate.queryForObject(
+                    getFindOneByEmailQuery(),
+                    new Object[]{email},
+                    this);
+            return Optional.of(person);
+
+        } catch (EmptyResultDataAccessException e) {
+            System.err.println("Empty data");
+        }
+        return Optional.empty();
+    }
+
+    @Override
     public String getInsertQuery() {
         return queryService.getQuery("insert.person");
     }
@@ -300,6 +316,10 @@ public class PersonCrudDaoImpl implements PersonCrudDao, QueryDao, RowMapper<Per
 
     private String getSearchQuery() {
         return queryService.getQuery("select.person.search");
+    }
+
+    private String getFindOneByEmailQuery() {
+        return queryService.getQuery("select.person.by.email");
     }
 
     private String getFindByRoleIdQuery() {

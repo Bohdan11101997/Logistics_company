@@ -195,6 +195,12 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
         }
     }
 
+    @Override
+    public List<Order> HistoryCompleteOrder() {
+        return  jdbcTemplate.query(getHistoryCompleteOrderQuery(), this);
+    }
+
+
     private String getFindOneQuery() {
         return queryService.getQuery("select.order");
     }
@@ -209,6 +215,9 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
 
     private String getDeleteQuery() {
         return queryService.getQuery("delete.order");
+    }
+
+    private String getHistoryCompleteOrderQuery() { return queryService.getQuery("select.order.by.complete");
     }
 
     private String getFindNotProcessedQuery() {

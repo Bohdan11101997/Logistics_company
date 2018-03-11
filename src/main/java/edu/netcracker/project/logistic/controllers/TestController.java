@@ -1,5 +1,6 @@
 package edu.netcracker.project.logistic.controllers;
 
+import com.google.maps.model.GeocodingResult;
 import edu.netcracker.project.logistic.dao.ContactDao;
 import edu.netcracker.project.logistic.dao.OfficeDao;
 import edu.netcracker.project.logistic.dao.impl.AddressDaoImpl;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.GregorianCalendar;
 
 
@@ -51,13 +53,18 @@ public class TestController {
 
     @RequestMapping(value = "/test")
     public String test(Model model) {
-        Address address = new Address("м. Київ");
+        Address address = new Address("Академіка Янгеля 5");
         Address address1 = new Address((long) 3, "qwqw");
         addressService.save(address);
         addressService.save(address1);
 
         System.out.println(address.check("qwqw"));
 
+        for(GeocodingResult gr : Address.getListOfAddresses(address.getName()))
+            System.out.println(gr.formattedAddress);
+        System.out.println("===========================================");
+        for(GeocodingResult gr : Address.getListOfAddresses(address.getLocation()))
+            System.out.println(gr.formattedAddress);
 //        Contact contact = new Contact(1L, "lol", "lol", "+2312312313");
 //        contactDao.save(contact);
 //        Person person1 = new Person("nick_name", "1121212", localDate, "sdfffsfsdf", contact);

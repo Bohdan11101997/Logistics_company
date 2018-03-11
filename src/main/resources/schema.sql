@@ -11,8 +11,10 @@ DROP TABLE IF EXISTS "logistic_company"."address" CASCADE;
 DROP TABLE IF EXISTS "logistic_company"."role" CASCADE;
 DROP TABLE IF EXISTS "logistic_company"."office" CASCADE;
 DROP TABLE IF EXISTS "logistic_company"."order_status" CASCADE;
+DROP TABLE IF EXISTS "logistic_company"."tasks_list";
 DROP TABLE IF EXISTS "logistic_company"."task" CASCADE;
 DROP TABLE IF EXISTS "logistic_company"."courier_data" CASCADE;
+DROP TABLE IF EXISTS "logistic_company"."reset_password" CASCADE ;
 
 
 DROP FUNCTION IF EXISTS logistic_company.delete_old_rows() CASCADE;
@@ -63,6 +65,12 @@ CREATE TABLE "logistic_company"."person" (
   "contact_id"        INT4                                            NOT NULL
 );
 
+CREATE TABLE "logistic_company"."reset_password" (
+  "person_id"         INT4                                            NOT NULL,
+  -- change later for CHAR(36)
+  "reset_token"       CHAR(36)                                        NOT NULL
+);
+
 CREATE TABLE "logistic_company"."role" (
   "role_id"          INT4 DEFAULT nextval('main_seq_id' :: REGCLASS) NOT NULL,
   "role_name"        VARCHAR(45) COLLATE "default"                   NOT NULL,
@@ -107,6 +115,7 @@ CREATE TABLE "logistic_company"."order"
   "order_id"            INT4 DEFAULT nextval('main_seq_id' :: REGCLASS)    NOT NULL,
   "creation_time"       TIMESTAMP                                          NOT NULL DEFAULT NOW(),
   "delivery_time"       TIMESTAMP,
+  "estimated_delivery_time" INTERVAL,
   "order_status_time"   TIMESTAMP                                          NOT NULL DEFAULT NOW(),
   "courier_id"          INT4,
   "receiver_contact_id" INT4,
@@ -183,7 +192,9 @@ ALTER TABLE "logistic_company"."contact"
 ALTER TABLE "logistic_company"."contact"
   ADD UNIQUE ("phone_number");
 ALTER TABLE logistic_company.registration_link
-  ADD UNIQUE (person_id);
+  ADD UNIQUE ("person_id");
+ALTER TABLE logistic_company.reset_password
+  ADD UNIQUE ("reset_token");
 
 
 ALTER TABLE "logistic_company"."order_type"
@@ -280,6 +291,10 @@ ALTER TABLE "logistic_company"."order"
 
 ALTER TABLE logistic_company.registration_link
   ADD FOREIGN KEY (person_id) REFERENCES logistic_company.person (person_id);
+
+ALTER TABLE logistic_company.reset_password
+  ADD FOREIGN KEY (person_id) REFERENCES logistic_company.person (person_id)
+  ON DELETE CASCADE;
 
 ALTER TABLE logistic_company.task
   ADD FOREIGN KEY ("order_id") REFERENCES "logistic_company"."order" ("order_id");

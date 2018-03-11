@@ -34,9 +34,9 @@
                             Your profile has been deleted successfully.
                         </div>
                     </div>
-                    <div th:if="${param.changeUsername}">
+                    <div th:if="${infoMessage != null}" >
                         <div class="alert alert-info">
-                            Your username has been successfully changed. Try log in with this new one.
+                            <p th:text="#{${infoMessage}}"></p>
                         </div>
                     </div>
 
@@ -76,7 +76,7 @@
             </form>
 
             <div class="etc-login-form">
-                <p>forgot your password? <a th:href="@{__${#httpServletRequest.requestURI}__/forgot/password}">click
+                <p>forgot your password? <a th:href="@{/password/forgot}">click
                     here</a></p>
                 <p>new user? <a th:href="@{/registration}">create new account</a></p>
             </div>

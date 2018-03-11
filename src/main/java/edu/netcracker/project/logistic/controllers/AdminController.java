@@ -285,14 +285,15 @@ public class AdminController {
     }
 
     @PostMapping("/crud/office")
-    public String saveOffice(@ModelAttribute("office") OfficeForm officeForm) {
-        addressService.save(officeForm.getAddress());
-        Office office = new Office(
-                officeForm.getOfficeId(),
-                officeForm.getName(),
-                addressService.findOne(officeForm.getAddress().getName()).get()
-        );
+    public String saveOffice(@ModelAttribute("office") Office office) {
+        Optional<Address> opt = addressService.findOne(office.getAddress().getName());
+        if (opt.isPresent()) {
+            return "error/500";
+        }
+        addressService.save(office.getAddress());
+        addressService.findOne(office.getAddress().getName()).get();
         System.out.println(office);
+
         officeService.save(office);
         return "redirect:/admin/offices";
     }
