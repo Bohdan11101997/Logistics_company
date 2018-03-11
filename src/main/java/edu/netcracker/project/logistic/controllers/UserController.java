@@ -219,4 +219,14 @@ public class UserController {
         return "person_main";
     }
 
+    @GetMapping(value = "/orders/sent")
+    public String viewSentOrders(){
+        return "user/user_order_history";
+    }
+
+    @GetMapping(value = "/orders/received")
+    public String viewReceivedOrders(){
+        return "user/user_order_history";
+    }
+
 }
