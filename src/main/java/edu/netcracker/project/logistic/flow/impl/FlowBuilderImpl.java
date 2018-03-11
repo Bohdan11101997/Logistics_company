@@ -1,22 +1,24 @@
 package edu.netcracker.project.logistic.flow.impl;
 
+import edu.netcracker.project.logistic.dao.OrderTypeDao;
 import edu.netcracker.project.logistic.maps_wrapper.StaticMap;
-import com.google.maps.errors.ApiException;
 import com.google.maps.model.*;
 import edu.netcracker.project.logistic.flow.FlowBuilder;
 import edu.netcracker.project.logistic.maps_wrapper.GoogleApiRequest;
-import edu.netcracker.project.logistic.model.Office;
-import edu.netcracker.project.logistic.model.Order;
-import edu.netcracker.project.logistic.model.Person;
-import edu.netcracker.project.logistic.model.Role;
+import edu.netcracker.project.logistic.model.*;
 import edu.netcracker.project.logistic.service.RoleService;
 //import org.apache.tomcat.util.collections.SynchronizedQueue;
 
-import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.PriorityBlockingQueue;
 
 public abstract class FlowBuilderImpl implements FlowBuilder {
+
+    protected double maxWalkableDistance = 15*1000.0/*m*/;
+    protected double maxDrivableDistance = 300*1000.0/*m*/;
+
+    public static long clientWaitingTime = 15*60/*seconds*/;
 
     protected boolean optimize = false;
 
@@ -26,6 +28,9 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
     protected Queue<Person> driveCouriers;
 
     protected RoleService roleService;
+    protected OrderTypeDao orderTypeDao;
+
+    protected static Map<OrderType,TravelMode> travelModeMap;
 
     protected final Office office;
     protected LatLng center;
@@ -35,7 +40,7 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
 
     protected String errorMessage = "No error";
 
-    public FlowBuilderImpl(RoleService roleService, Office office) {
+    public FlowBuilderImpl(RoleService roleService, OrderTypeDao orderTypeDao, Office office) {
         this.roleService = roleService;
         this.office = office;
         this.center = office.getAddress().getLocation();
@@ -43,18 +48,42 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
         init(this, this.office);
     }
 
-    private static void init(FlowBuilderImpl impl, Office office) {
-        Comparator<Order> co = (Order o1, Order o2) -> {
+    private static Comparator<Order> makeOrderComparator(FlowBuilderImpl impl, Office office, boolean useMap, TravelMode travelMode) {
+        return (Order o1, Order o2) -> {
             LatLng l1 = o1.getReceiverAddress().getLocation();
             LatLng l2 = o2.getSenderAddress().getLocation();
-            Double dist1 = distance(l1, office.getAddress().getLocation());
-            Double dist2 = distance(l2, office.getAddress().getLocation());
+            Double dist1;
+            Double dist2;
+            if(useMap){
+                dist1 = mapDistance(l1, office.getAddress().getLocation(),travelMode);
+                dist2 = mapDistance(l2, office.getAddress().getLocation(),travelMode);
+            }
+            else {
+                dist1 = distance(l1, office.getAddress().getLocation());
+                dist2 = distance(l2, office.getAddress().getLocation());
+            }
             dist1 = updateOrderDistanceIfVip(impl, o1, dist1);
             dist2 = updateOrderDistanceIfVip(impl, o2, dist2);
             return Double.compare(dist1, dist2);
         };
-        impl.walkOrders = new PriorityBlockingQueue<>(11, co);
-        impl.driveOrders = new PriorityBlockingQueue<>(11, co);
+    }
+
+    private static void init(FlowBuilderImpl impl, Office office) {
+        travelModeMap = new LinkedHashMap<>();
+        List<OrderType> orderTypes = null;
+        try {
+            orderTypes = new ArrayList<>(impl.orderTypeDao.findAll());
+        } catch(NullPointerException e){
+            orderTypes = new ArrayList<>(3);
+            orderTypes.add(new OrderType((long)1, "Documents", new BigDecimal(1), (long)35, (long)25, (long)2));
+            orderTypes.add(new OrderType((long)2, "Package", new BigDecimal(30), (long)150, (long)150, (long)150));
+            orderTypes.add(new OrderType((long)3, "Cargo", new BigDecimal(1000), (long)170, (long)170, (long)300));
+        }
+        for(OrderType ot : orderTypes)
+            travelModeMap.put(ot, ot.getId() == 2 ? TravelMode.DRIVING : TravelMode.WALKING);
+
+        impl.walkOrders = new PriorityBlockingQueue<>(11, makeOrderComparator( impl, office,true,TravelMode.WALKING));
+        impl.driveOrders = new PriorityBlockingQueue<>(11, makeOrderComparator(impl, office,true,TravelMode.DRIVING));
 
         Comparator<Person> cp = (Person p1, Person p2) -> {
           /*  LatLng l1 = p1.getLocation();
@@ -73,7 +102,7 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
         return Math.sqrt(Math.pow(a.lat - b.lat, 2)
                 + Math.pow(a.lng - b.lng, 2));
     }
-    protected static long mapDistance(LatLng a, LatLng b, TravelMode travelMode){
+    protected static double mapDistance(LatLng a, LatLng b, TravelMode travelMode){
         DistanceMatrix req = null;
         try {
             req = GoogleApiRequest.DistanceMatrixApi()
@@ -90,12 +119,11 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
             for(DistanceMatrixElement d :req.rows[0].elements){
                 distance+=d.distance.inMeters;
             }
-            return distance;
+            return (double)distance;
         }
         else
-            return Long.MAX_VALUE;
+            return Double.MAX_VALUE;
     }
-
 
     protected static double updateOrderDistanceIfVip(FlowBuilderImpl impl, Order o, double distance) {
         boolean isVIP = false;
@@ -118,9 +146,8 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
         return distance;
     }
 
-    protected static OrderType decide(Order o) {
-        //TODO: back after updating other classes
-        return OrderType.Luggage;
+    protected static TravelMode decide(Order o) {
+        return travelModeMap.get(o.getOrderType());
     }
 
     @Override
@@ -169,6 +196,28 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
     }
 
     @Override
+    public double getMaxWalkableDistance() {
+        return maxWalkableDistance;
+    }
+
+    @Override
+    public void setMaxWalkableDistance(double maxWalkableDistance) {
+        if(maxWalkableDistance > 0)
+            this.maxWalkableDistance = maxWalkableDistance;
+        else this.maxWalkableDistance = 0;
+    }
+
+    @Override
+    public double getMaxDrivableDistance() {
+        return maxDrivableDistance;
+    }
+
+    @Override
+    public void setMaxDrivableDistance(double maxDrivableDistance) {
+        this.maxDrivableDistance = maxDrivableDistance;
+    }
+
+    @Override
     public Person removeCourier(long courier_id) {
         Person p = removeCourierFromQueue(walkCouriers, courier_id);
         if (p != null)
@@ -187,34 +236,42 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
     }
 
     // false if adding failed
-    @Override
-    public boolean add(Order order, OrderType type) {
-        switch (type) {
-            case Freight:
+    public boolean add(Order order) {
+        switch (travelModeMap.get(order.getOrderType())) {
+            case WALKING:
+            case BICYCLING:
+            case TRANSIT:
+                if(distance(order.getReceiverAddress().getLocation(),
+                        office.getAddress().getLocation()) < metersToEarthDegrees(maxWalkableDistance)/8 &&
+                        order.getSenderAddress() != null &&
+                        distance(order.getSenderAddress().getLocation(),
+                                office.getAddress().getLocation()) < metersToEarthDegrees(maxWalkableDistance)/8)
+                    return walkOrders.add(order);
+            case DRIVING:
                 return driveOrders.add(order);
-            case Luggage:
-                return walkOrders.add(order);
         }
         return false;
     }
 
+    public static double metersToEarthDegrees(double meters){
+        return meters*6.0/1000.0;
+    }
+
     @Override
-    public int add(Order[] orders, OrderType type) {
+    public int add(Order[] orders) {
         int counter = 0;
         for (Order o : orders)
-            if (!add(o, type))
+            if (!add(o))
                 return counter;
             else counter++;
-
         return counter;
     }
 
-    //TODO: remove duplicating code (without using toArray())
     @Override
-    public int add(Collection<Order> orders, OrderType type) {
+    public int add(Collection<Order> orders) {
         int counter = 0;
         for (Order o : orders)
-            if (!add(o, type))
+            if (!add(o))
                 return counter;
             else counter++;
 
@@ -259,14 +316,19 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
     }
 
     @Override
-    public Queue<Order> getOrders(OrderType type) {
-        switch (type) {
-            case Freight:
-                return driveOrders;
-            case Luggage:
-                return walkOrders;
-        }
-        return null;
+    public List<Order> getOrders(OrderType type) {
+        List<Order> return_value = new ArrayList<>();
+
+        for(Order o : walkOrders)
+            if(o.getOrderType().equals(type))
+                return_value.add(o);
+
+        for(Order o : driveOrders)
+            if(o.getOrderType().equals(type))
+                return_value.add(o);
+        if(return_value.size() == 0)
+            return null;
+        else return return_value;
     }
 
     @Override
@@ -321,6 +383,13 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
 
     @Override
     public abstract boolean process();
+
+    @Override
+    public boolean isFinished(){
+        if(walkOrders.size() == 0 && driveOrders.size() == 0)
+            return true;
+        return false;
+    }
 
     @Override
     public String getError(){
