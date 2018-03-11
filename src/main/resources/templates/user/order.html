@@ -35,8 +35,9 @@
                                     <select id="order-type" class="form-control">
                                         th:field="*{orderType}">
                                         <option th:each="type: ${orderTypes}"
-                                        th:value="${type.id}"
-                                        th:text="${{type}}">Order Type</option>
+                                                th:value="${type.id}"
+                                                th:text="${{type}}">Order Type
+                                        </option>
                                     </select>
                                 </div>
 
@@ -138,7 +139,7 @@
     var orderSizeElement = document.getElementById('order-size');
     var orderWeightElement = document.getElementById('weight');
     var orderTypeSelect = document.getElementById('order-type');
-    orderTypeSelect.addEventListener("change", function(ev) {
+    orderTypeSelect.addEventListener("change", function (ev) {
         var orderType = orderTypeSelect.options[orderTypeSelect.selectedIndex].label;
         if (orderType === "Documents") {
             orderWeightElement.parentElement.style.display = "none";
@@ -147,7 +148,8 @@
             orderWeightElement.parentElement.style.display = "block";
             orderSizeElement.parentElement.style.display = "block";
         }
-    })
+    });
+    orderTypeSelect.dispatchEvent(new Event("change"));
 </script>
 
 </body>

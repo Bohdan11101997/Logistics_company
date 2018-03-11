@@ -117,30 +117,29 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
     }
 
     private void prepareUpdate(PreparedStatement ps, Order order, boolean hasPrimaryKey) throws SQLException {
-        ps.setLong(1, order.getId());
-        ps.setObject(2, order.getCreationTime());
-        ps.setObject(3, order.getDeliveryTime());
-        ps.setObject(4, order.getOrderStatus().getId());
-        ps.setObject(5, order.getCourier() == null ? null : order.getCourier().getId());
-        ps.setObject(6, order.getReceiverContact() == null ? null : order.getReceiverContact().getContactId());
+        ps.setObject(1, order.getCreationTime());
+        ps.setObject(2, order.getDeliveryTime());
+        ps.setObject(3, order.getOrderStatusTime());
+        ps.setObject(4, order.getCourier() == null ? null : order.getCourier().getId());
+        ps.setObject(5, order.getReceiverContact() == null ? null : order.getReceiverContact().getContactId());
+        ps.setObject(6, order.getReceiverAddress() == null ? null : order.getReceiverAddress().getId());
         ps.setObject(7, order.getSenderContact() == null ? null : order.getSenderContact().getContactId());
-        ps.setObject(8, order.getReceiverAddress() == null ? null : order.getReceiverAddress().getId());
-        ps.setObject(9, order.getSenderAddress() == null ? null : order.getSenderAddress().getId());
-        ps.setObject(10, order.getOffice() == null ? null : order.getOffice().getOfficeId());
-        ps.setLong(11, order.getOrderStatus().getId());
-        ps.setObject(12, order.getOrderType() == null ? null : order.getOrderType().getId());
-        ps.setBigDecimal(13, order.getWeight());
-        ps.setLong(14, order.getWidth());
-        ps.setLong(15, order.getHeight());
-        ps.setLong(16, order.getLength());
+        ps.setObject(8, order.getSenderAddress() == null ? null : order.getSenderAddress().getId());
+        ps.setObject(9, order.getOffice() == null ? null : order.getOffice().getOfficeId());
+        ps.setLong(10, order.getOrderStatus().getId());
+        ps.setObject(11, order.getOrderType() == null ? null : order.getOrderType().getId());
+        ps.setBigDecimal(12, order.getWeight());
+        ps.setObject(13, order.getWidth());
+        ps.setObject(14, order.getHeight());
+        ps.setObject(15, order.getLength());
         if (hasPrimaryKey) {
-            ps.setLong(17, order.getId());
+            ps.setLong(16, order.getId());
         }
     }
 
     @Override
     public Order save(Order order) {
-        boolean hasPrimaryKey = order.getId() == null;
+        boolean hasPrimaryKey = order.getId() != null;
         if (hasPrimaryKey) {
             jdbcTemplate.update(
                     getUpdateQuery(),

@@ -33,7 +33,6 @@ public class AddressDaoImpl implements AddressDao, QueryDao, RowMapper<Address> 
     private QueryService queryService;
 
 
-
     @Override
     public Address mapRow(ResultSet resultSet, int i) throws SQLException {
         Address address = new Address();
@@ -69,11 +68,11 @@ public class AddressDaoImpl implements AddressDao, QueryDao, RowMapper<Address> 
                 address.setId(key.longValue());
             }
         } else {
-        throw  new  NullPointerException("Address !exist");
+            throw new IllegalArgumentException("Address not exists");
         }
-            logger.info("Save address");
-            return address;
-        }
+        logger.info("Save address");
+        return address;
+    }
 
     @Override
     public void delete(Long aLong) {
@@ -130,27 +129,27 @@ public class AddressDaoImpl implements AddressDao, QueryDao, RowMapper<Address> 
         return queryService.getQuery("select.address");
     }
 
-    public String  getFindOneQueryByAddress_name() {
+    public String getFindOneQueryByAddress_name() {
         return queryService.getQuery("select.address.by.name");
     }
 
-    public boolean check(Address target, Address base){
+    public boolean check(Address target, Address base) {
         return base.check(target);
     }
 
-    public boolean check(String target, Address base){
+    public boolean check(String target, Address base) {
         return base.check(target);
     }
 
-    public boolean check(String target, Address base, TravelMode travelMode){
-        return base.check(target,travelMode);
+    public boolean check(String target, Address base, TravelMode travelMode) {
+        return base.check(target, travelMode);
     }
 
-    public boolean check(String target, String base){
+    public boolean check(String target, String base) {
         return new Address(base).check(target);
     }
 
-    public boolean check(String target, String base, TravelMode travelMode){
-        return new Address(base).check(target,travelMode);
+    public boolean check(String target, String base, TravelMode travelMode) {
+        return new Address(base).check(target, travelMode);
     }
 }

@@ -4,8 +4,7 @@ public class OrderStatus {
     private Long id;
     private String name;
 
-  public    OrderStatus() {
-
+    public OrderStatus() {
     }
 
     public OrderStatus(Long id, String name) {

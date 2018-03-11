@@ -23,7 +23,6 @@ import java.util.Optional;
 @Controller
 @RequestMapping(value = "/user")
 public class UserController {
-
     private SmartValidator fieldValidator;
     private UpdateUserValidator updateUserValidator;
     private CurrentPasswordValidator currentPasswordValidator;
