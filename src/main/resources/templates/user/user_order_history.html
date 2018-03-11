@@ -49,36 +49,32 @@
                         <table class="table">
                             <thead>
                             <tr>
-                                <th>#</th>
-                                <th>Sender First Name</th>
-                                <th>Sender Last Name</th>
+                                <th>Sender Name</th>
                                 <th>Sender Address</th>
-                                <th>Receiver First Name</th>
-                                <th>Receiver Last Name</th>
+                                <th>Receiver Name</th>
                                 <th>Receiver Address</th>
                                 <th>Office Address</th>
                                 <th>Creation Time</th>
                                 <th>Delivery Time</th>
-                                <th>Weight (kg)</th>
-                                <th>Dimensions (cm)</th>
+                                <th>Order Type</th>
                                 <th>Order Status</th>
                             </tr>
                             </thead>
                             <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>First Name Sender</td>
-                                <td>Last Name Sender</td>
-                                <td>Sender Address</td>
-                                <td>First name Receiver</td>
-                                <td>Last Name Receiver</td>
-                                <td>Receiver Address</td>
-                                <td>Office Address</td>
-                                <td>Creation Time (Date and Time)</td>
-                                <td>Delivery Time (Date and Time)</td>
-                                <td>14.2 (Double)</td>
-                                <td>23.5 x 14 x 19 (Double)</td>
-                                <td>Delivered</td>
+                            <tr th:each="order : ${orders}">
+                                <td th:text="${order.senderContact}"></td>
+                                <td th:text="${order.senderAddress}"></td>
+                                <td th:text="${order.receiverContact}"></td>
+                                <td th:text="${order.receiverAddress}"></td>
+                                <td th:text="${order.office}"></td>
+                                <td th:text="${order.creationTime}"></td>
+                                <td th:text="${order.deliveryTime}"></td>
+                                <td th:text="${order.orderType}"></td>
+                                <td th:text="${order.orderStatus}"></td>
+                                <td>
+                                    <a class="material-icons button delete" th:href="${'/admin/office/delete/' +order.id}">delete</a>
+                                    <a class="material-icons button delete" th:href="${'/admin/office/update/' + order.id}">edit</a>
+                                </td>
                             </tr>
                             </tbody>
                         </table>

@@ -152,4 +152,26 @@ public class Order {
     public void setLength(Long length) {
         this.length = length;
     }
+
+    @Override
+    public String toString() {
+        return "Order{" +
+                "id=" + id +
+                ", creationTime=" + creationTime +
+                ", deliveryTime=" + deliveryTime +
+                ", orderStatusTime=" + orderStatusTime +
+                ", courier=" + courier +
+                ", receiverContact=" + receiverContact +
+                ", senderContact=" + senderContact +
+                ", receiverAddress=" + receiverAddress +
+                ", senderAddress=" + senderAddress +
+                ", office=" + office +
+                ", orderStatus=" + orderStatus +
+                ", orderType=" + orderType +
+                ", weight=" + weight +
+                ", width=" + width +
+                ", height=" + height +
+                ", length=" + length +
+                '}';
+    }
 }

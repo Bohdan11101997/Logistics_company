@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Component
 public class OrderServiceImpl implements OrderService {
@@ -49,6 +50,16 @@ public class OrderServiceImpl implements OrderService {
         order.setOrderStatus(processing);
         orderDao.save(order);
         taskProcessor.createTask(order);
+    }
+
+    @Override
+    public List<Order> HistoryCompleteOrderReceiver(Long aLong) {
+        return orderDao.HistoryCompleteOrderReceiver( aLong);
+    }
+
+    @Override
+    public List<Order> HistoryCompleteOrderSender(Long aLong) {
+        return orderDao.HistoryCompleteOrderSender(aLong);
     }
 
     @Override

@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface OrderDao extends  CrudDao<Order, Long> {
     List<Order> findNotProcessed();
-
-    List<Order> HistoryCompleteOrder();
+    List<Order> HistoryCompleteOrderSender(Long aLong);
+    List<Order> HistoryCompleteOrderReceiver(Long aLong);
 }
 

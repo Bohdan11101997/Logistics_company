@@ -196,8 +196,30 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
     }
 
     @Override
-    public List<Order> HistoryCompleteOrder() {
-        return  jdbcTemplate.query(getHistoryCompleteOrderQuery(), this);
+    public List<Order> HistoryCompleteOrderSender(Long aLong) {
+        try {
+            return jdbcTemplate.query(
+                    getHistoryCompleteOrderSenderQuery(),
+                    new Object[]{aLong},
+                    this
+            );
+        } catch (EmptyResultDataAccessException e) {
+            return Collections.emptyList();
+        }
+    }
+
+
+    @Override
+    public List<Order> HistoryCompleteOrderReceiver(Long aLong) {
+        try {
+       return jdbcTemplate.query(
+               getHistoryCompleteOrderReceiverQuery(),
+                    new Object[]{aLong},
+                    this
+            );
+        } catch (EmptyResultDataAccessException e) {
+            return Collections.emptyList();
+        }
     }
 
 
@@ -217,9 +239,10 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
         return queryService.getQuery("delete.order");
     }
 
-    private String getHistoryCompleteOrderQuery() { return queryService.getQuery("select.order.by.complete");
+    private String getHistoryCompleteOrderReceiverQuery() { return queryService.getQuery("select.order.by.complete.receiver");
     }
-
+    private String getHistoryCompleteOrderSenderQuery() { return queryService.getQuery("select.order.by.complete.sender");
+    }
     private String getFindNotProcessedQuery() {
         return queryService.getQuery("select.order.not_processed");
     }

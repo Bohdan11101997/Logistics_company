@@ -57,4 +57,9 @@ public class OrderType {
     public void setMaxLength(Long maxLength) {
         this.maxLength = maxLength;
     }
+
+    @Override
+    public String toString() {
+        return " " + name;
+    }
 }

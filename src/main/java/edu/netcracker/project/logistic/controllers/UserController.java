@@ -220,20 +220,35 @@ public class UserController {
         return "redirect:/main";
     }
 
+    @GetMapping(value = "/orders/received")
+    public  String historyCompleteReceiverOrder(Model model, Principal principal)
+    {
+        Optional<Person> opt = userService.findOne(principal.getName());
+        Person user = opt.get();
+        model.addAttribute("orders", orderService.HistoryCompleteOrderReceiver(user.getId()));
+        return "user/user_order_history";
+    }
+
+    @GetMapping(value = "/orders/sent")
+    public  String historyCompleteSenderOrder(Model model, Principal principal)
+    {
+        Optional<Person> opt = userService.findOne(principal.getName());
+        Person user = opt.get();
+        model.addAttribute("orders", orderService.HistoryCompleteOrderSender(user.getId()));
+        return "user/user_order_history";
+    }
+
     @PostMapping("/order/draft")
     public String draftOrder(@ModelAttribute("order") Order order) {
         orderService.draft(order);
         return "redirect:/main";
     }
 
-    @GetMapping(value = "/orders/sent")
+    @GetMapping(value = "")
     public String viewSentOrders(){
         return "user/user_order_history";
     }
 
-    @GetMapping(value = "/orders/received")
-    public String viewReceivedOrders(){
-        return "user/user_order_history";
-    }
+
 
 }
