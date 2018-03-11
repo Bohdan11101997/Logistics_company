@@ -81,10 +81,11 @@ public class OrderTypeDaoImpl implements OrderTypeDao, RowMapper<OrderType> {
     }
 
     @Override
-    public Optional<OrderType> findOne(Long aLong) {
+    public Optional<OrderType> findOne(Long id) {
         try {
             OrderType orderType = jdbcTemplate.queryForObject(
                     getFindOneQuery(),
+                    new Object[]{id},
                     this
             );
             return Optional.of(orderType);

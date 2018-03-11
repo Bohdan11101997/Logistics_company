@@ -42,7 +42,11 @@ public class Address {
     }
 
     private static LatLng AddressToLocation(String name) {
-        GeocodingResult result = getListOfAddresses(name)[0];
+        GeocodingResult[] addressList = getListOfAddresses(name);
+        if (addressList.length == 0) {
+            return null;
+        }
+        GeocodingResult result = addressList[0];
         for(AddressComponent ac : result.addressComponents){
             for(AddressComponentType act : ac.types)
                 if(act.toCanonicalLiteral().equalsIgnoreCase("locality"))

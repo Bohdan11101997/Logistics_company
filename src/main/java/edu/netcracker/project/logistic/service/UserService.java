@@ -10,5 +10,4 @@ public interface UserService {
     void delete(Long id);
     Optional<Person> findOne(Long id);
     Optional<Person> findOne(String id);
-    void createOrder(Order order);
 }

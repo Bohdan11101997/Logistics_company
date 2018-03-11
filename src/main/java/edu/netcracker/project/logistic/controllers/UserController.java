@@ -3,9 +3,11 @@ package edu.netcracker.project.logistic.controllers;
 import edu.netcracker.project.logistic.dao.OrderTypeDao;
 import edu.netcracker.project.logistic.model.*;
 import edu.netcracker.project.logistic.processing.TaskProcessor;
+import edu.netcracker.project.logistic.service.OrderService;
 import edu.netcracker.project.logistic.service.SecurityService;
 import edu.netcracker.project.logistic.service.UserService;
 import edu.netcracker.project.logistic.validation.CurrentPasswordValidator;
+import edu.netcracker.project.logistic.validation.NewOrderValidator;
 import edu.netcracker.project.logistic.validation.UpdateUserValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +22,7 @@ import org.springframework.validation.SmartValidator;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -30,25 +33,27 @@ public class UserController {
     private SmartValidator fieldValidator;
     private UpdateUserValidator updateUserValidator;
     private CurrentPasswordValidator currentPasswordValidator;
+    private NewOrderValidator newOrderValidator;
     private UserService userService;
+    private OrderService orderService;
     private SecurityService securityService;
     private OrderTypeDao orderTypeDao;
     private PasswordEncoder passwordEncoder;
-    private TaskProcessor taskProcessor;
 
     @Autowired
     public UserController(SmartValidator fieldValidator, UpdateUserValidator updateUserValidator,
-                          CurrentPasswordValidator currentPasswordValidator, UserService userService,
-                          SecurityService securityService, OrderTypeDao orderTypeDao,
-                          PasswordEncoder passwordEncoder, TaskProcessor taskProcessor) {
+                          CurrentPasswordValidator currentPasswordValidator, NewOrderValidator newOrderValidator,
+                          UserService userService, SecurityService securityService, OrderTypeDao orderTypeDao,
+                          PasswordEncoder passwordEncoder, OrderService orderService) {
         this.fieldValidator = fieldValidator;
         this.updateUserValidator = updateUserValidator;
         this.currentPasswordValidator = currentPasswordValidator;
+        this.newOrderValidator = newOrderValidator;
         this.userService = userService;
         this.securityService = securityService;
         this.orderTypeDao = orderTypeDao;
         this.passwordEncoder = passwordEncoder;
-        this.taskProcessor = taskProcessor;
+        this.orderService = orderService;
     }
 
     @GetMapping("/personal")
@@ -138,7 +143,7 @@ public class UserController {
     }
 
     @GetMapping(value = "/password/change")
-    public String viewChangePassword(Model model){
+    public String viewChangePassword(Model model) {
         ChangePasswordForm changePasswordForm = new ChangePasswordForm();
         model.addAttribute("changePassword", changePasswordForm);
         return "user/user_change_password";
@@ -167,7 +172,7 @@ public class UserController {
         String newPassword = changePasswordForm.getNewPassword();
         String oldPassword = person.getPassword();
 
-        if (!passwordEncoder.matches(newPassword, oldPassword)){
+        if (!passwordEncoder.matches(newPassword, oldPassword)) {
             String newPasswordEncoded = passwordEncoder.encode(newPassword);
             person.setPassword(newPasswordEncoded);
             userService.update(person);
@@ -184,14 +189,20 @@ public class UserController {
 
     @GetMapping(value = "/order")
     public String createOrder(Model model) {
+        List<OrderType> orderTypes = orderTypeDao.findAll();
+        if (orderTypes.size() < 1) {
+            return "error/500";
+        }
         Order order = new Order();
+        order.setOrderType(orderTypes.get(0));
+        model.addAttribute("orderTypes", orderTypes);
         model.addAttribute("order", order);
-        model.addAttribute("orderTypes", orderTypeDao.findAll());
         return "user/order";
     }
 
     @PostMapping(value = "/order")
-    public String doCreateOrder(@ModelAttribute("order") Order order, Principal principal) {
+    public String doCreateOrder(Model model, @ModelAttribute("order") Order order,
+                                BindingResult result, Principal principal) {
         Optional<Person> opt = userService.findOne(principal.getName());
         if (!opt.isPresent()) {
             return "error/500";
@@ -199,8 +210,30 @@ public class UserController {
         Person user = opt.get();
         order.setSenderContact(user.getContact());
 
-        userService.createOrder(order);
-        return "person_main";
+        newOrderValidator.validate(order, result);
+        if (result.hasErrors()) {
+            model.addAttribute("orderTypes", orderTypeDao.findAll());
+            return "user/order";
+        }
+
+        orderService.createOrder(order);
+        return "redirect:/main";
+    }
+
+    @PostMapping("/order/draft")
+    public String draftOrder(@ModelAttribute("order") Order order) {
+        orderService.draft(order);
+        return "redirect:/main";
+    }
+
+    @GetMapping(value = "/orders/sent")
+    public String viewSentOrders(){
+        return "user/user_order_history";
+    }
+
+    @GetMapping(value = "/orders/received")
+    public String viewReceivedOrders(){
+        return "user/user_order_history";
     }
 
 }
