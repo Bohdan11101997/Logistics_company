@@ -3,6 +3,7 @@ package edu.netcracker.project.logistic.controllers;
 import edu.netcracker.project.logistic.dao.OrderTypeDao;
 import edu.netcracker.project.logistic.model.*;
 import edu.netcracker.project.logistic.processing.TaskProcessor;
+import edu.netcracker.project.logistic.service.OrderService;
 import edu.netcracker.project.logistic.service.SecurityService;
 import edu.netcracker.project.logistic.service.UserService;
 import edu.netcracker.project.logistic.validation.CurrentPasswordValidator;
@@ -34,16 +35,16 @@ public class UserController {
     private CurrentPasswordValidator currentPasswordValidator;
     private NewOrderValidator newOrderValidator;
     private UserService userService;
+    private OrderService orderService;
     private SecurityService securityService;
     private OrderTypeDao orderTypeDao;
     private PasswordEncoder passwordEncoder;
-    private TaskProcessor taskProcessor;
 
     @Autowired
     public UserController(SmartValidator fieldValidator, UpdateUserValidator updateUserValidator,
                           CurrentPasswordValidator currentPasswordValidator, NewOrderValidator newOrderValidator,
                           UserService userService, SecurityService securityService, OrderTypeDao orderTypeDao,
-                          PasswordEncoder passwordEncoder, TaskProcessor taskProcessor) {
+                          PasswordEncoder passwordEncoder, OrderService orderService) {
         this.fieldValidator = fieldValidator;
         this.updateUserValidator = updateUserValidator;
         this.currentPasswordValidator = currentPasswordValidator;
@@ -52,7 +53,7 @@ public class UserController {
         this.securityService = securityService;
         this.orderTypeDao = orderTypeDao;
         this.passwordEncoder = passwordEncoder;
-        this.taskProcessor = taskProcessor;
+        this.orderService = orderService;
     }
 
     @GetMapping("/personal")
@@ -215,8 +216,14 @@ public class UserController {
             return "user/order";
         }
 
-        userService.createOrder(order);
-        return "person_main";
+        orderService.createOrder(order);
+        return "redirect:/main";
+    }
+
+    @PostMapping("/order/draft")
+    public String draftOrder(@ModelAttribute("order") Order order) {
+        orderService.draft(order);
+        return "redirect:/main";
     }
 
     @GetMapping(value = "/orders/sent")

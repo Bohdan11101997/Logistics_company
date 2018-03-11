@@ -25,8 +25,8 @@
                 <h1 class="text-center">Create new order</h1>
 
                 <div>
-                    <form th:method="post" th:action="@{/user/order}"
-                          th:object="${order}">
+                    <form id="form-order"
+                          th:method="post" th:action="@{/user/order}" th:object="${order}">
                         <div class="panel panel-default">
                             <div class="panel-heading">Cargo details</div>
                             <div class="panel-body">
@@ -175,7 +175,7 @@
 
                         <div style="margin-top: 3em;" class="form-group">
                             <button class="btn btn-primary">Create</button>
-                            <button class="btn btn-info" th:action="@{/user/order/draft}">Draft</button>
+                            <button class="btn btn-info" id="btn-draft" th:formaction="@{/user/order/draft}">Draft</button>
                         </div>
                     </form>
                 </div>
@@ -203,6 +203,13 @@
         }
     });
     orderTypeSelect.dispatchEvent(new Event("change"));
+    var form = document.getElementById("form-order");
+    var draftButton = document.getElementById("btn-draft");
+    draftButton.addEventListener(
+        "click", function() {
+            form.setAttribute("novalidate", "novalidate");
+        }
+    )
 </script>
 
 </body>
