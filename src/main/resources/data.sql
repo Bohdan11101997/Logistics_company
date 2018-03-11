@@ -40,14 +40,10 @@ INSERT INTO person_role (person_id, role_id) VALUES (7, 7);
 INSERT INTO work_day (employee_id, week_day, start_time, end_time)
 VALUES (6, trim(to_char(CURRENT_DATE, 'DAY')) :: logistic_company.week_day, '14:00', '22:00');
 
-INSERT INTO advertisement_type (type_advertisement_id, advertisement_name) VALUES (1, 'Advertisement');
-INSERT INTO advertisement_type (type_advertisement_id, advertisement_name) VALUES (2, 'Announcement');
-INSERT INTO advertisement_type (type_advertisement_id, advertisement_name) VALUES (3, 'Other');
 INSERT INTO address (address_id, address_name) VALUES (1, 'вул.Академіка Янгеля 5, Київ');
 INSERT INTO address (address_id, address_name) VALUES (2, 'Будинок художника, Київ');
 INSERT INTO office (office_id, name, address_id) VALUES (1, 'werwerwer', 1);
 INSERT INTO office (office_id, name, address_id) VALUES (2, 'dddddddddd', 1);
-
 
 INSERT INTO order_type (order_type_id, name, max_weight, max_width, max_height, max_length)
 VALUES (1, 'Documents', 1, 35, 25, 2);
