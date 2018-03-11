@@ -6,6 +6,7 @@ INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALU
 INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (6, 'agent', 'smith', '666-66-66', 'agent.smith@example.com');
 INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (7, 'age3nt', 'sm3ith', '666-66-636', 'ag3ent.smith@example.com');
 INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (8, 'courier', 'rapidman', '777-66-636', 'courier.rapidman@example.com');
+INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (9, 'callcenter', 'callcenter', '888-66-636', 'callcenter.callcenter@example.com');
 
 
 INSERT INTO person(person_id,  user_name, password, contact_id)
@@ -24,6 +25,9 @@ INSERT INTO person (person_id, user_name, password, contact_id)
 VALUES (7, 'agent-lol', 'r245', 7);
 INSERT INTO person (person_id, user_name, password, contact_id)
 VALUES (8, 'courier', '$2a$10$xAqw2EDobxgMKPp3.yBt5OJAuWa/eQxajk2W1ALNuW5MiFxWs4YZC', 8);
+INSERT INTO person (person_id, user_name, password, contact_id)
+VALUES (9, 'callcenter', '$2a$10$Xa8rLWVVQzcnioaY7e5gEOeE1vqdtlDue4MEKjSSVzw0WTiB9HJCW', 9);
+
 
 INSERT INTO role (role_id, role_name, is_employee_role) VALUES (1, 'ROLE_ADMIN', TRUE);
 INSERT INTO role (role_id, role_name, is_employee_role, priority) VALUES (2, 'ROLE_USER', FALSE, 'NORMAL');
@@ -41,6 +45,7 @@ INSERT INTO person_role (person_id, role_id) VALUES (5, 4);
 INSERT INTO person_role (person_id, role_id) VALUES (6, 5);
 INSERT INTO person_role (person_id, role_id) VALUES (7, 7);
 INSERT INTO person_role (person_id, role_id) VALUES (8, 7);
+INSERT INTO person_role (person_id, role_id) VALUES (9, 5);
 
 INSERT INTO work_day (employee_id, week_day, start_time, end_time)
 VALUES (6, trim(to_char(CURRENT_DATE, 'DAY')) :: logistic_company.week_day, '14:00', '22:00');
