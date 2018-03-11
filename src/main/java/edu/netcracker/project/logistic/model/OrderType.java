@@ -10,6 +10,19 @@ public class OrderType {
     private Long maxWidth;
     private Long maxLength;
 
+    public OrderType(){
+
+    }
+
+    public OrderType(Long id, String name, BigDecimal maxWeight, Long maxHeight, Long maxWidth, Long maxLength) {
+        this.id = id;
+        this.name = name;
+        this.maxWeight = maxWeight;
+        this.maxHeight = maxHeight;
+        this.maxWidth = maxWidth;
+        this.maxLength = maxLength;
+    }
+
     public Long getId() {
         return id;
     }

@@ -3,6 +3,7 @@ package edu.netcracker.project.logistic.flow.impl;
 import com.google.maps.*;
 import com.google.maps.errors.ApiException;
 import com.google.maps.model.*;
+import edu.netcracker.project.logistic.dao.OrderTypeDao;
 import edu.netcracker.project.logistic.maps_wrapper.StaticMap;
 import edu.netcracker.project.logistic.maps_wrapper.GoogleApiRequest;
 import edu.netcracker.project.logistic.model.Office;
@@ -11,6 +12,7 @@ import edu.netcracker.project.logistic.model.Person;
 import edu.netcracker.project.logistic.service.RoleService;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
@@ -31,6 +33,9 @@ public class RadiusSelector extends FlowBuilderImpl {
     private static final int maxOrderCount = 8;
     private int MAX_RADIUS_STEPS = 5;
 
+    private double currentAproxDistance = 0/*meters*/;
+    private BigDecimal currentWeight = new BigDecimal(0.0)/*kg*/;
+
     private PriorityQueue<Order> candidates;
 
     private List<Order> resultSequence;
@@ -41,8 +46,8 @@ public class RadiusSelector extends FlowBuilderImpl {
 
     private URL[] icons;
 
-    public RadiusSelector(RoleService roleService, Office office) {
-        super(roleService, office);
+    public RadiusSelector(RoleService roleService, OrderTypeDao orderTypeDao, Office office) {
+        super(roleService, orderTypeDao, office);
         resultSequence = new LinkedList<>();
         center = office.getAddress().getLocation();
         courierToPick = CourierType.Driver;
@@ -93,6 +98,8 @@ public class RadiusSelector extends FlowBuilderImpl {
             }
 
             searchRadius = mapDistance(office.getAddress().getLocation(), center, travelMode);
+            currentAproxDistance = searchRadius;
+            currentWeight = pivot.getWeight();
         }
     }
 
@@ -121,21 +128,25 @@ public class RadiusSelector extends FlowBuilderImpl {
         return null;
     }
 
+    private void updateTimeAndDistance(Order next){
+        currentAproxDistance += mapDistance(center,next.getReceiverAddress().getLocation(),travelMode);
+        if(!next.getSenderAddress().equals(office.getAddress()))
+            currentAproxDistance += mapDistance(next.getSenderAddress().getLocation(),next.getReceiverAddress().getLocation(),travelMode);
+    }
+
     private Order pickNextOrder(){
         Order next = null;
         switch(courierToPick){
             case Driver:
                 next = driveOrders.poll();
-                if(canBePicked(next)) {
-                    resultSequence.add(next);
-                    return next;
-                }
+                break;
             case Walker:
                 next = walkOrders.poll();
-                if(canBePicked(next)) {
-                    resultSequence.add(next);
-                    return next;
-                }
+                break;
+        }
+        if(canBePicked(next)) {
+            resultSequence.add(next);
+            updateTimeAndDistance(next);
         }
         return next;
     }
@@ -146,12 +157,44 @@ public class RadiusSelector extends FlowBuilderImpl {
         if(resultSequence.size() >= maxOrderCount)
             return false;
 
-        if(searchRadius <= mapDistance(center,o.getReceiverAddress().getLocation(),travelMode))
+        double distance = mapDistance(center,o.getReceiverAddress().getLocation(), travelMode);
+        if(searchRadius <= distance)
             return false;
         /*
          * if(searchRadius <= distance(o.getReceiverAddress().getLocation(), center))
          *    return false;
          */
+        {
+            double maxDistance = 0;
+            double approxSpeed = 0;
+            switch (travelMode) {
+                case WALKING:
+                    maxDistance = getMaxWalkableDistance();
+                    approxSpeed = 5/*km/hour*/;
+
+                    //time check
+                    if ((resultSequence.size()+1)*clientWaitingTime+(currentAproxDistance+distance)/(approxSpeed*1000.0/60.0/60.0) > 5*60*60/*working day*/)
+                        return false;
+                    break;
+                default:
+                    maxDistance = getMaxDrivableDistance();
+                    approxSpeed = 40/*km/hour*/;
+
+                    //time check
+                    if ((resultSequence.size()+1)*clientWaitingTime+(currentAproxDistance+distance)/(approxSpeed*1000.0/60.0/60.0) > 7*60*60/*working day*/)
+                        return false;
+                    break;
+            }
+            //distance check
+            if (currentAproxDistance+distance > maxDistance)
+                return false;
+        }
+
+        //weight check
+        if(currentWeight.compareTo(o.getOrderType().getMaxWeight()) > 0)
+            return false;
+
+
         //TODO: make bigger after updating other classes
         return true;
     }
@@ -290,7 +333,7 @@ public class RadiusSelector extends FlowBuilderImpl {
         if(duration == 0){
             calculatePath();
         }
-        return duration;
+        return duration*resultSequence.size()*clientWaitingTime;
     }
 
     @Override
@@ -329,11 +372,6 @@ public class RadiusSelector extends FlowBuilderImpl {
         resultSequence = calculatePath();
         confirmCourier();
 
-        try {
-            System.out.println(getStaticMap().toURL().toString());
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
         return true;
     }
 }
