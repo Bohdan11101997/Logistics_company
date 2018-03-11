@@ -96,7 +96,6 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
             return Long.MAX_VALUE;
     }
 
-
     protected static double updateOrderDistanceIfVip(FlowBuilderImpl impl, Order o, double distance) {
         boolean isVIP = false;
         for(Role role :
@@ -321,6 +320,14 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
 
     @Override
     public abstract boolean process();
+
+    @Override
+    public boolean isFinished(){
+        if(walkOrders.size() == 0 && driveOrders.size() == 0)
+            return true;
+        return false;
+    }
+
 
     @Override
     public String getError(){

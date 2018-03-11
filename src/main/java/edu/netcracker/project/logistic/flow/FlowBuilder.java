@@ -63,6 +63,8 @@ public interface FlowBuilder {
 
     String getError();
 
+    boolean isFinished();
+
     /*
     * //TODO: give a better name
     *enum FlowResultType {
@@ -76,7 +78,7 @@ public interface FlowBuilder {
         Walker,
         Driver
     }
-
+    //TODO: move to order types
     enum OrderType {
         Luggage,
         Freight
