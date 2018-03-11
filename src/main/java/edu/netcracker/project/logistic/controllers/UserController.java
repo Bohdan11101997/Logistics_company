@@ -7,6 +7,8 @@ import edu.netcracker.project.logistic.service.SecurityService;
 import edu.netcracker.project.logistic.service.UserService;
 import edu.netcracker.project.logistic.validation.CurrentPasswordValidator;
 import edu.netcracker.project.logistic.validation.UpdateUserValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,6 +26,8 @@ import java.util.Optional;
 @RequestMapping(value = "/user")
 public class UserController {
 
+    private final Logger logger = LoggerFactory.getLogger(RegistrationController.class);
+
     private SmartValidator fieldValidator;
     private UpdateUserValidator updateUserValidator;
     private CurrentPasswordValidator currentPasswordValidator;
@@ -36,8 +40,8 @@ public class UserController {
     @Autowired
     public UserController(SmartValidator fieldValidator, UpdateUserValidator updateUserValidator,
                           CurrentPasswordValidator currentPasswordValidator, UserService userService,
-                          SecurityService securityService, OrderTypeDao orderTypeDao, PasswordEncoder passwordEncoder,
-                          TaskProcessor taskProcessor) {
+                          SecurityService securityService, OrderTypeDao orderTypeDao,
+                          PasswordEncoder passwordEncoder, TaskProcessor taskProcessor) {
         this.fieldValidator = fieldValidator;
         this.updateUserValidator = updateUserValidator;
         this.currentPasswordValidator = currentPasswordValidator;
@@ -134,14 +138,14 @@ public class UserController {
 
     }
 
-    @GetMapping(value = "/change/password")
-    public String viewChangePassword(Model model) {
+    @GetMapping(value = "/password/change")
+    public String viewChangePassword(Model model){
         ChangePasswordForm changePasswordForm = new ChangePasswordForm();
         model.addAttribute("changePassword", changePasswordForm);
         return "user/user_change_password";
     }
 
-    @PostMapping(value = "/change/password")
+    @PostMapping(value = "/password/change")
     public String saveNewPassword(@ModelAttribute("changePassword") ChangePasswordForm changePasswordForm,
                                   BindingResult bindingResult) {
 
@@ -162,13 +166,21 @@ public class UserController {
 
         Person person = optionalPerson.get();
         String newPassword = changePasswordForm.getNewPassword();
-        String newPasswordEncoded = passwordEncoder.encode(newPassword);
-        person.setPassword(newPasswordEncoded);
-        userService.update(person);
+        String oldPassword = person.getPassword();
+
+        if (!passwordEncoder.matches(newPassword, oldPassword)){
+            String newPasswordEncoded = passwordEncoder.encode(newPassword);
+            person.setPassword(newPasswordEncoded);
+            userService.update(person);
+        } else {
+            logger.error("Same old and new passwords");
+            bindingResult.rejectValue("newPassword", "Password.Old.Equals.New");
+            return "user/user_change_password";
+        }
 
         securityService.autoLogIn(username, newPassword);
 
-        return "redirect:/user/change/password?save";
+        return "redirect:/user/password/change?save";
     }
 
     @GetMapping(value = "/order")
@@ -191,4 +203,5 @@ public class UserController {
         userService.createOrder(order);
         return "person_main";
     }
+
 }
