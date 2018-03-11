@@ -45,7 +45,6 @@ INSERT INTO address (address_id, address_name) VALUES (2, 'Будинок худ
 INSERT INTO office (office_id, name, address_id) VALUES (1, 'werwerwer', 1);
 INSERT INTO office (office_id, name, address_id) VALUES (2, 'dddddddddd', 1);
 
-
 INSERT INTO order_type (order_type_id, name, max_weight, max_width, max_height, max_length)
 VALUES (1, 'Documents', 1, 35, 25, 2);
 INSERT INTO order_type (order_type_id, name, max_weight, max_width, max_height, max_length)
