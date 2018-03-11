@@ -53,16 +53,17 @@ public class TestController {
 
     @RequestMapping(value = "/test")
     public String test(Model model) {
-        Address address = new Address("м. Київ");
+        Address address = new Address("Академіка Янгеля 5");
         Address address1 = new Address((long) 3, "qwqw");
         addressService.save(address);
         addressService.save(address1);
 
         System.out.println(address.check("qwqw"));
-        for(GeocodingResult gr : Address.getListOfAddresses(address1.getName()))
+
+        for(GeocodingResult gr : Address.getListOfAddresses(address.getName()))
             System.out.println(gr.formattedAddress);
         System.out.println("===========================================");
-        for(GeocodingResult gr : Address.getListOfAddresses(address1.getLocation()))
+        for(GeocodingResult gr : Address.getListOfAddresses(address.getLocation()))
             System.out.println(gr.formattedAddress);
 //        Contact contact = new Contact(1L, "lol", "lol", "+2312312313");
 //        contactDao.save(contact);
