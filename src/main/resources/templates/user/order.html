@@ -30,36 +30,61 @@
                         <div class="panel panel-default">
                             <div class="panel-heading">Cargo details</div>
                             <div class="panel-body">
-                                <div class="form-group required">
+                                <div class="form-group required"
+                                     th:classappend="${#fields.hasErrors('orderType')}? 'has-error'">
                                     <label for="order-type" class="control-label">Order type</label>
-                                    <select id="order-type" class="form-control">
-                                        th:field="*{orderType}">
+                                    <select id="order-type" class="form-control"
+                                            onchange="clearErrorStyles(this)"
+                                            th:field="*{{orderType}}">
                                         <option th:each="type: ${orderTypes}"
                                                 th:value="${type.id}"
-                                                th:text="${{type}}">Order Type
+                                                th:text="${{type}}"
+                                                th:selected="${order.orderType.name == type.name}">
+                                            Order Type
                                         </option>
                                     </select>
+                                    <div class="has-error help-block"
+                                         th:errors="*{orderType}">
+                                    </div>
                                 </div>
 
-                                <div class="form-group">
+                                <div class="form-group"
+                                     th:classappend="${#fields.hasErrors('weight')}? 'has-error'">
                                     <label for="weight" class="control-label">Weight (kg)</label>
                                     <input id="weight" class="form-control"
                                            pattern="\d{1,}(.\d{1,})*" title="Decimal value representing order weight"
+                                           oninput="clearErrorStyles(this)"
                                            th:field="*{weight}"/>
+                                    <div class="has-error help-block"
+                                         th:errors="*{weight}">
+                                    </div>
                                 </div>
 
-                                <div class="form-group">
+                                <div class="form-group"
+                                     th:classappend="${#fields.hasErrors('width') || #fields.hasErrors('height') || #fields.hasErrors('length')}? 'has-error'">
                                     <label class="control-label">Size (cm)</label>
                                     <div id="order-size" class="form-inline">
                                         <input type="number" id="width" class="form-control" placeholder="Width"
                                                title="Width" min="1"
+                                               oninput="clearErrorStyles(this)"
                                                th:field="*{width}"/>
                                         <input type="number" id="height" class="form-control" placeholder="Height"
                                                title="Height" min="1"
+                                               oninput="clearErrorStyles(this)"
                                                th:field="*{height}"/>
                                         <input type="number" id="length" class="form-control" placeholder="Length"
                                                title="Length" min="1"
+                                               oninput="clearErrorStyles(this)"
                                                th:field="*{length}"/>
+                                    </div>
+                                    <div class="has-error help-block"
+                                         th:errors="*{width}">
+                                    </div>
+                                    <div class="has-error help-block"
+                                         th:errors="*{height}">
+                                    </div>
+                                    <div class="has-error help-block"
+                                         th:errors="*{length}">
                                     </div>
                                 </div>
                             </div>
@@ -68,18 +93,28 @@
                         <div class="panel panel-default">
                             <div class="panel-heading">Route</div>
                             <div class="panel-body">
-                                <div class="form-group required">
+                                <div class="form-group required"
+                                     th:classappend="${#fields.hasErrors('senderAddress')}? 'has-error'">
                                     <label for="receiver-address" class="control-label">Sender address</label>
                                     <input type="text" id="receiver-address" class="form-control"
                                            required="required"
+                                           oninput="clearErrorStyles(this)"
                                            th:field="*{senderAddress.name}"/>
+                                    <div class="has-error help-block"
+                                         th:errors="*{senderAddress}">
+                                    </div>
                                 </div>
 
-                                <div class="form-group required">
+                                <div class="form-group required"
+                                     th:classappend="${#fields.hasErrors('receiverAddress')}? 'has-error'">
                                     <label for="sender-address" class="control-label">Receiver address</label>
                                     <input type="text" id="sender-address" class="form-control"
                                            required="required"
+                                           oninput="clearErrorStyles(this)"
                                            th:field="*{receiverAddress.name}"/>
+                                    <div class="has-error help-block"
+                                         th:errors="*{receiverAddress}">
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -87,18 +122,28 @@
                         <div class="panel panel-default">
                             <div class="panel-heading">Receiver Contact Data</div>
                             <div class="panel-body">
-                                <div class="form-group required">
+                                <div class="form-group required"
+                                     th:classappend="${#fields.hasErrors('receiverContact.firstName')}? 'has-error'">
                                     <label for="firstName" class="control-label">First Name</label>
                                     <input type="text" class="form-control" id="firstName"
                                            required="required" minlength="1" maxlength="45"
+                                           oninput="clearErrorStyles(this)"
                                            th:field="*{receiverContact.firstName}"/>
+                                    <div class="has-error help-block"
+                                         th:errors="*{receiverContact.firstName}">
+                                    </div>
                                 </div>
 
-                                <div class="form-group required">
+                                <div class="form-group required"
+                                     th:classappend="${#fields.hasErrors('receiverContact.lastName')}? 'has-error'">
                                     <label for="lastName" class="control-label">Last Name</label>
                                     <input type="text" class="form-control" id="lastName"
                                            required="required" minlength="1" maxlength="45"
+                                           oninput="clearErrorStyles(this)"
                                            th:field="*{receiverContact.lastName}"/>
+                                    <div class="has-error help-block"
+                                         th:errors="*{receiverContact.lastName}">
+                                    </div>
                                 </div>
 
                                 <div class="form-group required"
@@ -106,7 +151,11 @@
                                     <label for="email" class="control-label">E-mail</label>
                                     <input type="email" class="form-control" id="email" placeholder=""
                                            required="required" maxlength="254"
+                                           oninput="clearErrorStyles(this)"
                                            th:field="*{receiverContact.email}"/>
+                                    <div class="has-error help-block"
+                                         th:errors="*{receiverContact.email}">
+                                    </div>
                                 </div>
 
                                 <div class="form-group required"
@@ -114,8 +163,12 @@
                                     <label for="phone" class="control-label">Phone</label>
                                     <input type="text" class="form-control" id="phone" placeholder=""
                                            required="required" pattern="(\+380)?\d{9}"
+                                           oninput="clearErrorStyles(this)"
                                            title="(+380)XXXXXXXXX"
                                            th:field="*{receiverContact.phoneNumber}"/>
+                                    <div class="has-error help-block"
+                                         th:errors="*{receiverContact.phoneNumber}">
+                                    </div>
                                 </div>
                             </div>
                         </div>
