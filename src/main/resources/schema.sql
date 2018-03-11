@@ -107,6 +107,7 @@ CREATE TABLE "logistic_company"."order"
   "order_id"            INT4 DEFAULT nextval('main_seq_id' :: REGCLASS)    NOT NULL,
   "creation_time"       TIMESTAMP                                          NOT NULL DEFAULT NOW(),
   "delivery_time"       TIMESTAMP,
+  "estimated_delivery_time" INTERVAL,
   "order_status_time"   TIMESTAMP                                          NOT NULL DEFAULT NOW(),
   "courier_id"          INT4,
   "receiver_contact_id" INT4,
