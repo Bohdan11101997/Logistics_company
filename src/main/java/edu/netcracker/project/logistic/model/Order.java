@@ -1,34 +1,28 @@
 package edu.netcracker.project.logistic.model;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Order {
     private Long id;
-    private LocalDate creationDay;
-    private LocalDate deliveryTime;
-    private LocalDate orderStatusTime;
-    private AddressContact receiver;
-    private AddressContact sender;
+    private LocalDateTime creationTime;
+    private LocalDateTime deliveryTime;
+    private LocalDateTime orderStatusTime;
     private Person courier;
+    private Contact receiverContact;
+    private Contact senderContact;
+    private Address receiverAddress;
+    private Address senderAddress;
     private Office office;
     private OrderStatus orderStatus;
-
+    private OrderType orderType;
+    private BigDecimal weight;
+    private Long width;
+    private Long height;
+    private Long length;
 
     public Order() {
-
-
-    }
-
-    public Order(Long id, LocalDate creationDay, LocalDate deliveryTime, LocalDate orderStatusTime, AddressContact receiver, AddressContact sender, Person courier, Office office, OrderStatus orderStatus) {
-        this.id = id;
-        this.creationDay = creationDay;
-        this.deliveryTime = deliveryTime;
-        this.orderStatusTime = orderStatusTime;
-        this.receiver = receiver;
-        this.sender = sender;
-        this.courier = courier;
-        this.office = office;
-        this.orderStatus = orderStatus;
     }
 
     public Long getId() {
@@ -39,44 +33,28 @@ public class Order {
         this.id = id;
     }
 
-    public LocalDate getCreationDay() {
-        return creationDay;
+    public LocalDateTime getCreationTime() {
+        return creationTime;
     }
 
-    public void setCreationDay(LocalDate creationDay) {
-        this.creationDay = creationDay;
+    public void setCreationTime(LocalDateTime creationTime) {
+        this.creationTime = creationTime;
     }
 
-    public LocalDate getDeliveryTime() {
+    public LocalDateTime getDeliveryTime() {
         return deliveryTime;
     }
 
-    public void setDeliveryTime(LocalDate deliveryTime) {
+    public void setDeliveryTime(LocalDateTime deliveryTime) {
         this.deliveryTime = deliveryTime;
     }
 
-    public LocalDate getOrderStatusTime() {
+    public LocalDateTime getOrderStatusTime() {
         return orderStatusTime;
     }
 
-    public void setOrderStatusTime(LocalDate orderStatusTime) {
+    public void setOrderStatusTime(LocalDateTime orderStatusTime) {
         this.orderStatusTime = orderStatusTime;
-    }
-
-    public AddressContact getReceiver() {
-        return receiver;
-    }
-
-    public void setReceiver(AddressContact receiver) {
-        this.receiver = receiver;
-    }
-
-    public AddressContact getSender() {
-        return sender;
-    }
-
-    public void setSender(AddressContact sender) {
-        this.sender = sender;
     }
 
     public Person getCourier() {
@@ -85,6 +63,38 @@ public class Order {
 
     public void setCourier(Person courier) {
         this.courier = courier;
+    }
+
+    public Contact getReceiverContact() {
+        return receiverContact;
+    }
+
+    public void setReceiverContact(Contact receiverContact) {
+        this.receiverContact = receiverContact;
+    }
+
+    public Contact getSenderContact() {
+        return senderContact;
+    }
+
+    public void setSenderContact(Contact senderContact) {
+        this.senderContact = senderContact;
+    }
+
+    public Address getReceiverAddress() {
+        return receiverAddress;
+    }
+
+    public void setReceiverAddress(Address receiverAddress) {
+        this.receiverAddress = receiverAddress;
+    }
+
+    public Address getSenderAddress() {
+        return senderAddress;
+    }
+
+    public void setSenderAddress(Address senderAddress) {
+        this.senderAddress = senderAddress;
     }
 
     public Office getOffice() {
@@ -101,5 +111,45 @@ public class Order {
 
     public void setOrderStatus(OrderStatus orderStatus) {
         this.orderStatus = orderStatus;
+    }
+
+    public OrderType getOrderType() {
+        return orderType;
+    }
+
+    public void setOrderType(OrderType orderType) {
+        this.orderType = orderType;
+    }
+
+    public BigDecimal getWeight() {
+        return weight;
+    }
+
+    public void setWeight(BigDecimal weight) {
+        this.weight = weight;
+    }
+
+    public Long getWidth() {
+        return width;
+    }
+
+    public void setWidth(Long width) {
+        this.width = width;
+    }
+
+    public Long getHeight() {
+        return height;
+    }
+
+    public void setHeight(Long height) {
+        this.height = height;
+    }
+
+    public Long getLength() {
+        return length;
+    }
+
+    public void setLength(Long length) {
+        this.length = length;
     }
 }

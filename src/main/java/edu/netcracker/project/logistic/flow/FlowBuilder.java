@@ -1,10 +1,9 @@
 package edu.netcracker.project.logistic.flow;
 
-import edu.com.google.maps.StaticMap;
-import edu.com.google.maps.model.LatLng;
+import edu.netcracker.project.logistic.maps_wrapper.StaticMap;
+import com.google.maps.model.LatLng;
 import edu.netcracker.project.logistic.model.Order;
 import edu.netcracker.project.logistic.model.Person;
-import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 import java.util.List;
@@ -54,7 +53,15 @@ public interface FlowBuilder {
 
     StaticMap getStaticMap();
 
+    //in meters
+    long getDistance();
+
+    //in seconds
+    long getDuration();
+
     boolean process();
+
+    String getError();
 
     /*
     * //TODO: give a better name

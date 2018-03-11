@@ -3,7 +3,7 @@
 <head>
     <th:block th:replace="fragments/header :: header-bootstrap-config" />
     <th:block th:replace="fragments/header :: header-bootstrap-config-IE" />
-    <link rel="stylesheet" th:href="@{/css/left_menu.css}" type="text/css" href="../static/css/left_menu.css" />
+    <link rel="stylesheet" th:href="@{/css/left_menu.css}" type="text/css" href="../../static/css/left_menu.css" />
     <script th:src="@{/js/forms.js}" src="../../static/js/forms.js"></script>
     <style>
         @media (min-width: 768px)  {
@@ -20,6 +20,10 @@
 
         .glyphicon-search {
             color: white;
+        }
+
+        .form-horizontal {
+            padding: 0 15px;
         }
     </style>
 </head>
@@ -39,7 +43,7 @@
                 <div class="col-lg-10 col-md-10 col-md-offset-1 col-lg-offset-1">
                     <div class="well">
                         <h3 align="center">Search Filters</h3>
-                        <form method="get" class="form-horizontal"
+                        <form method="post" class="form-horizontal"
                               th:object="${searchForm}">
 
                             <div class="form-group">
@@ -65,13 +69,18 @@
                                 </select>
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group"
+                                th:classappend="${#fields.hasErrors('from')}? 'has-error'">
                                 <label class="control-label">Registration date interval</label>
                                 <div class="form-inline">
                                     <input type="date" class="form-control" id="from-date" title="From"
-                                        th:field="*{{from}}"/>
+                                        th:field="*{{from}}" oninput="onSearchDateClick(this)"/>
                                     <input type="date" class="form-control" id="to-date" title="To"
-                                        th:field="*{{to}}"/>
+                                        th:field="*{{to}}" oninput="onSearchDateClick(this)"/>
+                                </div>
+                                <div class="has-error help-block"
+                                     th:if="${#fields.hasErrors('from')}"
+                                     th:errors="*{from}">
                                 </div>
                             </div>
 
@@ -87,8 +96,8 @@
                             <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Firstname</th>
-                                <th>Lastname</th>
+                                <th>First Name</th>
+                                <th>Last Name</th>
                                 <th>Registration date</th>
                                 <th>E-mail</th>
                                 <th>Phone</th>
@@ -125,11 +134,9 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css" type="text/css"/>
 
-    <script>
-        createMultiSelect("#role");
-    </script>
     <script type="text/javascript">
         document.getElementById('employees').className='active';
+        createMultiSelect("#role", true);
     </script>
 </body>
 </html>

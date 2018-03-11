@@ -1,9 +1,8 @@
 package edu.netcracker.project.logistic.controllers;
 
-import edu.netcracker.project.logistic.model.ChangePasswordForm;
-import edu.netcracker.project.logistic.model.Contact;
-import edu.netcracker.project.logistic.model.Person;
-import edu.netcracker.project.logistic.model.UserForm;
+import edu.netcracker.project.logistic.dao.OrderTypeDao;
+import edu.netcracker.project.logistic.model.*;
+import edu.netcracker.project.logistic.processing.TaskProcessor;
 import edu.netcracker.project.logistic.service.SecurityService;
 import edu.netcracker.project.logistic.service.UserService;
 import edu.netcracker.project.logistic.validation.CurrentPasswordValidator;
@@ -34,27 +33,32 @@ public class UserController {
     private CurrentPasswordValidator currentPasswordValidator;
     private UserService userService;
     private SecurityService securityService;
+    private OrderTypeDao orderTypeDao;
     private PasswordEncoder passwordEncoder;
+    private TaskProcessor taskProcessor;
 
     @Autowired
     public UserController(SmartValidator fieldValidator, UpdateUserValidator updateUserValidator,
                           CurrentPasswordValidator currentPasswordValidator, UserService userService,
-                          SecurityService securityService, PasswordEncoder passwordEncoder) {
+                          SecurityService securityService, OrderTypeDao orderTypeDao,
+                          PasswordEncoder passwordEncoder, TaskProcessor taskProcessor) {
         this.fieldValidator = fieldValidator;
         this.updateUserValidator = updateUserValidator;
         this.currentPasswordValidator = currentPasswordValidator;
         this.userService = userService;
         this.securityService = securityService;
+        this.orderTypeDao = orderTypeDao;
         this.passwordEncoder = passwordEncoder;
+        this.taskProcessor = taskProcessor;
     }
 
     @GetMapping("/personal")
-    public String viewPersonalArea(Model model, Principal principal){
+    public String viewPersonalArea(Model model, Principal principal) {
 
         String username = principal.getName();
         Optional<Person> optionalPerson = userService.findOne(username);
 
-        if (!optionalPerson.isPresent()){
+        if (!optionalPerson.isPresent()) {
             return "/error/403";
         }
 
@@ -74,7 +78,7 @@ public class UserController {
         return userForm;
     }
 
-    private UserForm getUserFormFilledWithContactData(Contact contact){
+    private UserForm getUserFormFilledWithContactData(Contact contact) {
 
         UserForm userForm = new UserForm();
         userForm.setFirstName(contact.getFirstName());
@@ -85,18 +89,18 @@ public class UserController {
     }
 
     @GetMapping(value = "/personal/{id}")
-    public String changePersonalArea(@PathVariable Long id){
+    public String changePersonalArea(@PathVariable Long id) {
         return "redirect:/user/personal";
     }
 
     @PostMapping(value = "/personal/{id}", params = "action=save")
     public String updatePersonalArea(@PathVariable Long id,
                                      @ModelAttribute("user") UserForm userForm,
-                                     BindingResult bindingResult){
+                                     BindingResult bindingResult) {
 
         Optional<Person> optionalPerson = userService.findOne(id);
 
-        if (!optionalPerson.isPresent()){
+        if (!optionalPerson.isPresent()) {
             return "/error/403";
         }
 
@@ -118,7 +122,7 @@ public class UserController {
 
         userService.update(person);
 
-        if (!oldUsername.equals(person.getUserName())){
+        if (!oldUsername.equals(person.getUserName())) {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             securityService.autoLogIn(person.getUserName(), (String) authentication.getCredentials());
         }
@@ -127,13 +131,12 @@ public class UserController {
     }
 
     @PostMapping(value = "/personal/{id}", params = "action=delete")
-    public String deletePersonalArea(@PathVariable Long id){
+    public String deletePersonalArea(@PathVariable Long id) {
 
         userService.delete(id);
         return "redirect:/login?delete";
 
     }
-
 
     @GetMapping(value = "/password/change")
     public String viewChangePassword(Model model){
@@ -144,13 +147,12 @@ public class UserController {
 
     @PostMapping(value = "/password/change")
     public String saveNewPassword(@ModelAttribute("changePassword") ChangePasswordForm changePasswordForm,
-                                  BindingResult bindingResult,
-                                  Model model){
+                                  BindingResult bindingResult) {
 
         String currentPasswordFromForm = changePasswordForm.getOldPassword();
         currentPasswordValidator.validate(currentPasswordFromForm, bindingResult);
 
-        if (bindingResult.hasErrors()){
+        if (bindingResult.hasErrors()) {
             return "user/user_change_password";
         }
 
@@ -158,7 +160,7 @@ public class UserController {
         // change for single password
         Optional<Person> optionalPerson = userService.findOne(username);
 
-        if (!optionalPerson.isPresent()){
+        if (!optionalPerson.isPresent()) {
             return "/error/403";
         }
 
@@ -181,5 +183,25 @@ public class UserController {
         return "redirect:/user/password/change?save";
     }
 
+    @GetMapping(value = "/order")
+    public String createOrder(Model model) {
+        Order order = new Order();
+        model.addAttribute("order", order);
+        model.addAttribute("orderTypes", orderTypeDao.findAll());
+        return "user/order";
+    }
+
+    @PostMapping(value = "/order")
+    public String doCreateOrder(@ModelAttribute("order") Order order, Principal principal) {
+        Optional<Person> opt = userService.findOne(principal.getName());
+        if (!opt.isPresent()) {
+            return "error/500";
+        }
+        Person user = opt.get();
+        order.setSenderContact(user.getContact());
+
+        userService.createOrder(order);
+        return "person_main";
+    }
 
 }

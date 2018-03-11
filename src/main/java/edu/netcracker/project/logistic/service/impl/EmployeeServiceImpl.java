@@ -58,10 +58,12 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
         Person existing = opt.get();
         Long contactId = existing.getContact().getContactId();
-        Contact updatedContact = existing.getContact();
+        Contact updatedContact = employee.getContact();
         updatedContact.setContactId(contactId);
+        existing.setRoles(employee.getRoles());
         contactDao.save(updatedContact);
-        return employee;
+        personDao.save(existing);
+        return existing;
     }
 
     @Transactional
@@ -117,6 +119,17 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public List<Person> findAll() {
         return personDao.findAllEmployees();
+    }
+
+    @Override
+    public List<Person> findCallCenterAgents() {
+        Optional<Role> callCentreAgent = roleDao.getByName("ROLE_CALL_CENTER");
+        if (!callCentreAgent.isPresent()) {
+            String errorMsg = "Role for call center agents not found";
+            logger.error(errorMsg);
+            throw new IllegalStateException(errorMsg);
+        }
+        return personDao.findByRoleId(callCentreAgent.get().getRoleId());
     }
 
     @Override

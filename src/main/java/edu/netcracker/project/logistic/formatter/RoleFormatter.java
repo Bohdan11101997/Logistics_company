@@ -31,7 +31,18 @@ public class RoleFormatter implements Formatter<Role> {
     @Override
     public String print(Role role, Locale locale) {
         String roleName = role.getRoleName().substring(5);
-        char[] letters = roleName.toCharArray();
+        String[] words = roleName.split("_");
+        StringBuilder builder = new StringBuilder();
+        for (String word: words) {
+            builder.append(titleCase(word));
+            builder.append(" ");
+        }
+        builder.deleteCharAt(builder.length() - 1);
+        return builder.toString();
+    }
+
+    private String titleCase(String input) {
+        char[] letters = input.toCharArray();
         char[] result = new char[letters.length];
         for (int i = 0; i < letters.length; i++) {
             if (i == 0) {

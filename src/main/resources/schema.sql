@@ -12,6 +12,8 @@ DROP TABLE IF EXISTS "logistic_company"."role" CASCADE;
 DROP TABLE IF EXISTS "logistic_company"."office" CASCADE;
 DROP TABLE IF EXISTS "logistic_company"."order_status" CASCADE;
 DROP TABLE IF EXISTS "logistic_company"."tasks_list";
+DROP TABLE IF EXISTS "logistic_company"."task" CASCADE;
+DROP TABLE IF EXISTS "logistic_company"."courier_data" CASCADE;
 DROP TABLE IF EXISTS "logistic_company"."reset_password" CASCADE ;
 
 
@@ -26,8 +28,8 @@ DROP SCHEMA IF EXISTS "logistic_company" CASCADE;
 
 CREATE SCHEMA "logistic_company";
 
-CREATE TYPE logistic_company.WEEK_DAY AS ENUM ('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday');
-
+CREATE TYPE logistic_company.WEEK_DAY AS ENUM ('MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY');
+CREATE TYPE logistic_company.COURIER_STATUS AS ENUM ('on_way');
 CREATE SEQUENCE "logistic_company"."main_seq_id"
   INCREMENT 1
   MINVALUE 1
@@ -45,6 +47,13 @@ CREATE TABLE "logistic_company"."contact" (
   "last_name"    VARCHAR(45) COLLATE "default"                   NOT NULL,
   "phone_number" VARCHAR(45) COLLATE "default"                   NOT NULL,
   "email"        VARCHAR(45) COLLATE "default"                   NOT NULL
+);
+
+CREATE TABLE "logistic_company"."courier_data"
+(
+  "person_id"             INT4,
+  "courier_status"        COURIER_STATUS,
+  "courier_last_location" VARCHAR(45) COLLATE "default" NOT NULL
 );
 
 CREATE TABLE "logistic_company"."person" (
@@ -75,19 +84,11 @@ CREATE TABLE "logistic_company"."person_role"
   "role_id"   INT4
 );
 
-CREATE TABLE "logistic_company"."tasks_list"
-(
-  "task_id"       INT4 DEFAULT nextval('main_seq_id' :: REGCLASS)    NOT NULL,
-  "description"   VARCHAR(60) COLLATE "default"                 NOT NULL,
-  "is_complete"   BOOLEAN                                       NOT NULL,
-  "person_id"     INT4                                           NOT NULL,
-  "order_id"      INT4                                           NOT NULL
-);
 
 CREATE TABLE "logistic_company"."advertisement"
 (
   "advertisement_id"      INT4 DEFAULT nextval('main_seq_id' :: REGCLASS)     NOT NULL,
-  "caption"               VARCHAR(200)  COLLATE "default"                     NOT NULL,
+  "caption"               VARCHAR(200) COLLATE "default"                      NOT NULL,
   "description"           VARCHAR(1000) COLLATE "default"                     NOT NULL,
   "show_first_date"       DATE                                                NOT NULL DEFAULT NOW(),
   "show_end_date"         DATE                                                NOT NULL,
@@ -105,25 +106,26 @@ CREATE TABLE "logistic_company"."work_day"
 (
   "employee_id" INT4     NOT NULL,
   "week_day"    WEEK_DAY NOT NULL,
-  "begin_time"  TIME     NOT NULL,
+  "start_time"  TIME     NOT NULL,
   "end_time"    TIME     NOT NULL
 );
 
 CREATE TABLE "logistic_company"."order"
 (
   "order_id"            INT4 DEFAULT nextval('main_seq_id' :: REGCLASS)    NOT NULL,
-  "creation_date"       TIMESTAMP                                          NOT NULL DEFAULT NOW(),
-  "delivery_time"       TIME                                               NOT NULL,
+  "creation_time"       TIMESTAMP                                          NOT NULL DEFAULT NOW(),
+  "delivery_time"       TIMESTAMP,
+  "estimated_delivery_time" INTERVAL,
   "order_status_time"   TIMESTAMP                                          NOT NULL DEFAULT NOW(),
-  "courier_id"          INT4                                               NOT NULL,
-  "receiver_contact_id" INT4                                               NOT NULL,
-  "receiver_address_id" INT4                                               NOT NULL,
-  "sender_contact_id"   INT4                                               NOT NULL,
-  "sender_address_id"   INT4                                               NOT NULL,
-  "office_id"           INT4                                               NOT NULL,
-  "order_status_id"     INT4,
-  "order_type_id"       INT4                                               NOT NULL,
-  "weight"              NUMERIC(5, 1)                                      NOT NULL,
+  "courier_id"          INT4,
+  "receiver_contact_id" INT4,
+  "receiver_address_id" INT4,
+  "sender_contact_id"   INT4,
+  "sender_address_id"   INT4,
+  "office_id"           INT4,
+  "order_status_id"     INT4                                               NOT NULL,
+  "order_type_id"       INT4,
+  "weight"              NUMERIC(5, 1),
   "width"               INT4,
   "height"              INT4,
   "length"              INT4
@@ -164,6 +166,22 @@ CREATE TABLE logistic_company.registration_link
   person_id            INT4 NOT NULL
 );
 
+CREATE TABLE logistic_company.task
+(
+  task_id      INT4 DEFAULT nextval('main_seq_id' :: REGCLASS) NOT NULL,
+  employee_id  INT4                                            NOT NULL,
+  order_id     INT4                                            NOT NULL,
+  is_completed BOOLEAN                                         NOT NULL
+);
+
+CREATE TABLE logistic_company.day_off
+(
+  day_off_id  INT4 NOT NULL,
+  start_date  DATE NOT NULL,
+  end_date    DATE NOT NULL,
+  employee_id INT4 NOT NULL
+);
+
 
 ALTER TABLE "logistic_company"."person"
   ADD UNIQUE ("user_name");
@@ -178,12 +196,9 @@ ALTER TABLE logistic_company.registration_link
 ALTER TABLE logistic_company.reset_password
   ADD UNIQUE ("reset_token");
 
-ALTER TABLE "logistic_company"."order"
-  ADD PRIMARY KEY ("order_id");
+
 ALTER TABLE "logistic_company"."order_type"
   ADD PRIMARY KEY ("order_type_id");
-ALTER TABLE "logistic_company"."tasks_list"
-  ADD PRIMARY KEY ("task_id");
 ALTER TABLE "logistic_company"."person"
   ADD PRIMARY KEY ("person_id");
 ALTER TABLE "logistic_company"."role"
@@ -204,20 +219,21 @@ ALTER TABLE logistic_company.registration_link
   ADD PRIMARY KEY (registration_link_id);
 ALTER TABLE logistic_company.person_role
   ADD PRIMARY KEY (person_id, role_id);
+ALTER TABLE logistic_company.order
+  ADD PRIMARY KEY (order_id);
+ALTER TABLE logistic_company.task
+  ADD PRIMARY KEY (task_id);
+ALTER TABLE logistic_company.work_day
+  ADD PRIMARY KEY (employee_id, week_day);
+ALTER TABLE logistic_company.day_off
+  ADD PRIMARY KEY (day_off_id);
 
-ALTER TABLE "logistic_company"."order"
-  ADD  FOREIGN KEY ("order_type_id") REFERENCES "logistic_company"."order_type"("order_type_id");
 
-ALTER TABLE "logistic_company"."tasks_list"
-  ADD FOREIGN KEY ("order_id") REFERENCES "logistic_company"."order" ("order_id");
-
-ALTER TABLE "logistic_company"."tasks_list"
-  ADD FOREIGN KEY ("person_id") REFERENCES "logistic_company"."person" ("person_id");
-
+ALTER TABLE "logistic_company"."courier_data"
+  ADD FOREIGN KEY ("person_id") REFERENCES "logistic_company"."person" (person_id);
 
 ALTER TABLE "logistic_company"."person_role"
   ADD FOREIGN KEY ("role_id") REFERENCES "logistic_company"."role" ("role_id");
-
 ALTER TABLE "logistic_company"."person_role"
   ADD FOREIGN KEY ("person_id") REFERENCES "logistic_company"."person" ("person_id") ON DELETE CASCADE;
 
@@ -232,7 +248,6 @@ ALTER TABLE "logistic_company"."person"
 
 ALTER TABLE "logistic_company"."order"
   ADD FOREIGN KEY ("office_id") REFERENCES "logistic_company"."office" ("office_id");
-
 ALTER TABLE "logistic_company"."order"
   ADD FOREIGN KEY ("order_status_id") REFERENCES "logistic_company"."order_status" ("order_status_id");
 
@@ -241,6 +256,26 @@ ALTER TABLE "logistic_company"."office"
 
 ALTER TABLE "logistic_company"."order"
   ADD FOREIGN KEY ("courier_id") REFERENCES "logistic_company"."person" ("person_id");
+ALTER TABLE "logistic_company"."order"
+  ADD FOREIGN KEY ("sender_address_id") REFERENCES "logistic_company"."address" ("address_id");
+ALTER TABLE "logistic_company"."order"
+  ADD FOREIGN KEY ("receiver_address_id") REFERENCES "logistic_company"."address" ("address_id");
+ALTER TABLE "logistic_company"."order"
+  ADD FOREIGN KEY ("sender_contact_id") REFERENCES "logistic_company"."contact" ("contact_id");
+ALTER TABLE "logistic_company"."order"
+  ADD FOREIGN KEY ("receiver_contact_id") REFERENCES "logistic_company"."contact" ("contact_id");
+
+ALTER TABLE "logistic_company"."order"
+  ADD FOREIGN KEY ("receiver_contact_id") REFERENCES "logistic_company"."contact" ("contact_id");
+
+ALTER TABLE "logistic_company"."order"
+  ADD FOREIGN KEY ("receiver_address_id") REFERENCES "logistic_company"."address" ("address_id");
+
+ALTER TABLE "logistic_company"."order"
+  ADD FOREIGN KEY ("sender_contact_id") REFERENCES "logistic_company"."contact" ("contact_id");
+
+ALTER TABLE "logistic_company"."order"
+  ADD FOREIGN KEY ("sender_address_id") REFERENCES "logistic_company"."address" ("address_id");
 
 ALTER TABLE "logistic_company"."order"
   ADD FOREIGN KEY ("receiver_contact_id") REFERENCES "logistic_company"."contact" ("contact_id");
@@ -261,6 +296,12 @@ ALTER TABLE logistic_company.reset_password
   ADD FOREIGN KEY (person_id) REFERENCES logistic_company.person (person_id)
   ON DELETE CASCADE;
 
+ALTER TABLE logistic_company.task
+  ADD FOREIGN KEY ("order_id") REFERENCES "logistic_company"."order" ("order_id");
+ALTER TABLE logistic_company.task
+  ADD FOREIGN KEY ("employee_id") REFERENCES "logistic_company"."person" ("person_id");
+ALTER TABLE logistic_company.day_off
+  ADD FOREIGN KEY (employee_id) REFERENCES logistic_company.person (person_id);
 
 CREATE FUNCTION delete_old_rows()
   RETURNS TRIGGER
@@ -293,16 +334,18 @@ CREATE TRIGGER trigger_delete_old_rows
 EXECUTE PROCEDURE delete_old_rows();
 
 
-CREATE FUNCTION advertisement_delete_old_rows() RETURNS trigger
-  LANGUAGE plpgsql
-  AS $$
+CREATE FUNCTION advertisement_delete_old_rows()
+  RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
 BEGIN
-  DELETE FROM advertisement WHERE show_end_date < NOW();
+  DELETE FROM advertisement
+  WHERE show_end_date < NOW();
   RETURN NEW;
 END;
 $$;
 
 CREATE TRIGGER advertisement_delete_old_rows_trigger
-  AFTER INSERT ON advertisement
-  EXECUTE PROCEDURE advertisement_delete_old_rows();
-
+  AFTER INSERT
+  ON advertisement
+EXECUTE PROCEDURE advertisement_delete_old_rows();

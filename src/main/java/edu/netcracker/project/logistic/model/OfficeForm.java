@@ -3,7 +3,7 @@ package edu.netcracker.project.logistic.model;
 public class OfficeForm {
     private Long officeId;
     private String name;
-    private Long address;
+    private Address address;
 
     public Long getOfficeId() {
         return officeId;
@@ -21,11 +21,11 @@ public class OfficeForm {
         this.name = name;
     }
 
-    public Long getAddress() {
+    public Address getAddress() {
         return address;
     }
 
-    public void setAddress(Long address) {
+    public void setAddress(Address address) {
         this.address = address;
     }
 }

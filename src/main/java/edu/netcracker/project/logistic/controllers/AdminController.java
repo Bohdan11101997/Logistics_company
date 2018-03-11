@@ -11,6 +11,7 @@ import edu.netcracker.project.logistic.service.AdvertisementService;
 
 import edu.netcracker.project.logistic.validation.AdvertisementValidator;
 import edu.netcracker.project.logistic.validation.EmployeeValidator;
+import edu.netcracker.project.logistic.validation.SearchFormValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
@@ -20,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.security.Principal;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -36,6 +36,7 @@ public class AdminController {
     private AddressService addressService;
     private EmployeeValidator employeeValidator;
     private AdvertisementValidator advertisementValidator;
+    private SearchFormValidator searchFormValidator;
     private UserDetailsService userDetailsService;
 
 
@@ -43,7 +44,8 @@ public class AdminController {
     public AdminController(OfficeService officeService, EmployeeService employeeService,
                            RoleService roleService, AdvertisementService advertisementService,
                            AddressService addressService, EmployeeValidator employeeValidator,
-                           AdvertisementValidator advertisementValidator, UserDetailsService userDetailsService) {
+                           AdvertisementValidator advertisementValidator, SearchFormValidator searchFormValidator,
+                           UserDetailsService userDetailsService) {
         this.officeService = officeService;
         this.employeeService = employeeService;
         this.roleService = roleService;
@@ -51,6 +53,7 @@ public class AdminController {
         this.addressService = addressService;
         this.employeeValidator = employeeValidator;
         this.advertisementValidator = advertisementValidator;
+        this.searchFormValidator = searchFormValidator;
         this.userDetailsService = userDetailsService;
     }
 
@@ -150,11 +153,26 @@ public class AdminController {
     }
 
     @GetMapping("/employees")
-    public String getAllEmployees(Model model, @ModelAttribute("searchForm") SearchForm searchForm) {
+    public String getAllEmployees(Model model) {
+        List<Person> employees = employeeService.findAll();
+        model.addAttribute("employees", employees);
+        model.addAttribute("availableRoles", roleService.findEmployeeRoles());
+        model.addAttribute("searchForm", new SearchForm());
+        return "admin/admin_employees";
+    }
+
+    @PostMapping("/employees")
+    public String searchEmployees(Model model, @ModelAttribute("searchForm") SearchForm searchForm, BindingResult result) {
+        searchFormValidator.validate(searchForm, result);
+        if (result.hasErrors()) {
+            model.addAttribute("availableRoles", roleService.findEmployeeRoles());
+            return "admin/admin_employees";
+        }
         List<Person> employees = employeeService.search(searchForm);
         model.addAttribute("employees", employees);
         model.addAttribute("availableRoles", roleService.findEmployeeRoles());
-        return "/admin/admin_employees";
+        model.addAttribute("searchForm", searchForm);
+        return "admin/admin_employees";
     }
 
     @GetMapping("/crud/employee/{id}")
@@ -177,9 +195,20 @@ public class AdminController {
     @PostMapping("/crud/employee/{id}")
     public String updateEmployee(@PathVariable long id, Model model,
                                  @ModelAttribute("employee") Person employee,
-                                 BindingResult result) {
+                                 BindingResult result, Principal principal) {
         employee.setId(id);
         employeeValidator.validateUpdateData(employee, result);
+        Optional<Person> opt = employeeService.findOne(principal.getName());
+        if (!opt.isPresent()) {
+            return "error/500";
+        }
+        Person account = opt.get();
+        boolean adminRoleLeft =
+                employee.getRoles().stream().anyMatch(r -> r.getRoleName().equals("ROLE_ADMIN"));
+        if (account.getId().equals(id) && !adminRoleLeft) {
+            model.addAttribute("message", "Can't remove admin role from own account");
+            return "error/400";
+        }
         if (result.hasErrors()) {
             List<Role> employeeRoles = roleService.findEmployeeRoles();
             model.addAttribute("newEmployee", false);
@@ -229,7 +258,6 @@ public class AdminController {
             List<Role> availableRoles = roleService.findEmployeeRoles();
             model.addAttribute("newEmployee", true);
             model.addAttribute("availableRoles", availableRoles);
-
             return "/admin/admin_crud_employee";
         }
         employeeService.create(employee);
@@ -257,14 +285,15 @@ public class AdminController {
     }
 
     @PostMapping("/crud/office")
-    public String saveOffice(@ModelAttribute("office") OfficeForm officeForm) {
-
-        Office office = new Office(
-                officeForm.getOfficeId(),
-                officeForm.getName(),
-                addressService.findOne(officeForm.getAddress()).get()
-        );
+    public String saveOffice(@ModelAttribute("office") Office office) {
+        Optional<Address> opt = addressService.findOne(office.getAddress().getName());
+        if (opt.isPresent()) {
+            return "error/500";
+        }
+        addressService.save(office.getAddress());
+        addressService.findOne(office.getAddress().getName()).get();
         System.out.println(office);
+
         officeService.save(office);
         return "redirect:/admin/offices";
     }

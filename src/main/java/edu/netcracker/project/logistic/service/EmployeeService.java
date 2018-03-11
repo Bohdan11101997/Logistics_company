@@ -18,6 +18,7 @@ public interface EmployeeService {
     Optional<Person> findOne(Long id);
     Optional<Person> findOne(String userName);
     List<Person> findAll();
+    List<Person> findCallCenterAgents();
     boolean contains(Long id);
     List<Person> search(SearchForm searchForm);
 }

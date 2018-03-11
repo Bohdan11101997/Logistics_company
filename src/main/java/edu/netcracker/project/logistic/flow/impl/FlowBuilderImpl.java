@@ -1,17 +1,18 @@
 package edu.netcracker.project.logistic.flow.impl;
 
-import edu.com.google.maps.StaticMap;
-import edu.com.google.maps.model.LatLng;
-import edu.netcracker.project.logistic.dao.RoleCrudDao;
+import edu.netcracker.project.logistic.maps_wrapper.StaticMap;
+import com.google.maps.errors.ApiException;
+import com.google.maps.model.*;
 import edu.netcracker.project.logistic.flow.FlowBuilder;
+import edu.netcracker.project.logistic.maps_wrapper.GoogleApiRequest;
 import edu.netcracker.project.logistic.model.Office;
 import edu.netcracker.project.logistic.model.Order;
 import edu.netcracker.project.logistic.model.Person;
 import edu.netcracker.project.logistic.model.Role;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import edu.netcracker.project.logistic.service.RoleService;
 //import org.apache.tomcat.util.collections.SynchronizedQueue;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.PriorityBlockingQueue;
 
@@ -24,23 +25,28 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
     protected Queue<Person> walkCouriers;
     protected Queue<Person> driveCouriers;
 
-    protected RoleCrudDao roleCrudDao;
+    protected RoleService roleService;
 
-    protected Office office;
+    protected final Office office;
     protected LatLng center;
 
-    public FlowBuilderImpl(RoleCrudDao roleCrudDao, Office office) {
-        this.roleCrudDao = roleCrudDao;
+    protected long distance;
+    protected long duration;
+
+    protected String errorMessage = "No error";
+
+    public FlowBuilderImpl(RoleService roleService, Office office) {
+        this.roleService = roleService;
         this.office = office;
-        center = office.getAddress().getLocation();
+        this.center = office.getAddress().getLocation();
 
         init(this, this.office);
     }
 
     private static void init(FlowBuilderImpl impl, Office office) {
         Comparator<Order> co = (Order o1, Order o2) -> {
-            LatLng l1 = o1.getReceiver().getAddress().getLocation();
-            LatLng l2 = o2.getReceiver().getAddress().getLocation();
+            LatLng l1 = o1.getReceiverAddress().getLocation();
+            LatLng l2 = o2.getSenderAddress().getLocation();
             Double dist1 = distance(l1, office.getAddress().getLocation());
             Double dist2 = distance(l2, office.getAddress().getLocation());
             dist1 = updateOrderDistanceIfVip(impl, o1, dist1);
@@ -63,23 +69,52 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
 
     }
 
-    protected static double distance(LatLng a, LatLng b){
-        return Math.sqrt(Math.pow(a.lat-b.lat,2)
-                + Math.pow(a.lng-b.lng,2));
+    protected static double distance(LatLng a, LatLng b) {
+        return Math.sqrt(Math.pow(a.lat - b.lat, 2)
+                + Math.pow(a.lng - b.lng, 2));
+    }
+    protected static long mapDistance(LatLng a, LatLng b, TravelMode travelMode){
+        DistanceMatrix req = null;
+        try {
+            req = GoogleApiRequest.DistanceMatrixApi()
+                    .origins(a)
+                    .destinations(b)
+                    .mode(travelMode == null ? TravelMode.DRIVING : travelMode)
+                    .await();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        long distance = 0;
+        if(req != null) {
+            for(DistanceMatrixElement d :req.rows[0].elements){
+                distance+=d.distance.inMeters;
+            }
+            return distance;
+        }
+        else
+            return Long.MAX_VALUE;
     }
 
-    protected static double updateOrderDistanceIfVip(FlowBuilderImpl impl,Order o, double distance){
+
+    protected static double updateOrderDistanceIfVip(FlowBuilderImpl impl, Order o, double distance) {
         boolean isVIP = false;
         for(Role role :
-                impl.roleCrudDao.getByPersonId(
-                        o.getSender().getContact().getContactId()
-                )){
-            if(role.isEmployeeRole()){
-                isVIP = true; break; }
-            if(role.getRoleName().equalsIgnoreCase("ROLE_VIP_USER")){
-                isVIP = true; break; }
+                impl.roleService.findRolesByPersonId(
+                        o.getSenderContact().getContactId()
+                )) {
+            if (role.isEmployeeRole()) {
+                isVIP = true;
+                break;
+            }
+            if (role.getRoleName().equalsIgnoreCase("ROLE_VIP_USER")){
+                isVIP = true;
+                break;
+            }
         }
-        if(isVIP){ distance = (Double.MIN_VALUE+distance); }
+        if (isVIP) {
+            distance = (Double.MIN_VALUE + distance);
+        }
         return distance;
     }
 
@@ -91,7 +126,8 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
     @Override
     public boolean add(Person courier, CourierType type) {
         //checking if is not a courier
-        if (courier.getRoles().contains(roleCrudDao.getByName("ROLE_COURIER")))
+        //TODO: priority???
+        if (courier.getRoles().contains(new Role((long)(5), "ROLE_COURIER","NULL"))) {//5 == ROLE_COURIER
             switch (type) {
                 case Walker:
                     walkCouriers.add(courier);
@@ -100,6 +136,7 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
                     driveCouriers.add(courier);
                     break;
             }
+        }
         return false;
     }
 
@@ -277,5 +314,16 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
     public abstract StaticMap getStaticMap();
 
     @Override
+    public abstract long getDistance();
+
+    @Override
+    public abstract long getDuration();
+
+    @Override
     public abstract boolean process();
+
+    @Override
+    public String getError(){
+        return errorMessage;
+    }
 }

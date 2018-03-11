@@ -1,10 +1,12 @@
 package edu.netcracker.project.logistic.dao.impl;
 
+import com.google.maps.model.TravelMode;
 import edu.netcracker.project.logistic.dao.AddressDao;
 import edu.netcracker.project.logistic.dao.QueryDao;
 import edu.netcracker.project.logistic.model.Address;
 import edu.netcracker.project.logistic.service.QueryService;
 
+import org.omg.CORBA.OBJECT_NOT_EXIST;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,27 +50,28 @@ public class AddressDaoImpl implements AddressDao, QueryDao, RowMapper<Address> 
 
     @Override
     public Address save(Address address) {
-        boolean hasPrimaryKey = address.getId() != null;
-
-        if (hasPrimaryKey) {
-            jdbcTemplate.update(getUpsertQuery(), ps -> {
-                ps.setObject(1, address.getId());
-                ps.setObject(2, address.getName());
-            });
-        } else {
-            GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
-            jdbcTemplate.update(psc -> {
-                String query = getInsertQuery();
-                PreparedStatement ps = psc.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-                ps.setObject(1, address.getName());
-                return ps;
-            }, keyHolder);
-            Number key = (Number) keyHolder.getKeys().get("address_id");
-            address.setId(key.longValue());
+        address.check(address.getName());
+            boolean hasPrimaryKey = address.getId() != null;
+            if (hasPrimaryKey) {
+                jdbcTemplate.update(getUpsertQuery(), ps -> {
+                    ps.setObject(1, address.getId());
+                    ps.setObject(2, address.getName());
+                });
+            } else {
+                GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
+                jdbcTemplate.update(psc -> {
+                    String query = getInsertQuery();
+                    PreparedStatement ps = psc.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+                    ps.setObject(1, address.getName());
+                    return ps;
+                }, keyHolder);
+                Number key = (Number) keyHolder.getKeys().get("address_id");
+                address.setId(key.longValue());
+            }
+     return address;
         }
-        logger.info("Save address");
-        return address;
-    }
+
+
 
     @Override
     public void delete(Long aLong) {
@@ -76,6 +79,19 @@ public class AddressDaoImpl implements AddressDao, QueryDao, RowMapper<Address> 
         logger.info("Delete address");
     }
 
+
+    public Optional<Address> findOne(String address_name) {
+        try {
+            Address address = jdbcTemplate.queryForObject(
+                    getFindOneQueryByAddress_name(),
+                    new Object[]{address_name},
+                    this);
+            logger.info("Find address");
+            return Optional.of(address);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
 
     @Override
     public Optional<Address> findOne(Long aLong) {
@@ -91,16 +107,6 @@ public class AddressDaoImpl implements AddressDao, QueryDao, RowMapper<Address> 
         }
     }
 
-    public Address findOne1(Long aLong) {
-
-        Address address = jdbcTemplate.queryForObject(
-                getFindOneQuery(),
-                new Object[]{aLong},
-                this);
-        logger.info("Find1 address");
-        return address;
-
-    }
 
     @Override
     public String getInsertQuery() {
@@ -122,5 +128,27 @@ public class AddressDaoImpl implements AddressDao, QueryDao, RowMapper<Address> 
         return queryService.getQuery("select.address");
     }
 
+    public String  getFindOneQueryByAddress_name() {
+        return queryService.getQuery("select.address.by.name");
+    }
 
+    public boolean check(Address target, Address base){
+        return base.check(target);
+    }
+
+    public boolean check(String target, Address base){
+        return base.check(target);
+    }
+
+    public boolean check(String target, Address base, TravelMode travelMode){
+        return base.check(target,travelMode);
+    }
+
+    public boolean check(String target, String base){
+        return new Address(base).check(target);
+    }
+
+    public boolean check(String target, String base, TravelMode travelMode){
+        return new Address(base).check(target,travelMode);
+    }
 }

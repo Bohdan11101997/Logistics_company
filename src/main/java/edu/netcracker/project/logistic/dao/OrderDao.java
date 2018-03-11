@@ -2,7 +2,11 @@ package edu.netcracker.project.logistic.dao;
 
 import edu.netcracker.project.logistic.model.Order;
 
-public interface OrderDao extends  CrudDao<Order, Long> {
+import java.util.List;
 
+public interface OrderDao extends  CrudDao<Order, Long> {
+    List<Order> findNotProcessed();
+
+    List<Order> HistoryCompleteOrder();
 }
 

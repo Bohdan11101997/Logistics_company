@@ -20,7 +20,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -129,6 +131,21 @@ public class PersonCrudDaoImpl implements PersonCrudDao, QueryDao, RowMapper<Per
     }
 
     @Override
+    public Optional<Person> findByContactId(Long contactId) {
+        Person person;
+        try {
+            person = jdbcTemplate.queryForObject(
+                    getFindByContactIdQuery(),
+                    new Object[]{contactId},
+                    this);
+            return Optional.of(person);
+
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
     public Optional<Person> findOne(String username) {
         Person person;
         try {
@@ -194,21 +211,41 @@ public class PersonCrudDaoImpl implements PersonCrudDao, QueryDao, RowMapper<Per
     }
 
     @Override
+    public List<Person> findByRoleId(Long roleId) {
+        try {
+            return jdbcTemplate.query(
+                    getFindByRoleIdQuery(),
+                    this
+            );
+        } catch (EmptyResultDataAccessException ex) {
+            return Collections.emptyList();
+        }
+    }
+
+    private String prepareSearchString(String input) {
+        return "%" + input.replace("%", "\\%") + "%";
+    }
+
+    @Override
     public List<Person> search(SearchForm searchForm) {
         String firstName = searchForm.getFirstName();
-        firstName = firstName == null ? "%%" : String.format("%%%s%%", firstName);
+        firstName = firstName == null ? "%%" : prepareSearchString(firstName);
 
         String lastName = searchForm.getLastName();
-        lastName = lastName == null ? "%%" : String.format("%%%s%%", lastName);
+        lastName = lastName == null ? "%%" : prepareSearchString(lastName);
 
         LocalDateTime from = searchForm.getFrom();
         if (from == null) {
             from = LocalDateTime.MIN;
+        } else {
+            from = from.with(LocalTime.MIN);
         }
 
         LocalDateTime to = searchForm.getTo();
         if (to == null) {
             to = LocalDateTime.now();
+        } else {
+            to = to.with(LocalTime.MAX);
         }
 
         Map<String, Object> paramMap = new HashMap<>(5);
@@ -284,4 +321,10 @@ public class PersonCrudDaoImpl implements PersonCrudDao, QueryDao, RowMapper<Per
     private String getFindOneByEmailQuery() {
         return queryService.getQuery("select.person.by.email");
     }
+
+    private String getFindByRoleIdQuery() {
+        return queryService.getQuery("select.person.by.role_id");
+    }
+
+    private String getFindByContactIdQuery() { return queryService.getQuery("select.person.by.contact_id"); }
 }

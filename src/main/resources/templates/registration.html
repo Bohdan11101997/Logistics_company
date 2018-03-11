@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
@@ -29,7 +31,6 @@
             <h1>Register</h1>
 
             <form action="#" method="post" th:action="@{/registration}" th:object="${registrationForm}">
-
                 <div class="form-group required">
                             <label for="firstName" class="control-label">First Name</label>
                             <input type="text" class="form-control" id="firstName" placeholder="First name"
