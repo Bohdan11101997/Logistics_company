@@ -24,7 +24,14 @@ import java.util.Optional;
 public class LoginController {
 
     @GetMapping
-    public String login(){
+    public String login(Model model,
+                        @ModelAttribute("infoMessage") String infoMessage){
+
+        if (infoMessage == null || infoMessage.isEmpty()) {
+            infoMessage = null;
+        }
+
+        model.addAttribute("infoMessage", infoMessage);
         return "login";
     }
 

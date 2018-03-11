@@ -16,6 +16,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.SmartValidator;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.mail.MessagingException;
 import java.util.Optional;
@@ -27,62 +28,17 @@ public class PasswordController {
     private final Logger logger = LoggerFactory.getLogger(RegistrationController.class);
 
     private SmartValidator smartValidator;
-    private CurrentPasswordValidator currentPasswordValidator;
     private ResetPasswordService resetPasswordService;
     private PersonService personService;
-    private UserService userService;
-    private SecurityService securityService;
     private PasswordEncoder passwordEncoder;
 
-
     @Autowired
-    public PasswordController(SmartValidator smartValidator, CurrentPasswordValidator currentPasswordValidator,
-                              ResetPasswordService resetPasswordService, PersonService personService,
-                              UserService userService, SecurityService securityService, PasswordEncoder passwordEncoder) {
+    public PasswordController(SmartValidator smartValidator, ResetPasswordService resetPasswordService,
+                              PersonService personService, PasswordEncoder passwordEncoder) {
         this.smartValidator = smartValidator;
-        this.currentPasswordValidator = currentPasswordValidator;
         this.resetPasswordService = resetPasswordService;
         this.personService = personService;
-        this.userService = userService;
-        this.securityService = securityService;
         this.passwordEncoder = passwordEncoder;
-    }
-
-    @GetMapping(value = "/change")
-    public String viewChangePassword(Model model){
-        ChangePasswordForm changePasswordForm = new ChangePasswordForm();
-        model.addAttribute("changePassword", changePasswordForm);
-        return "user/user_change_password";
-    }
-
-    @PostMapping(value = "/change")
-    public String saveNewPassword(@ModelAttribute("changePassword") ChangePasswordForm changePasswordForm,
-                                  BindingResult bindingResult){
-
-        String currentPasswordFromForm = changePasswordForm.getOldPassword();
-        currentPasswordValidator.validate(currentPasswordFromForm, bindingResult);
-
-        if (bindingResult.hasErrors()){
-            return "user/user_change_password";
-        }
-
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        // change for single password
-        Optional<Person> optionalPerson = userService.findOne(username);
-
-        if (!optionalPerson.isPresent()){
-            return "/error/403";
-        }
-
-        Person person = optionalPerson.get();
-        String newPassword = changePasswordForm.getNewPassword();
-        String newPasswordEncoded = passwordEncoder.encode(newPassword);
-        person.setPassword(newPasswordEncoded);
-        userService.update(person);
-
-        securityService.autoLogIn(username, newPassword);
-
-        return "redirect:/password/change?save";
     }
 
     @GetMapping("/forgot")
@@ -95,7 +51,7 @@ public class PasswordController {
     @PostMapping("/forgot")
     public String sendResetPasswordLinkOnEmail(@ModelAttribute("forgotPassword") ForgotPasswordForm forgotPasswordForm,
                                                BindingResult bindingResult,
-                                               Model model){
+                                               RedirectAttributes redirectAttributes){
 
         String email = forgotPasswordForm.getEmail();
         smartValidator.validate(email, bindingResult);
@@ -110,10 +66,12 @@ public class PasswordController {
             logger.error("Exception caught when sending confirmation mail", ex);
         } catch (IllegalArgumentException ex){
             logger.error("No person with such e-mail");
-            return "redirect:/login?sendOnMail";
+            redirectAttributes.addFlashAttribute("infoMessage", "Password.Reset.Send.On.Email");
+            return "redirect:/login";
         }
 
-        return "redirect:/login?sendOnMail";
+        redirectAttributes.addFlashAttribute("infoMessage", "Password.Reset.Send.On.Email");
+        return "redirect:/login";
     }
 
     @GetMapping("/reset")
@@ -135,17 +93,29 @@ public class PasswordController {
 
     @PostMapping("/reset/{id}")
     public String saveNewPassword(@ModelAttribute("resetPassword") ResetPasswordForm resetPasswordForm,
-                                  @PathVariable("id") Long personId){
+                                  @PathVariable("id") Long personId,
+                                  BindingResult bindingResult,
+                                  RedirectAttributes redirectAttributes){
 
         String newPassword = resetPasswordForm.getNewPassword();
         Optional<Person> optionalPerson = personService.findOne(personId);
         Person person = optionalPerson.get();
 
-        person.setPassword(newPassword);
-        personService.savePerson(person);
+        String oldPassword = person.getPassword();
+        if (!passwordEncoder.matches(newPassword, oldPassword)){
+            person.setPassword(newPassword);
+            personService.savePerson(person);
+        } else {
+            logger.error("Same old and new passwords");
+            bindingResult.rejectValue("newPassword", "Password.Old.Equals.New");
+            return "/reset_password";
+        }
+
 
         resetPasswordService.deleteResetPasswordTokenRowById(personId);
-        return "redirect:/login?newpassword";
+
+        redirectAttributes.addFlashAttribute("infoMessage", "Password.Change.Success");
+        return "redirect:/login";
     }
 
 }
