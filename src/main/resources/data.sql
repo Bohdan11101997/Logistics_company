@@ -40,7 +40,7 @@ INSERT INTO role (role_id, role_name, is_employee_role) VALUES (7, 'ROLE_COURIER
 
 INSERT INTO person_role (person_id, role_id) VALUES (1, 1);
 INSERT INTO person_role (person_id, role_id) VALUES (2, 3);
-INSERT INTO person_role (person_id, role_id) VALUES (4, 2);
+INSERT INTO person_role (person_id, role_id) VALUES (4, 1);
 INSERT INTO person_role (person_id, role_id) VALUES (2, 2);
 INSERT INTO person_role (person_id, role_id) VALUES (5, 2);
 INSERT INTO person_role (person_id, role_id) VALUES (6, 5);
@@ -58,6 +58,8 @@ INSERT INTO work_day (employee_id, week_day, start_time, end_time)
 VALUES (4, trim(to_char(CURRENT_DATE, 'DAY')) :: logistic_company.week_day, '16:00', '02:00');
 INSERT INTO work_day (employee_id, week_day, start_time, end_time)
 VALUES (5, trim(to_char(CURRENT_DATE, 'DAY')) :: logistic_company.week_day, '06:00', '15:00');
+INSERT INTO work_day (employee_id, week_day, start_time, end_time)
+VALUES (6, trim(to_char(CURRENT_DATE, 'DAY')) :: logistic_company.week_day, '06:00', '15:00');
 
 INSERT INTO address (address_id, address_name) VALUES (1, 'Zodchykh St, 34А, Kyiv');
 INSERT INTO address (address_id, address_name) VALUES (2, 'Lesya Kurbasa Ave, 18, Kyiv');

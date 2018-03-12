@@ -34,9 +34,9 @@ public class Address {
     //TODO: add default name or create rerequest
     private static String LocationToAddress(LatLng location) {
         GeocodingResult result = getListOfAddresses(location)[0];
-        for(AddressComponent ac : result.addressComponents){
-            for(AddressComponentType act : ac.types)
-                if(act.toCanonicalLiteral().equalsIgnoreCase("locality"))
+        for (AddressComponent ac : result.addressComponents) {
+            for (AddressComponentType act : ac.types)
+                if (act.toCanonicalLiteral().equalsIgnoreCase("locality"))
                     return result.formattedAddress;
         }
         return "";
@@ -48,20 +48,20 @@ public class Address {
             return null;
         }
         GeocodingResult result = addressList[0];
-        for(AddressComponent ac : result.addressComponents){
-            for(AddressComponentType act : ac.types)
-                if(act.toCanonicalLiteral().equalsIgnoreCase("locality"))
+        for (AddressComponent ac : result.addressComponents) {
+            for (AddressComponentType act : ac.types)
+                if (act.toCanonicalLiteral().equalsIgnoreCase("locality"))
                     return result.geometry.location;
         }
         return null;
     }
 
-    public static GeocodingResult[] getListOfAddresses(LatLng location){
+    public static GeocodingResult[] getListOfAddresses(LatLng location) {
         GeocodingResult[] result = null;
         try {
             result = GoogleApiRequest.GeocodingApi().latlng(location).
                     components(ComponentFilter.country("ua"))
-                    .bounds(new LatLng(50.243848, 30.204895),new LatLng(50.674379, 30.735831))
+                    .bounds(new LatLng(50.243848, 30.204895), new LatLng(50.674379, 30.735831))
                     .region("ua").await();
         } catch (Exception e) {
             System.err.println(e.getMessage());
@@ -69,12 +69,12 @@ public class Address {
         return result;
     }
 
-    public static GeocodingResult[] getListOfAddresses(String address){
+    public static GeocodingResult[] getListOfAddresses(String address) {
         GeocodingResult[] result = null;
         try {
             result = GoogleApiRequest.GeocodingApi().address(address)
-            .components(ComponentFilter.country("ua"))
-                    .bounds(new LatLng(50.243848, 30.204895),new LatLng(50.674379, 30.735831))
+                    .components(ComponentFilter.country("ua"))
+                    .bounds(new LatLng(50.243848, 30.204895), new LatLng(50.674379, 30.735831))
                     .region("ua").await();
         } catch (Exception e) {
             System.err.println(e.getMessage());
@@ -101,7 +101,7 @@ public class Address {
     }
 
     public void setName(String name) {
-        if(this.name != name) {
+        if (!Objects.equals(this.name, name)) {
             this.location = null;
             this.name = name;
         }
@@ -121,7 +121,7 @@ public class Address {
         return check(new Address(address), TravelMode.WALKING);
     }
 
-    public boolean check(String address, TravelMode travelMode ) {
+    public boolean check(String address, TravelMode travelMode) {
         return check(new Address(address), travelMode);
     }
 
@@ -147,9 +147,7 @@ public class Address {
         } catch (ApiException | InterruptedException | IOException e) {
             e.printStackTrace();
             return false;
-        }
-        catch (NullPointerException e )
-        {
+        } catch (NullPointerException e) {
             return false;
         }
     }
@@ -158,10 +156,14 @@ public class Address {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Address that = (Address) o;
-        return Objects.equals(id, that.id) &&
-                name == that.name &&
-                Objects.equals(location, that.location);
+        Address address = (Address) o;
+        return Objects.equals(id, address.id) &&
+                Objects.equals(name, address.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
     }
 
     @Override
