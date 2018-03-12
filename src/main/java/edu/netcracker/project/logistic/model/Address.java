@@ -145,7 +145,7 @@ public class Address {
             result = GoogleApiRequest.DistanceMatrixApi()
                     .origins(this.getLocation())
                     .destinations(with.getLocation())
-                    .mode(travelMode)
+                    .mode(travelMode == null ? TravelMode.DRIVING : travelMode)
                     .avoid(DirectionsApi.RouteRestriction.FERRIES)
                     .avoid(DirectionsApi.RouteRestriction.TOLLS)
                     .units(Unit.METRIC)
@@ -153,18 +153,20 @@ public class Address {
 
             if(result.rows[0].elements[0].status != DistanceMatrixElementStatus.OK) {
                 System.err.println("DistansMatrixRequest return "+result.rows[0].elements[0].status.name());
-                return false;
+                return false; // not OK
             }
 
-            return (result.rows[0].elements[0].fare.value.equals(BigDecimal.valueOf(0.0))//Check on money wastes
-            );
+            return true;//OK
+            //(result.rows[0].elements[0].fare.value.equals(BigDecimal.valueOf(0.0)));
         } catch (ApiException | InterruptedException | IOException e) {
             e.printStackTrace();
-            return false;
+            System.err.println("DistansMatrixRequest caught API's exception");
+            return false;   //bad request
         }
         catch (NullPointerException e )
         {
-            return false;
+            System.err.println("DistansMatrixRequest caught NullPointerException");
+            return false;   //no return|not valid input
         }
     }
 
@@ -180,6 +182,6 @@ public class Address {
 
     @Override
     public String toString() {
-        return " " + name;
+        return " " + name + location != null ? " : " + location : "" ;
     }
 }

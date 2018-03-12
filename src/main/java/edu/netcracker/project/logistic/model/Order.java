@@ -25,6 +25,25 @@ public class Order {
     public Order() {
     }
 
+    public Order(Order other) {
+        this.id = other.id;
+        this.creationTime = other.creationTime;
+        this.deliveryTime = other.deliveryTime;
+        this.orderStatusTime = other.orderStatusTime;
+        this.courier = other.courier;
+        this.receiverContact = other.receiverContact;
+        this.senderContact = other.senderContact;
+        this.receiverAddress = other.receiverAddress;
+        this.senderAddress = other.senderAddress;
+        this.office = other.office;
+        this.orderStatus = other.orderStatus;
+        this.orderType = other.orderType;
+        this.weight = other.weight;
+        this.width = other.width;
+        this.height = other.height;
+        this.length = other.length;
+    }
+
     public Long getId() {
         return id;
     }

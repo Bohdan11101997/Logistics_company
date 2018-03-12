@@ -49,19 +49,19 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
         init(this, this.office);
     }
 
-    private static Comparator<Order> makeOrderComparator(FlowBuilderImpl impl, Office office, boolean useMap, TravelMode travelMode) {
+    protected static Comparator<Order> makeOrderComparator(FlowBuilderImpl impl, LatLng center, boolean useMap, TravelMode travelMode) {
         return (Order o1, Order o2) -> {
             LatLng l1 = o1.getReceiverAddress().getLocation();
-            LatLng l2 = o2.getSenderAddress().getLocation();
+            LatLng l2 = o2.getReceiverAddress().getLocation();
             Double dist1;
             Double dist2;
             if(useMap){
-                dist1 = mapDistance(l1, office.getAddress().getLocation(), travelMode);
-                dist2 = mapDistance(l2, office.getAddress().getLocation(), travelMode);
+                dist1 = mapDistance(l1, center, travelMode);
+                dist2 = mapDistance(l2, center, travelMode);
             }
             else {
-                dist1 = distance(l1, office.getAddress().getLocation());
-                dist2 = distance(l2, office.getAddress().getLocation());
+                dist1 = distance(l1, center);
+                dist2 = distance(l2, center);
             }
             dist1 = updateOrderDistanceIfVip(impl, o1, dist1);
             dist2 = updateOrderDistanceIfVip(impl, o2, dist2);
@@ -86,8 +86,8 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
                 travelModeMap.put(ot, ot.getName().equalsIgnoreCase("Cargo") ? TravelMode.DRIVING : TravelMode.WALKING);
         }
 
-        impl.walkOrders = new PriorityBlockingQueue<>(11, makeOrderComparator( impl, office,true,TravelMode.WALKING));
-        impl.driveOrders = new PriorityBlockingQueue<>(11, makeOrderComparator(impl, office,true,TravelMode.DRIVING));
+        impl.walkOrders = new PriorityBlockingQueue<>(11, makeOrderComparator( impl, office.getAddress().getLocation(),true,TravelMode.WALKING));
+        impl.driveOrders = new PriorityBlockingQueue<>(11, makeOrderComparator(impl, office.getAddress().getLocation(),true,TravelMode.DRIVING));
 
         Comparator<Person> cp = (Person p1, Person p2) -> {
           /*  LatLng l1 = p1.getLocation();
@@ -327,6 +327,9 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
     public boolean isOptimized() {
         return optimize;
     }
+
+    @Override
+    public abstract List<Order> getUnused();
 
     @Override
     public List<Order> getOrders() {
