@@ -12,6 +12,8 @@ import edu.netcracker.project.logistic.service.AdvertisementService;
 import edu.netcracker.project.logistic.validation.AdvertisementValidator;
 import edu.netcracker.project.logistic.validation.EmployeeValidator;
 import edu.netcracker.project.logistic.validation.SearchFormValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
@@ -19,6 +21,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.HashSet;
@@ -29,6 +32,8 @@ import java.util.Optional;
 @Controller
 @RequestMapping(value = "/admin")
 public class AdminController {
+
+    private final Logger logger = LoggerFactory.getLogger(RegistrationController.class);
 
     private static final int INITIAL_PAGE_SIZE = 20;
     private static final int BUTTONS_TO_SHOW = 5;
@@ -284,7 +289,13 @@ public class AdminController {
             model.addAttribute("availableRoles", availableRoles);
             return "/admin/admin_crud_employee";
         }
-        employeeService.create(employee);
+
+        try {
+            employeeService.create(employee);
+        } catch (MessagingException e) {
+            logger.error("Exception caught when sending confirmation mail", e);
+        }
+
         return "redirect:/admin/employees";
     }
 

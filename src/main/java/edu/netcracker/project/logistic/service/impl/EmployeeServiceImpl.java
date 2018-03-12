@@ -10,14 +10,18 @@ import edu.netcracker.project.logistic.service.EmployeeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.Errors;
 
-import javax.swing.text.html.Option;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -30,23 +34,59 @@ public class EmployeeServiceImpl implements EmployeeService {
     private PersonCrudDao personDao;
     private PersonRoleDao personRoleDao;
     private RoleCrudDao roleDao;
+    private Environment env;
+    private JavaMailSender sender;
 
     @Autowired
     public EmployeeServiceImpl(ContactDao contactDao, PersonCrudDao personDao,
-                               PersonRoleDao personRoleDao, RoleCrudDao roleDao) {
+                               PersonRoleDao personRoleDao, RoleCrudDao roleDao,
+                               Environment env, JavaMailSender sender) {
         this.contactDao = contactDao;
         this.personDao = personDao;
         this.personRoleDao = personRoleDao;
         this.roleDao = roleDao;
+        this.env = env;
+        this.sender = sender;
     }
 
-    @Transactional(rollbackFor = {NonUniqueRecordException.class, DataIntegrityViolationException.class})
+    @Transactional(rollbackFor = {NonUniqueRecordException.class, DataIntegrityViolationException.class, MessagingException.class})
     @Override
-    public Person create(Person employee) {
+    public Person create(Person employee) throws MessagingException {
         employee.setRegistrationDate(LocalDateTime.now());
+
         contactDao.save(employee.getContact());
+
+        String temporaryPassword = generateRandomPasswordWithSpecifiedLength(12);
+        // password encoder encode!!!
+        employee.setPassword(temporaryPassword);
         personDao.save(employee);
+
+        MimeMessage mimeMessage = sender.createMimeMessage();
+        MimeMessageHelper msg = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+        msg.setSubject("Successful registration!");
+        String from = env.getProperty("spring.mail.username");
+        msg.setFrom(from);
+        msg.setTo(employee.getContact().getEmail());
+        msg.setText("You have been registered in our logistic company service!\n" +
+                "You can login with credentials below.\n" +
+                "Username: " + employee.getUserName() + "\n" +
+                "Password: " + temporaryPassword + "\n" +
+                "We recommend you log in and change temporary password!", false);
+
+        sender.send(mimeMessage);
+
         return employee;
+    }
+
+    private String generateRandomPasswordWithSpecifiedLength(int passwordLength){
+
+        final String allowedSymbols = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+        SecureRandom rnd = new SecureRandom();
+
+        StringBuilder sb = new StringBuilder();
+        for( int i = 0; i < passwordLength; i++ )
+            sb.append( allowedSymbols.charAt( rnd.nextInt(allowedSymbols.length()) ) );
+        return sb.toString();
     }
 
     @Override
