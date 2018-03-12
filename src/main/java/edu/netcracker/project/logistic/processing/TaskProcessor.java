@@ -161,7 +161,7 @@ public class TaskProcessor {
             employeeEntry.workDayDate = todayDate;
         }
         // Check if work day is nearing end
-        if (now.toLocalTime().isBefore(employeeEntry.workDay.getStartTime()) &&
+        if (now.toLocalTime().isBefore(employeeEntry.workDay.getStartTime()) ||
                 now.toLocalTime().plus(WORK_DAY_END_NEARING_INTERVAL)
                 .isAfter(employeeEntry.workDay.getEndTime())) {
             taskQueue.put(taskEntry);
@@ -171,7 +171,7 @@ public class TaskProcessor {
 
         task.setEmployeeId(employeeId);
         taskDao.save(task);
-        logger.info("Assigned task #{} to employee {}", task.getId(), employeeId);
+        logger.info("Assigned task #{} to employee #{}", task.getId(), employeeId);
         employeeEntry.tasksAssigned += 1;
         notificationService.send(employee.getUserName(), new Notification("task", "Created new task"));
         workerQueue.put(employeeEntry);

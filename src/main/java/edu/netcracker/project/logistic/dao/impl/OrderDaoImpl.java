@@ -196,6 +196,15 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
     }
 
     @Override
+    public List<Order> findNotProcessedByEmployeeId(Long employeeId) {
+        return jdbcTemplate.query(
+                getFindByEmployeeIdNotProcessedQuery(),
+                new Object[]{employeeId},
+                this
+        );
+    }
+
+    @Override
     public List<Order> HistoryCompleteOrderSender(Long aLong) {
         try {
             return jdbcTemplate.query(
@@ -212,8 +221,8 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
     @Override
     public List<Order> HistoryCompleteOrderReceiver(Long aLong) {
         try {
-       return jdbcTemplate.query(
-               getHistoryCompleteOrderReceiverQuery(),
+            return jdbcTemplate.query(
+                    getHistoryCompleteOrderReceiverQuery(),
                     new Object[]{aLong},
                     this
             );
@@ -239,11 +248,19 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
         return queryService.getQuery("delete.order");
     }
 
-    private String getHistoryCompleteOrderReceiverQuery() { return queryService.getQuery("select.order.by.complete.receiver");
+    private String getHistoryCompleteOrderReceiverQuery() {
+        return queryService.getQuery("select.order.by.complete.receiver");
     }
-    private String getHistoryCompleteOrderSenderQuery() { return queryService.getQuery("select.order.by.complete.sender");
+
+    private String getHistoryCompleteOrderSenderQuery() {
+        return queryService.getQuery("select.order.by.complete.sender");
     }
+
     private String getFindNotProcessedQuery() {
         return queryService.getQuery("select.order.not_processed");
+    }
+
+    private String getFindByEmployeeIdNotProcessedQuery() {
+        return queryService.getQuery("select.order.not_processed.by.employee_id");
     }
 }
