@@ -2,7 +2,6 @@ package edu.netcracker.project.logistic.controllers;
 
 import edu.netcracker.project.logistic.dao.OrderTypeDao;
 import edu.netcracker.project.logistic.model.*;
-import edu.netcracker.project.logistic.processing.TaskProcessor;
 import edu.netcracker.project.logistic.service.OrderService;
 import edu.netcracker.project.logistic.service.SecurityService;
 import edu.netcracker.project.logistic.service.UserService;
@@ -220,22 +219,13 @@ public class UserController {
         return "redirect:/main";
     }
 
-    @GetMapping(value = "/orders/sent")
+    @GetMapping(value = "/orders")
     public  String historyCompleteReceiverOrder(Model model, Principal principal)
     {
         Optional<Person> opt = userService.findOne(principal.getName());
         Person user = opt.get();
         model.addAttribute("orders", orderService.HistoryCompleteOrderReceiver(user.getId()));
-        return "user/user_order_history";
-    }
-
-    @GetMapping(value = "/orders/received")
-    public  String historyCompleteSenderOrder(Model model, Principal principal)
-    {
-        Optional<Person> opt = userService.findOne(principal.getName());
-        Person user = opt.get();
-        model.addAttribute("orders", orderService.HistoryCompleteOrderSender(user.getId()));
-        return "user/user_order_history";
+        return "user/user_my_orders";
     }
 
     @PostMapping("/order/draft")
@@ -246,7 +236,7 @@ public class UserController {
 
     @GetMapping(value = "")
     public String viewSentOrders(){
-        return "user/user_order_history";
+        return "user_my_orders";
     }
 
 
