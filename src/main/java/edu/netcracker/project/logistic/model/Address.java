@@ -27,7 +27,13 @@ public class Address {
 
     public Address(Long id, LatLng location) {
         this.id = id;
-        this.name = null;
+        this.name = "";
+        this.location = location;
+    }
+
+    public Address(Long id, String name, LatLng location) {
+        this.id = id;
+        this.name = name;
         this.location = location;
     }
 
@@ -62,10 +68,10 @@ public class Address {
     public static GeocodingResult[] getListOfAddresses(LatLng location){
         GeocodingResult[] result = null;
         try {
-            result = GoogleApiRequest.GeocodingApi().latlng(location).
-                    components(ComponentFilter.country("ua"))
+            result = GoogleApiRequest.GeocodingApi().latlng(location)
+                    .locationType(LocationType.APPROXIMATE)
                     .bounds(new LatLng(50.243848, 30.204895),new LatLng(50.674379, 30.735831))
-                    .region("ua").await();
+                    .await();
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }
@@ -76,9 +82,9 @@ public class Address {
         GeocodingResult[] result = null;
         try {
             result = GoogleApiRequest.GeocodingApi().address(address)
-            .components(ComponentFilter.country("ua"))
-                    .bounds(new LatLng(50.243848, 30.204895),new LatLng(50.674379, 30.735831))
-                    .region("ua").await();
+                    .locationType(LocationType.APPROXIMATE)
+                    .bounds(new LatLng(50.243848, 30.204895), new LatLng(50.674379, 30.735831))
+                    .await();
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }
@@ -142,10 +148,15 @@ public class Address {
                     .mode(travelMode)
                     .avoid(DirectionsApi.RouteRestriction.FERRIES)
                     .avoid(DirectionsApi.RouteRestriction.TOLLS)
+                    .units(Unit.METRIC)
                     .await();
 
-            return (result.rows[0].elements[0].status == DistanceMatrixElementStatus.OK
-                    && result.rows[0].elements[0].fare.value.equals(BigDecimal.valueOf(0.0))//Check on money wastes
+            if(result.rows[0].elements[0].status != DistanceMatrixElementStatus.OK) {
+                System.err.println("DistansMatrixRequest return "+result.rows[0].elements[0].status.name());
+                return false;
+            }
+
+            return (result.rows[0].elements[0].fare.value.equals(BigDecimal.valueOf(0.0))//Check on money wastes
             );
         } catch (ApiException | InterruptedException | IOException e) {
             e.printStackTrace();

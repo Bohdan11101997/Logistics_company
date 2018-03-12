@@ -12,8 +12,8 @@ public class GoogleApiRequest {
 
 //    private static final String API_KEY = "AIzaSyBHUNATkvBBtqWEF8roNL_EJEF-IQ1THP0";
 //    private static final String RESERVE_API_KEY = "AIzaSyBHUNATkvBBtqWEF8roNL_EJEF-IQ1THP0";
-    private static final String API_KEY =  "AIzaSyCU2xp68iQecwO3kZk1cLZCGavoD1j4lIc" ;
-    private static final String RESERVE_API_KEY = "AIzaSyCU2xp68iQecwO3kZk1cLZCGavoD1j4lIc" ;
+    private static final String RESERVE_API_KEY=  "AIzaSyCU2xp68iQecwO3kZk1cLZCGavoD1j4lIc" ;
+    private static final String API_KEY = "AIzaSyBHUNATkvBBtqWEF8roNL_EJEF-IQ1THP0";
     private static long request_quote_per_key = 2500;
     private static long requests_count = 0;
 
@@ -77,11 +77,13 @@ public class GoogleApiRequest {
     }
 
     private static boolean roll_keys() {
-        if (out_of_keys)
-            return false;
-        logger.warn("Setting new API_KEY");
-        new_context(RESERVE_API_KEY);
-        out_of_keys = true;
+        if(requests_count >= getQuote()) {
+            if (out_of_keys)
+                return false;
+            logger.warn("Setting new API_KEY");
+            new_context(RESERVE_API_KEY);
+            out_of_keys = true;
+        }
         return true;
     }
 
@@ -132,9 +134,11 @@ public class GoogleApiRequest {
     }
 
     private static boolean check_request_limit() {
-        boolean return_value = requests_count > request_quote_per_key && !roll_keys();
-        if(return_value)
+        boolean return_value = requests_count > request_quote_per_key;
+        if(return_value) {
             logger.error("Google Maps API_KEY quote wasted!");
+            return_value = !roll_keys();
+        }
         return return_value;
     }
 }

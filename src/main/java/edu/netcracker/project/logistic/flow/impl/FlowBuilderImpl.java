@@ -1,5 +1,6 @@
 package edu.netcracker.project.logistic.flow.impl;
 
+import com.google.maps.DirectionsApi;
 import edu.netcracker.project.logistic.dao.OrderTypeDao;
 import edu.netcracker.project.logistic.maps_wrapper.StaticMap;
 import com.google.maps.model.*;
@@ -55,8 +56,8 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
             Double dist1;
             Double dist2;
             if(useMap){
-                dist1 = mapDistance(l1, office.getAddress().getLocation(),travelMode);
-                dist2 = mapDistance(l2, office.getAddress().getLocation(),travelMode);
+                dist1 = mapDistance(l1, office.getAddress().getLocation(), travelMode);
+                dist2 = mapDistance(l2, office.getAddress().getLocation(), travelMode);
             }
             else {
                 dist1 = distance(l1, office.getAddress().getLocation());
@@ -70,18 +71,20 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
 
     private static void init(FlowBuilderImpl impl, Office office) {
         travelModeMap = new LinkedHashMap<>();
-        List<OrderType> orderTypes = null;
-        try {
-            orderTypes = new ArrayList<>(impl.orderTypeDao.findAll());
-        } catch(NullPointerException e){
-            //TODO: remove this staff before release
-            orderTypes = new ArrayList<>(3);
-            orderTypes.add(new OrderType((long)1, "Documents", new BigDecimal(1), (long)35, (long)25, (long)2));
-            orderTypes.add(new OrderType((long)2, "Package", new BigDecimal(30), (long)150, (long)150, (long)150));
-            orderTypes.add(new OrderType((long)3, "Cargo", new BigDecimal(1000), (long)170, (long)170, (long)300));
+        {
+            List<OrderType> orderTypes;
+            try {
+                orderTypes = new ArrayList<>(impl.orderTypeDao.findAll());
+            } catch (NullPointerException e) {
+                //TODO: remove this staff before release
+                orderTypes = new ArrayList<>(3);
+                orderTypes.add(new OrderType((long) 1, "Documents", new BigDecimal(1), (long) 35, (long) 25, (long) 2));
+                orderTypes.add(new OrderType((long) 2, "Package", new BigDecimal(30), (long) 150, (long) 150, (long) 150));
+                orderTypes.add(new OrderType((long) 3, "Cargo", new BigDecimal(1000), (long) 170, (long) 170, (long) 300));
+            }
+            for (OrderType ot : orderTypes)
+                travelModeMap.put(ot, ot.getName().equalsIgnoreCase("Cargo") ? TravelMode.DRIVING : TravelMode.WALKING);
         }
-        for(OrderType ot : orderTypes)
-            travelModeMap.put(ot, ot.getName().equalsIgnoreCase("Cargo") ? TravelMode.DRIVING : TravelMode.WALKING);
 
         impl.walkOrders = new PriorityBlockingQueue<>(11, makeOrderComparator( impl, office,true,TravelMode.WALKING));
         impl.driveOrders = new PriorityBlockingQueue<>(11, makeOrderComparator(impl, office,true,TravelMode.DRIVING));
@@ -110,6 +113,9 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
                     .origins(a)
                     .destinations(b)
                     .mode(travelMode == null ? TravelMode.DRIVING : travelMode)
+                    .avoid(DirectionsApi.RouteRestriction.FERRIES)
+                    .avoid(DirectionsApi.RouteRestriction.TOLLS)
+                    .units(Unit.METRIC)
                     .await();
         } catch (Exception e) {
             e.printStackTrace();
@@ -118,6 +124,10 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
         long distance = 0;
         if(req != null) {
             for(DistanceMatrixElement d :req.rows[0].elements){
+                if(d.status != DistanceMatrixElementStatus.OK){
+                    System.err.println("DistanceMatrixRequest returns " + d.status.name());
+                    return Double.MAX_VALUE;
+                }
                 distance+=d.distance.inMeters;
             }
             return (double)distance;
@@ -148,7 +158,7 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
     }
 
     protected static TravelMode decide(Order o) {
-        return travelModeMap.get(o.getOrderType());
+        return travelModeMap.getOrDefault(o.getOrderType(), TravelMode.DRIVING);
     }
 
     @Override
@@ -252,7 +262,7 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
         if(!order.getOrderStatus().getName().equalsIgnoreCase("CONFIRMED"))
             return false;
 
-        switch (travelModeMap.get(order.getOrderType())) {
+        switch (decide(order)) {
             case WALKING:
             case BICYCLING:
             case TRANSIT:
