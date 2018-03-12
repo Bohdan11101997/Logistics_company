@@ -45,12 +45,12 @@ public class AdvertisementServiceImpl implements AdvertisementService {
     }
 
     @Override
-    public List<Advertisement> findAllOnPage(int itemsOnPage, int currentPage) {
-        return null;
+    public List<Advertisement> findAmountOfAdvertisementsForCurrentPage(int itemsOnPage, int currentPage) {
+        return advertisementDao.findAmountOfAdvertisementsForCurrentPage(itemsOnPage, currentPage);
     }
 
     @Override
-    public int getNumberOfAllAdvertisements() {
-        return 0;
+    public int getCountOfAllAdvertisements() {
+        return advertisementDao.getCountOfAllAdvertisements();
     }
 }

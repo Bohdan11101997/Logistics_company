@@ -90,24 +90,5 @@ public class TestController {
         return "person_main";
     }
 
-    private static final int INITIAL_PAGE_SIZE = 20;
-    private static final int INITIAL_PAGE = 0;
-    private static final int[] PAGE_SIZES = {5, 10, 20};
-
-    @Autowired
-    private AdvertisementService advertisementService;
-
-    @GetMapping("/pagination")
-    public String viewPagination(@RequestParam("pageSize")Optional<Integer> pageSize,
-                                 @RequestParam("page") Optional<Integer> page){
-        int itemsOnPage = pageSize.orElse(INITIAL_PAGE_SIZE);
-        int currentPage = (page.orElse(0) < 1) ? INITIAL_PAGE : page.get()-1;
-
-        int allAdvertisementsNumber = advertisementService.getNumberOfAllAdvertisements();
-
-        List<Advertisement> advertisementsForCurrentPage = advertisementService.findAllOnPage(itemsOnPage, currentPage);
-
-        return "test_advertisements";
-    }
 
 }
