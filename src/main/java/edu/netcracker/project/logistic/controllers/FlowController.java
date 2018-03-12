@@ -212,7 +212,8 @@ public class FlowController {
                 o.setReceiverContact(new Contact());
                 o.setSenderContact(new Contact());
                 o.setOrderType(orderTypes.get((int) (Math.random() + 0.33) * (orderTypes.size() - 1)));
-                o.setWeight(o.getOrderType().getId() >= 2 ? BigDecimal.valueOf(Math.random() * 50) : BigDecimal.valueOf(Math.random() * 8));
+                o.setWeight(o.getOrderType().getId() == 1 ? BigDecimal.valueOf(Math.random() * 0.5) :
+                        (o.getOrderType().getId() == 2 ? BigDecimal.valueOf(Math.random() * 8) : BigDecimal.valueOf(Math.random() * 50)));
                 //TODO: cange to debug
                 logger.info("Generated Order #" + i + ": " + o);
                 sequence.add(o);
