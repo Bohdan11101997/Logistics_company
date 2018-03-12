@@ -49,7 +49,7 @@ public class AddressDaoImpl implements AddressDao, QueryDao, RowMapper<Address> 
 
     @Override
     public Address save(Address address) {
-        if (address.check(address.getName())) {
+       address.check(address.getName());
             boolean hasPrimaryKey = address.getId() != null;
             if (hasPrimaryKey) {
                 jdbcTemplate.update(getUpsertQuery(), ps -> {
@@ -67,9 +67,7 @@ public class AddressDaoImpl implements AddressDao, QueryDao, RowMapper<Address> 
                 Number key = (Number) keyHolder.getKeys().get("address_id");
                 address.setId(key.longValue());
             }
-        } else {
-            throw new IllegalArgumentException("Address not exists");
-        }
+
         logger.info("Save address");
         return address;
     }

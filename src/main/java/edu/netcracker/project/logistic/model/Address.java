@@ -95,8 +95,8 @@ public class Address {
     }
 
     public String getName() {
-        if (name == null && location != null)
-            return LocationToAddress(location);
+//        if (name == null && location != null)
+//            return LocationToAddress(location);
         return name;
     }
 

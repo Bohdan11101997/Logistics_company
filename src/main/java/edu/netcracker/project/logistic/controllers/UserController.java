@@ -220,7 +220,7 @@ public class UserController {
         return "redirect:/main";
     }
 
-    @GetMapping(value = "/orders/received")
+    @GetMapping(value = "/orders/sent")
     public  String historyCompleteReceiverOrder(Model model, Principal principal)
     {
         Optional<Person> opt = userService.findOne(principal.getName());
@@ -229,7 +229,7 @@ public class UserController {
         return "user/user_order_history";
     }
 
-    @GetMapping(value = "/orders/sent")
+    @GetMapping(value = "/orders/received")
     public  String historyCompleteSenderOrder(Model model, Principal principal)
     {
         Optional<Person> opt = userService.findOne(principal.getName());

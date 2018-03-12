@@ -44,12 +44,30 @@ INSERT INTO person_role (person_id, role_id) VALUES (7, 7);
 INSERT INTO person_role (person_id, role_id) VALUES (8, 7);
 
 INSERT INTO work_day (employee_id, week_day, start_time, end_time)
-VALUES (6, trim(to_char(CURRENT_DATE, 'DAY')) :: logistic_company.week_day, '14:00', '22:00');
+VALUES (1, trim(to_char(CURRENT_DATE, 'DAY')) :: logistic_company.week_day, '12:00', '22:00');
+INSERT INTO work_day (employee_id, week_day, start_time, end_time)
+VALUES (2, trim(to_char(CURRENT_DATE, 'DAY')) :: logistic_company.week_day, '07:00', '15:00');
+INSERT INTO work_day (employee_id, week_day, start_time, end_time)
+VALUES (3, trim(to_char(CURRENT_DATE, 'DAY')) :: logistic_company.week_day, '15:00', '21:00');
+INSERT INTO work_day (employee_id, week_day, start_time, end_time)
+VALUES (4, trim(to_char(CURRENT_DATE, 'DAY')) :: logistic_company.week_day, '16:00', '02:00');
+INSERT INTO work_day (employee_id, week_day, start_time, end_time)
+VALUES (5, trim(to_char(CURRENT_DATE, 'DAY')) :: logistic_company.week_day, '06:00', '15:00');
 
-INSERT INTO address (address_id, address_name) VALUES (1, 'вул.Академіка Янгеля 5, Київ');
-INSERT INTO address (address_id, address_name) VALUES (2, 'Будинок художника, Київ');
-INSERT INTO office (office_id, name, address_id) VALUES (1, 'werwerwer', 1);
-INSERT INTO office (office_id, name, address_id) VALUES (2, 'dddddddddd', 1);
+INSERT INTO address (address_id, address_name) VALUES (1, 'Zodchykh St, 34А, Kyiv');
+INSERT INTO address (address_id, address_name) VALUES (2, 'Lesya Kurbasa Ave, 18, Kyiv');
+INSERT INTO address (address_id, address_name) VALUES (3, 'Semashka St, 9, Kyiv');
+INSERT INTO address (address_id, address_name) VALUES (4, 'Mykoly Krasnova St, 29, Kyiv');
+INSERT INTO address (address_id, address_name) VALUES (5, 'Borysa Zhytkova St, 7Б, Kyiv');
+INSERT INTO address (address_id, address_name) VALUES (6, 'Bakynska St, 35, 5, Kyiv');
+INSERT INTO address (address_id, address_name) VALUES (7, 'Vvedenska St, 25-21, Kyiv');
+INSERT INTO address (address_id, address_name) VALUES (8, 'Druzhby Narodiv Blvd, 23, Kyiv');
+INSERT INTO address (address_id, address_name) VALUES (9, 'Metrolohichna St, 4, Kyiv');
+INSERT INTO address (address_id, address_name) VALUES (10, 'Romena Rollana Blvd, 5-3, Kyiv');
+
+INSERT INTO office (office_id, name, address_id) VALUES (1, 'Storage №1', 1);
+INSERT INTO office (office_id, name, address_id) VALUES (2, 'Storage №2', 2);
+INSERT INTO office (office_id, name, address_id) VALUES (3, 'Storage №2', 3);
 
 INSERT INTO order_type (order_type_id, name, max_weight, max_width, max_height, max_length)
 VALUES (1, 'Documents', 1, 35, 25, 2);
@@ -73,5 +91,7 @@ INSERT INTO reset_password(person_id, reset_token) VALUES (4, '47a95c8c-a5d1-498
 
 INSERT INTO logistic_company."order"(order_id, estimated_delivery_time,  courier_id, receiver_contact_id, receiver_address_id, sender_contact_id, sender_address_id, office_id, order_status_id, order_type_id, weight, width, height, length)
 VALUES (1, '04:05:06', 7, 5, 1,2,2, 1, 6,1, 12,12,12,12);
+INSERT INTO logistic_company."order"(order_id, estimated_delivery_time,  courier_id, receiver_contact_id, receiver_address_id, sender_contact_id, sender_address_id, office_id, order_status_id, order_type_id, weight, width, height, length)
+VALUES (3, '14:05:06', 7, 5, 1,2,2, 1, 6,1, 12,12,12,12);
 INSERT INTO logistic_company."order"(order_id, estimated_delivery_time,  courier_id, receiver_contact_id, receiver_address_id, sender_contact_id, sender_address_id, office_id, order_status_id, order_type_id, weight, width, height, length)
 VALUES (2, '04:05:06', 7, 2, 1,5,2, 1, 6,2, 112,132,1322,12);
