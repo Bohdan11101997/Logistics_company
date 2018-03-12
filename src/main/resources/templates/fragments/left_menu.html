@@ -100,8 +100,9 @@
                                 <div id="dropdown-courier" class="panel-collapse collapse">
                                     <div class="panel-body">
                                         <ul class="nav navbar-nav">
-                                            <li><a id="courier_tasks_list" th:href="@{/courier/tasks/list}" href="#">Tasks list</a></li>
-                                            <li><a id="courier_tasks_map" th:href="@{/courier/tasks/map}" href="#">Map with route</a></li>
+                                            <li><a id="courier_tasks_list" th:href="@{/courier/orders/actual}" href="#">Actual orders</a></li>
+                                            <li><a id="courier_tasks_history" th:href="@{/courier/orders/history}" href="#">Order history</a></li>
+                                            <li><a id="courier_tasks_map" th:href="@{/courier/orders/map}" href="#">Map with route</a></li>
                                         </ul>
                                     </div>
                                 </div>
@@ -115,8 +116,8 @@
                                 <div id="dropdown-call-center" class="panel-collapse collapse">
                                     <div class="panel-body">
                                         <ul class="nav navbar-nav">
-                                            <li><a id="call_center_tasks_actual" th:href="@{/call-center/tasks/actual}" href="#">Actual tasks list</a></li>
-                                            <li><a id="call_center_tasks_history" th:href="@{/call-center/tasks/history}" href="#">Tasks history</a></li>
+                                            <li><a id="call_center_tasks_actual" th:href="@{/call-center/orders/actual}" href="#">Actual orders</a></li>
+                                            <li><a id="call_center_tasks_history" th:href="@{/call-center/orders/history}" href="#">Order history</a></li>
                                         </ul>
                                     </div>
                                 </div>

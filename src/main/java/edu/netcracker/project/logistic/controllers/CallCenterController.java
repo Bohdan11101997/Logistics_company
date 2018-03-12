@@ -8,14 +8,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/call-center")
 public class CallCenterController {
 
-    @GetMapping("/tasks/actual")
+    @GetMapping("/orders/actual")
     public String viewTasksList(){
-        return "call_center/call_center_tasks_actual";
+        return "call_center/call_center_orders_actual";
     }
 
-    @GetMapping("/tasks/history")
+    @GetMapping("/orders/history")
     public String viewTasksHistory(){
-        return "call_center/call_center_tasks_history";
+        return "call_center/call_center_orders_history";
     }
 
 }

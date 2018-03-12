@@ -10,22 +10,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/courier")
 public class CourierController {
 
-    @GetMapping("/tasks/list")
+    @GetMapping("/orders/actual")
     public String viewTasksList(){
-
-        return "courier/courier_tasks_list";
+        return "courier/courier_orders_actual";
     }
 
-    @PostMapping("tasks/list")
+    @PostMapping("orders/actual")
     public String saveCompletedTasks(){
-
-        return "redirect:/courier/tasks/list";
+        return "redirect:/courier/orders/actual";
     }
 
-    @GetMapping("/tasks/map")
-    public String viewTasksMap(){
+    @GetMapping("/orders/history")
+    public String viewTaskHistory(){
+        return "courier/courier_orders_history";
+    }
 
-        return "courier/courier_tasks_map";
+    @GetMapping("/orders/map")
+    public String viewTasksMap(){
+        return "courier/courier_orders_map";
     }
 
 }

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="fragments/header :: header-bootstrap-config" />
+    <th:block th:replace="fragments/header :: header-bootstrap-config-IE" />
+    <link rel="stylesheet" th:href="@{/css/left_menu.css}" type="text/css" href="../../static/css/left_menu.css" />
+</head>
+<body>
+
+<div class="row">
+
+    <div th:replace="fragments/left_menu :: left-menu-header">
+    </div>
+
+    <!-- Main Content -->
+    <div class="container-fluid">
+        <div class="side-body">
+            <div class="row">
+                <h1 style="text-align:center"> Actual orders </h1>
+
+                <div class="col-lg-10 col-md-10 col-md-offset-1 col-lg-offset-1">
+
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Sender Name</th>
+                                <th>Sender Address</th>
+                                <th>Sender Phone</th>
+                                <th>Receiver Name</th>
+                                <th>Receiver Address</th>
+                                <th>Receiver Phone</th>
+                                <th>Office Address</th>
+                                <th>Order Status</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>#</td>
+                                <td>Sender Name</td>
+                                <td>Sender Address</td>
+                                <td>Sender Phone</td>
+                                <td>Receiver Name</td>
+                                <td>Receiver Address</td>
+                                <td>Receiver Phone</td>
+                                <td>Office Address</td>
+                                <td>Order Status</td>
+                                <td>
+                                    <input type="radio" name="optradio"  />Confirmed
+                                </td>
+                                <td>
+                                    <input type="radio" name="optradio" />Failed
+                                </td>
+                                <td>
+                                    <form th:method="POST">
+                                        <button class="btn btn-link">Save</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#</td>
+                                <td>Sender Name</td>
+                                <td>Sender Address</td>
+                                <td>Sender Phone</td>
+                                <td>Receiver Name</td>
+                                <td>Receiver Address</td>
+                                <td>Receiver Phone</td>
+                                <td>Office Address</td>
+                                <td>Order Status</td>
+                                <td>
+                                    <input type="radio" name="optradio1"  />Confirmed
+                                </td>
+                                <td>
+                                    <input type="radio" name="optradio1" />Failed
+                                </td>
+                                <td>
+                                    <form th:method="POST">
+                                        <button class="btn btn-link">Save</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block th:replace="fragments/footer :: footer"/>
+<th:block th:replace="fragments/left_menu :: left-menu-footer" />
+
+<script type="text/javascript">
+    document.getElementById('call_center_tasks_actual').className='active';
+</script>
+
+</body>
+</html>
