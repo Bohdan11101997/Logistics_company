@@ -10,9 +10,10 @@ public class GoogleApiRequest {
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(GoogleApiRequest.class);
 
-    private static final String API_KEY = "AIzaSyBHUNATkvBBtqWEF8roNL_EJEF-IQ1THP0";
-    private static final String RESERVE_API_KEY = "AIzaSyBHUNATkvBBtqWEF8roNL_EJEF-IQ1THP0";
-
+//    private static final String API_KEY = "AIzaSyBHUNATkvBBtqWEF8roNL_EJEF-IQ1THP0";
+//    private static final String RESERVE_API_KEY = "AIzaSyBHUNATkvBBtqWEF8roNL_EJEF-IQ1THP0";
+    private static final String API_KEY =  "AIzaSyCU2xp68iQecwO3kZk1cLZCGavoD1j4lIc" ;
+    private static final String RESERVE_API_KEY = "AIzaSyCU2xp68iQecwO3kZk1cLZCGavoD1j4lIc" ;
     private static long request_quote_per_key = 2500;
     private static long requests_count = 0;
 
