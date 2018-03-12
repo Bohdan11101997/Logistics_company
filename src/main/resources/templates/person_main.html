@@ -2,15 +2,10 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 <head>
-
-    <th:block th:replace="fragments/header :: header-bootstrap-config" />
-
+    <th:block th:replace="fragments/header :: header-bootstrap-config"/>
+    <th:block th:replace="fragments/header :: header-bootstrap-config-IE"/>
     <title>Main page</title>
-
-    <th:block th:replace="fragments/header :: header-bootstrap-config-IE" />
-
-    <link rel="stylesheet" th:href="@{/css/left_menu.css}" type="text/css" href="/static/css/left_menu.css" />
-
+    <link rel="stylesheet" th:href="@{/css/left_menu.css}" type="text/css" href="/static/css/left_menu.css"/>
 </head>
 <body>
 
@@ -36,18 +31,15 @@
 
                 <h3>All your functions are on your left!</h3>
 
+                <button id="btn-echo" class="btn btn-primary">Echo</button>
+
             </div>
         </div>
     </div>
 </div>
 
 <th:block th:replace="fragments/footer :: footer"/>
-
-
-<th:block th:replace="fragments/left_menu :: left-menu-footer" />
-
-
-
+<th:block th:replace="fragments/left_menu :: left-menu-footer"/>
 
 </body>
 </html>

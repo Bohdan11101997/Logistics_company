@@ -3,6 +3,7 @@ package edu.netcracker.project.logistic.processing;
 import edu.netcracker.project.logistic.dao.*;
 import edu.netcracker.project.logistic.model.*;
 import edu.netcracker.project.logistic.service.EmployeeService;
+import edu.netcracker.project.logistic.service.NotificationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -86,23 +87,19 @@ public class TaskProcessor {
     private BlockingQueue<TaskEntry> taskQueue;
 
     private OrderDao orderDao;
-    private RoleCrudDao roleDao;
     private TaskDao taskDao;
     private PersonCrudDao personDao;
-    private EmployeeService employeeService;
     private WorkDayDao workDayDao;
-    private SessionRegistry sessionRegistry;
+    private NotificationService notificationService;
 
     public TaskProcessor(OrderDao orderDao, RoleCrudDao roleDao, TaskDao taskDao,
                          PersonCrudDao personDao, EmployeeService employeeService, WorkDayDao workDayDao,
-                         SessionRegistry sessionRegistry) {
+                         SessionRegistry sessionRegistry, NotificationService notificationService) {
         this.orderDao = orderDao;
-        this.roleDao = roleDao;
         this.taskDao = taskDao;
         this.personDao = personDao;
-        this.employeeService = employeeService;
         this.workDayDao = workDayDao;
-        this.sessionRegistry = sessionRegistry;
+        this.notificationService = notificationService;
         this.taskQueue = new PriorityBlockingQueue<>(
                 11,
                 (t1, t2) -> {
@@ -136,8 +133,9 @@ public class TaskProcessor {
             taskQueue.put(taskEntry);
             return;
         }
+        Person employee = employeeRecord.get();
         boolean callCentreAgent = false;
-        for (Role r : employeeRecord.get().getRoles()) {
+        for (Role r : employee.getRoles()) {
             if (r.getRoleName().equals("ROLE_CALL_CENTER")) {
                 callCentreAgent = true;
                 break;
@@ -163,16 +161,19 @@ public class TaskProcessor {
             employeeEntry.workDayDate = todayDate;
         }
         // Check if work day is nearing end
-        if (now.toLocalTime().plus(WORK_DAY_END_NEARING_INTERVAL)
+        if (now.toLocalTime().isBefore(employeeEntry.workDay.getStartTime()) ||
+                now.toLocalTime().plus(WORK_DAY_END_NEARING_INTERVAL)
                 .isAfter(employeeEntry.workDay.getEndTime())) {
             taskQueue.put(taskEntry);
             return;
         }
 
+
         task.setEmployeeId(employeeId);
         taskDao.save(task);
-        logger.info("Assigned task #{} to employee {}", task.getId(), employeeId);
+        logger.info("Assigned task #{} to employee #{}", task.getId(), employeeId);
         employeeEntry.tasksAssigned += 1;
+        notificationService.send(employee.getUserName(), new Notification("task", "Created new task"));
         workerQueue.put(employeeEntry);
     }
 
@@ -242,6 +243,7 @@ public class TaskProcessor {
         }
         Task task = new Task();
         task.setOrderId(order.getId());
+        task.setCompleted(false);
         taskQueue.add(new TaskEntry(task, priority));
     }
 }

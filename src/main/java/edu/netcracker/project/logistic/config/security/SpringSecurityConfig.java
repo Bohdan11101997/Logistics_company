@@ -45,11 +45,11 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/", "/index", "/registration", "/registration/complete", "/registration/confirm", "/password/**" ,
                         "/flow/**", "/flow/test", "/test").permitAll()
-                .antMatchers("/person_main").hasAnyRole("ADMIN", "MANAGER", "COURIER", "CALL_CENTER_AGENT", "USER")
+                .antMatchers("/person_main").hasAnyRole("ADMIN", "MANAGER", "COURIER", "CALL_CENTER", "USER")
                 .antMatchers("/admin/**").hasAnyRole("ADMIN")
                 .antMatchers("/manager/**").hasAnyRole("MANAGER")
                 .antMatchers("/courier/**").hasAnyRole("COURIER")
-                .antMatchers("/call-center-agent/**").hasAnyRole("CALL_CENTER_AGENT")
+                .antMatchers("/call-center/**").hasAnyRole("CALL_CENTER")
                 .antMatchers("/user/**").hasAnyRole("USER")
                 .anyRequest().authenticated()
                 .and()
@@ -68,7 +68,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(
-            AuthenticationManagerBuilder auth) throws Exception {
+            AuthenticationManagerBuilder auth) {
         auth.eraseCredentials(false);
         auth.authenticationProvider(authenticationProvider());
     }
