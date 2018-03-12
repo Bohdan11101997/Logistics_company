@@ -31,24 +31,53 @@ public class NewOrderValidator implements Validator {
         OrderType orderType = order.getOrderType();
         if (orderType == null) {
             errors.rejectValue("orderType", "Required.OrderType");
-        }
-        if (orderType != null && !orderType.getName().equals("Documents")) {
-            if (order.getWeight() == null) {
-                errors.rejectValue("weight", "Not.Empty");
-            }
-            if (order.getWidth() == null) {
-                errors.rejectValue("width", "Not.Empty");
-            }
-            if (order.getHeight() == null) {
-                errors.rejectValue("height", "Not.Empty");
-            }
-            if (order.getLength() == null) {
-                errors.rejectValue("length", "Not.Empty");
+        } else if (!orderType.getName().equals("Documents")) {
+            validateWeight(order, errors, orderType);
+            validateWidth(order, errors, orderType);
+            validateHeight(order, errors, orderType);
+            validateLength(order, errors, orderType);
+        } else {
+            if (order.getWeight() != null || order.getWidth() != null ||
+                    order.getHeight() != null || order.getLength() != null) {
+                errors.rejectValue("orderType", "Invalid.Constraints.OrderType.Documents");
             }
         }
+
         validateAddress("senderAddress", order.getSenderAddress(), errors);
         validateAddress("receiverAddress", order.getReceiverAddress(), errors);
         validateReceiverContact(order.getReceiverContact(), errors);
+    }
+
+    private void validateWeight(Order order, Errors errors, OrderType orderType) {
+        if (order.getWeight() == null) {
+            errors.rejectValue("weight", "Required.Order.Weight");
+        } else if (order.getWeight().compareTo(orderType.getMaxWeight()) > 0) {
+            errors.rejectValue("weight", "Exceeded.Order.Weight");
+        }
+    }
+
+    private void validateWidth(Order order, Errors errors, OrderType orderType) {
+        if (order.getWidth() == null) {
+            errors.rejectValue("width", "Required.Order.Width");
+        } else if (order.getWidth().compareTo(orderType.getMaxWidth()) > 0) {
+            errors.rejectValue("width", "Exceeded.Order.Width");
+        }
+    }
+
+    private void validateHeight(Order order, Errors errors, OrderType orderType) {
+        if (order.getHeight() == null) {
+            errors.rejectValue("height", "Required.Order.Height");
+        } else if (order.getHeight().compareTo(orderType.getMaxHeight()) > 0) {
+            errors.rejectValue("height", "Exceeded.Order.Height");
+        }
+    }
+
+    private void validateLength(Order order, Errors errors, OrderType orderType) {
+        if (order.getLength() == null) {
+            errors.rejectValue("length", "Required.Order.Length");
+        } else if (order.getLength().compareTo(orderType.getMaxLength()) > 0) {
+            errors.rejectValue("length", "Exceeded.Order.Length");
+        }
     }
 
     private void validateReceiverContact(Contact contact, Errors errors) {
