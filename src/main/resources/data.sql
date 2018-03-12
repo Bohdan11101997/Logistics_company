@@ -86,7 +86,8 @@ INSERT INTO order_status (order_status_id, status_name) VALUES (2, 'PROCESSING')
 INSERT INTO order_status (order_status_id, status_name) VALUES (3, 'POSTPONED');
 INSERT INTO order_status (order_status_id, status_name) VALUES (4, 'ASSOCIATED');
 INSERT INTO order_status (order_status_id, status_name) VALUES (5, 'CONFIRMED');
-INSERT INTO order_status (order_status_id, status_name) VALUES (6, 'DELIVERED');
+INSERT INTO order_status (order_status_id, status_name) VALUES (6, 'DELIVERING');
+INSERT INTO order_status (order_status_id, status_name) VALUES (7, 'DELIVERED');
 
 INSERT INTO advertisement_type(type_advertisement_id, advertisement_name) VALUES (1, 'Advertisement');
 INSERT INTO advertisement_type(type_advertisement_id, advertisement_name) VALUES (2, 'Announcement');

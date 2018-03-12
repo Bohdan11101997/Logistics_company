@@ -73,9 +73,12 @@ public class FlowController {
                             (Math.random() * 2 - 1) * radius + office.getAddress().getLocation().lat,
                             (Math.random() * 2 - 1) * radius + office.getAddress().getLocation().lng));
                     for (int iter = 0; iter < TRY_ITERATIONS && !address.check(office.getAddress(),travelMode); iter++){
+                        logger.warn("Address wasn't resolved");
                         address = new Address((long) (604 + i), new LatLng(
-                                (Math.random() * 2 - 1) * radius + office.getAddress().getLocation().lat,
-                                (Math.random() * 2 - 1) * radius + office.getAddress().getLocation().lng));
+                                address.getLocation().lat+(Math.random() * 2.0/(iter+1) - 1.0/(iter+1))
+                                        * radius/(iter+1) + office.getAddress().getLocation().lat,
+                                address.getLocation().lng+(Math.random() * 2.0/(iter+1) - 1.0/(iter+1))
+                                        * radius/(iter+1) + office.getAddress().getLocation().lng));
                     }
                     o.setReceiverAddress(address);
                     o.setSenderAddress(office.getAddress());

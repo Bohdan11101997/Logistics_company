@@ -33,13 +33,15 @@ public class Address {
 
     //TODO: add default name or create rerequest
     private static String LocationToAddress(LatLng location) {
-        GeocodingResult result = getListOfAddresses(location)[0];
+        /*GeocodingResult result = getListOfAddresses(location)[0];
         for(AddressComponent ac : result.addressComponents){
             for(AddressComponentType act : ac.types)
                 if(act.toCanonicalLiteral().equalsIgnoreCase("locality"))
                     return result.formattedAddress;
         }
         return "";
+        */
+        return getListOfAddresses(location)[0].formattedAddress;
     }
 
     private static LatLng AddressToLocation(String name) {
@@ -47,13 +49,14 @@ public class Address {
         if (addressList.length == 0) {
             return null;
         }
-        GeocodingResult result = addressList[0];
+        /*GeocodingResult result = addressList[0];
         for(AddressComponent ac : result.addressComponents){
             for(AddressComponentType act : ac.types)
                 if(act.toCanonicalLiteral().equalsIgnoreCase("locality"))
                     return result.geometry.location;
         }
-        return null;
+        return null;*/
+        return addressList[0].geometry.location;
     }
 
     public static GeocodingResult[] getListOfAddresses(LatLng location){

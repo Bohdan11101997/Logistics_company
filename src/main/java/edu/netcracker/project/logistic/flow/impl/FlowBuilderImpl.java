@@ -74,13 +74,14 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
         try {
             orderTypes = new ArrayList<>(impl.orderTypeDao.findAll());
         } catch(NullPointerException e){
+            //TODO: remove this staff before release
             orderTypes = new ArrayList<>(3);
             orderTypes.add(new OrderType((long)1, "Documents", new BigDecimal(1), (long)35, (long)25, (long)2));
             orderTypes.add(new OrderType((long)2, "Package", new BigDecimal(30), (long)150, (long)150, (long)150));
             orderTypes.add(new OrderType((long)3, "Cargo", new BigDecimal(1000), (long)170, (long)170, (long)300));
         }
         for(OrderType ot : orderTypes)
-            travelModeMap.put(ot, ot.getId() == 2 ? TravelMode.DRIVING : TravelMode.WALKING);
+            travelModeMap.put(ot, ot.getName().equalsIgnoreCase("Cargo") ? TravelMode.DRIVING : TravelMode.WALKING);
 
         impl.walkOrders = new PriorityBlockingQueue<>(11, makeOrderComparator( impl, office,true,TravelMode.WALKING));
         impl.driveOrders = new PriorityBlockingQueue<>(11, makeOrderComparator(impl, office,true,TravelMode.DRIVING));
@@ -135,7 +136,7 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
                 isVIP = true;
                 break;
             }
-            if (role.getRoleName().equalsIgnoreCase("ROLE_VIP_USER")){
+            if (role.getPriority().equals("VIP")){
                 isVIP = true;
                 break;
             }
@@ -152,18 +153,17 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
 
     @Override
     public boolean add(Person courier, CourierType type) {
-        //checking if is not a courier
-        //TODO: priority???
-        if (courier.getRoles().contains(new Role((long)(5), "ROLE_COURIER","NULL"))) {//5 == ROLE_COURIER
-            switch (type) {
-                case Walker:
-                    walkCouriers.add(courier);
-                    break;
-                case Driver:
-                    driveCouriers.add(courier);
-                    break;
+        for(Role role : courier.getRoles())
+            if (role.getRoleName().equals("ROLE_COURIER")) {
+                switch (type) {
+                    case Walker:
+                        walkCouriers.add(courier);
+                        return true;
+                    case Driver:
+                        driveCouriers.add(courier);
+                        return true;
+                }
             }
-        }
         return false;
     }
 
@@ -235,8 +235,23 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
         return p;
     }
 
+    public static double metersToEarthDegrees(double meters){
+        return meters*6.0/1000.0;
+    }
+
     // false if adding failed
+    @Override
     public boolean add(Order order) {
+        if(order == null)
+            return false;
+        if(order.getOrderType() == null)
+            return false;
+        if(order.getOrderStatus() == null)
+            return false;
+        //TODO: check if this can be moved out
+        if(!order.getOrderStatus().getName().equalsIgnoreCase("CONFIRMED"))
+            return false;
+
         switch (travelModeMap.get(order.getOrderType())) {
             case WALKING:
             case BICYCLING:
@@ -251,10 +266,6 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
                 return driveOrders.add(order);
         }
         return false;
-    }
-
-    public static double metersToEarthDegrees(double meters){
-        return meters*6.0/1000.0;
     }
 
     @Override
