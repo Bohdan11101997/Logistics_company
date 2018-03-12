@@ -5,8 +5,11 @@ import edu.netcracker.project.logistic.dao.ContactDao;
 import edu.netcracker.project.logistic.dao.OfficeDao;
 import edu.netcracker.project.logistic.dao.impl.AddressDaoImpl;
 import edu.netcracker.project.logistic.model.Address;
+import edu.netcracker.project.logistic.model.Advertisement;
 import edu.netcracker.project.logistic.model.Office;
+import edu.netcracker.project.logistic.model.Pager;
 import edu.netcracker.project.logistic.service.AddressService;
+import edu.netcracker.project.logistic.service.AdvertisementService;
 import edu.netcracker.project.logistic.service.PersonService;
 import edu.netcracker.project.logistic.service.RoleService;
 
@@ -16,10 +19,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Optional;
 
 
 @Controller
@@ -82,6 +88,26 @@ public class TestController {
     @GetMapping("/main")
     public String user() {
         return "person_main";
+    }
+
+    private static final int INITIAL_PAGE_SIZE = 20;
+    private static final int INITIAL_PAGE = 0;
+    private static final int[] PAGE_SIZES = {5, 10, 20};
+
+    @Autowired
+    private AdvertisementService advertisementService;
+
+    @GetMapping("/pagination")
+    public String viewPagination(@RequestParam("pageSize")Optional<Integer> pageSize,
+                                 @RequestParam("page") Optional<Integer> page){
+        int itemsOnPage = pageSize.orElse(INITIAL_PAGE_SIZE);
+        int currentPage = (page.orElse(0) < 1) ? INITIAL_PAGE : page.get()-1;
+
+        int allAdvertisementsNumber = advertisementService.getNumberOfAllAdvertisements();
+
+        List<Advertisement> advertisementsForCurrentPage = advertisementService.findAllOnPage(itemsOnPage, currentPage);
+
+        return "test_advertisements";
     }
 
 }

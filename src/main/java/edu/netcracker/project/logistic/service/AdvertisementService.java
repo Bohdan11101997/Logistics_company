@@ -17,4 +17,7 @@ public interface AdvertisementService {
 
     List<Advertisement> findAll();
 
+    List<Advertisement> findAllOnPage(int itemsOnPage, int currentPage);
+
+    int getNumberOfAllAdvertisements();
 }
