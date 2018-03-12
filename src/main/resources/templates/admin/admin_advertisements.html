@@ -58,6 +58,40 @@
                             </tbody>
                         </table>
                     </div>
+
+                    <!-- Paginator -->
+                    <div class="form-group col-md-1">
+                        <select class="form-control pagination" id="pageSizeSelect">
+                            <option th:each="pageSize : ${pageSizes}" th:text="${pageSize}" th:value="${pageSize}"
+                                    th:selected="${pageSize} == ${selectedPageSize}"></option>
+                        </select>
+                    </div>
+
+                    <div th:if="${totalPages != 1}" class="form-group col-md-11 pagination-centered">
+                        <ul class="pagination">
+                            <li th:class="${currentPage == 0} ? disabled">
+                                <a class="pageLink" th:href="@{/admin/advertisements/(pageSize=${selectedPageSize}, page=1)}">&laquo;</a>
+                            </li>
+                            <li th:class="${currentPage == 0} ? disabled">
+                                <a class="pageLink" th:href="@{/admin/advertisements/(pageSize=${selectedPageSize}, page=${currentPage})}">&larr;</a>
+                            </li>
+                            <li th:class="${currentPage == (page - 1)} ? 'active pointer-disabled'"
+                                th:each="page : ${#numbers.sequence(pager.startPage, pager.endPage)}">
+                                <a class="pageLink" th:href="@{/admin/advertisements/(pageSize=${selectedPageSize}, page=${page})}"
+                                   th:text="${page}"></a>
+                            </li>
+                            <li th:class="${currentPage + 1 == totalPages} ? disabled">
+                                <a class="pageLink"
+                                   th:href="@{/admin/advertisements/(pageSize=${selectedPageSize}, page=${currentPage + 2})}">&rarr;</a>
+                            </li>
+                            <li th:class="${currentPage + 1 == totalPages} ? disabled">
+                                <a class="pageLink"
+                                   th:href="@{/admin/advertisements/(pageSize=${selectedPageSize}, page=${totalPages})}">&raquo;</a>
+                            </li>
+                        </ul>
+                    </div>
+
+
                 </div>
 
             </div>
@@ -71,6 +105,6 @@
 <script type="text/javascript">
     document.getElementById('advertisements').className='active';
 </script>
-
+<script th:src="@{/js/paginator_admin_advertisements.js}"></script>
 </body>
 </html>

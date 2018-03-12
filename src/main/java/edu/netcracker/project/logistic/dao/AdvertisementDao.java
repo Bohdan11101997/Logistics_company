@@ -8,5 +8,6 @@ public interface AdvertisementDao extends CrudDao<Advertisement, Long> {
 
     List<Advertisement> allOffices();
     void update(Advertisement advertisement);
-
+    int getCountOfAllAdvertisements();
+    List<Advertisement> findAmountOfAdvertisementsForCurrentPage(int itemsOnPage, int currentPage);
 }
