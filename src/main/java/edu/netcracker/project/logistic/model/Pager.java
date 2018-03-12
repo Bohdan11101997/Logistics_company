@@ -10,7 +10,7 @@ public class Pager {
 
         setButtonsToShow(buttonsToShow);
 
-        int halfPagesToShow = getButtonsToShow();
+        int halfPagesToShow = getButtonsToShow() / 2;
 
         if (totalPages <= getButtonsToShow()){
             setStartPage(1);

@@ -29,6 +29,12 @@ import java.util.Optional;
 @Controller
 @RequestMapping(value = "/admin")
 public class AdminController {
+
+    private static final int INITIAL_PAGE_SIZE = 20;
+    private static final int BUTTONS_TO_SHOW = 5;
+    private static final int INITIAL_PAGE = 0;
+    private static final int[] PAGE_SIZES = {5, 10, 20, 50};
+
     private EmployeeService employeeService;
     private OfficeService officeService;
     private RoleService roleService;
@@ -139,11 +145,6 @@ public class AdminController {
         return "redirect:/admin/advertisements?delete=success";
     }
 
-    private static final int INITIAL_PAGE_SIZE = 20;
-    private static final int BUTTONS_TO_SHOW = 5;
-    private static final int INITIAL_PAGE = 0;
-    private static final int[] PAGE_SIZES = {5, 10, 20, 50};
-
     @GetMapping("/advertisements")
     public String getAllAdvertisementsOnPage(@RequestParam("pageSize")Optional<Integer> pageSize,
                                              @RequestParam("page") Optional<Integer> page,
@@ -151,17 +152,16 @@ public class AdminController {
 
         int itemsOnPage = pageSize.orElse(INITIAL_PAGE_SIZE);
         int currentPage = (page.orElse(0) < 1) ? INITIAL_PAGE : page.get()-1;
-
         int allAdvertisementsCount = advertisementService.getCountOfAllAdvertisements();
-
         List<Advertisement> advertisementsForCurrentPage = advertisementService.findAmountOfAdvertisementsForCurrentPage(itemsOnPage, currentPage);
 
         int totalPages = allAdvertisementsCount/itemsOnPage;
-
         Pager pager = new Pager(totalPages, currentPage, BUTTONS_TO_SHOW);
 
         model.addAttribute("advertisements", advertisementsForCurrentPage);
         model.addAttribute("selectedPageSize", itemsOnPage);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("currentPage", currentPage);
         model.addAttribute("pageSizes", PAGE_SIZES);
         model.addAttribute("pager", pager);
 
