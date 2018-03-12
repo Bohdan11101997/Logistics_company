@@ -27,19 +27,27 @@ public class Address {
 
     public Address(Long id, LatLng location) {
         this.id = id;
-        this.name = null;
+        this.name = "";
+        this.location = location;
+    }
+
+    public Address(Long id, String name, LatLng location) {
+        this.id = id;
+        this.name = name;
         this.location = location;
     }
 
     //TODO: add default name or create rerequest
     private static String LocationToAddress(LatLng location) {
-        GeocodingResult result = getListOfAddresses(location)[0];
-        for (AddressComponent ac : result.addressComponents) {
-            for (AddressComponentType act : ac.types)
-                if (act.toCanonicalLiteral().equalsIgnoreCase("locality"))
+        /*GeocodingResult result = getListOfAddresses(location)[0];
+        for(AddressComponent ac : result.addressComponents){
+            for(AddressComponentType act : ac.types)
+                if(act.toCanonicalLiteral().equalsIgnoreCase("locality"))
                     return result.formattedAddress;
         }
         return "";
+        */
+        return getListOfAddresses(location)[0].formattedAddress;
     }
 
     private static LatLng AddressToLocation(String name) {
@@ -47,22 +55,23 @@ public class Address {
         if (addressList.length == 0) {
             return null;
         }
-        GeocodingResult result = addressList[0];
-        for (AddressComponent ac : result.addressComponents) {
-            for (AddressComponentType act : ac.types)
-                if (act.toCanonicalLiteral().equalsIgnoreCase("locality"))
+        /*GeocodingResult result = addressList[0];
+        for(AddressComponent ac : result.addressComponents){
+            for(AddressComponentType act : ac.types)
+                if(act.toCanonicalLiteral().equalsIgnoreCase("locality"))
                     return result.geometry.location;
         }
-        return null;
+        return null;*/
+        return addressList[0].geometry.location;
     }
 
     public static GeocodingResult[] getListOfAddresses(LatLng location) {
         GeocodingResult[] result = null;
         try {
-            result = GoogleApiRequest.GeocodingApi().latlng(location).
-                    components(ComponentFilter.country("ua"))
+            result = GoogleApiRequest.GeocodingApi().latlng(location)
+                    .locationType(LocationType.APPROXIMATE)
                     .bounds(new LatLng(50.243848, 30.204895), new LatLng(50.674379, 30.735831))
-                    .region("ua").await();
+                    .await();
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }
@@ -73,9 +82,9 @@ public class Address {
         GeocodingResult[] result = null;
         try {
             result = GoogleApiRequest.GeocodingApi().address(address)
-                    .components(ComponentFilter.country("ua"))
+                    .locationType(LocationType.APPROXIMATE)
                     .bounds(new LatLng(50.243848, 30.204895), new LatLng(50.674379, 30.735831))
-                    .region("ua").await();
+                    .await();
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }
@@ -136,19 +145,26 @@ public class Address {
             result = GoogleApiRequest.DistanceMatrixApi()
                     .origins(this.getLocation())
                     .destinations(with.getLocation())
-                    .mode(travelMode)
+                    .mode(travelMode == null ? TravelMode.DRIVING : travelMode)
                     .avoid(DirectionsApi.RouteRestriction.FERRIES)
                     .avoid(DirectionsApi.RouteRestriction.TOLLS)
+                    .units(Unit.METRIC)
                     .await();
 
-            return (result.rows[0].elements[0].status == DistanceMatrixElementStatus.OK
-                    && result.rows[0].elements[0].fare.value.equals(BigDecimal.valueOf(0.0))//Check on money wastes
-            );
+            if (result.rows[0].elements[0].status != DistanceMatrixElementStatus.OK) {
+                System.err.println("DistansMatrixRequest return " + result.rows[0].elements[0].status.name());
+                return false; // not OK
+            }
+
+            return true;//OK
+            //(result.rows[0].elements[0].fare.value.equals(BigDecimal.valueOf(0.0)));
         } catch (ApiException | InterruptedException | IOException e) {
             e.printStackTrace();
-            return false;
+            System.err.println("DistansMatrixRequest caught API's exception");
+            return false;   //bad request
         } catch (NullPointerException e) {
-            return false;
+            System.err.println("DistansMatrixRequest caught NullPointerException");
+            return false;   //no return|not valid input
         }
     }
 
@@ -168,6 +184,10 @@ public class Address {
 
     @Override
     public String toString() {
-        return " " + name;
+        return "Address{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", location=" + location +
+                '}';
     }
 }

@@ -1,5 +1,6 @@
 package edu.netcracker.project.logistic.flow.impl;
 
+import com.google.maps.DirectionsApi;
 import edu.netcracker.project.logistic.dao.OrderTypeDao;
 import edu.netcracker.project.logistic.maps_wrapper.StaticMap;
 import com.google.maps.model.*;
@@ -48,19 +49,19 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
         init(this, this.office);
     }
 
-    private static Comparator<Order> makeOrderComparator(FlowBuilderImpl impl, Office office, boolean useMap, TravelMode travelMode) {
+    protected static Comparator<Order> makeOrderComparator(FlowBuilderImpl impl, LatLng center, boolean useMap, TravelMode travelMode) {
         return (Order o1, Order o2) -> {
             LatLng l1 = o1.getReceiverAddress().getLocation();
-            LatLng l2 = o2.getSenderAddress().getLocation();
+            LatLng l2 = o2.getReceiverAddress().getLocation();
             Double dist1;
             Double dist2;
             if(useMap){
-                dist1 = mapDistance(l1, office.getAddress().getLocation(),travelMode);
-                dist2 = mapDistance(l2, office.getAddress().getLocation(),travelMode);
+                dist1 = mapDistance(l1, center, travelMode);
+                dist2 = mapDistance(l2, center, travelMode);
             }
             else {
-                dist1 = distance(l1, office.getAddress().getLocation());
-                dist2 = distance(l2, office.getAddress().getLocation());
+                dist1 = distance(l1, center);
+                dist2 = distance(l2, center);
             }
             dist1 = updateOrderDistanceIfVip(impl, o1, dist1);
             dist2 = updateOrderDistanceIfVip(impl, o2, dist2);
@@ -70,20 +71,23 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
 
     private static void init(FlowBuilderImpl impl, Office office) {
         travelModeMap = new LinkedHashMap<>();
-        List<OrderType> orderTypes = null;
-        try {
-            orderTypes = new ArrayList<>(impl.orderTypeDao.findAll());
-        } catch(NullPointerException e){
-            orderTypes = new ArrayList<>(3);
-            orderTypes.add(new OrderType((long)1, "Documents", new BigDecimal(1), (long)35, (long)25, (long)2));
-            orderTypes.add(new OrderType((long)2, "Package", new BigDecimal(30), (long)150, (long)150, (long)150));
-            orderTypes.add(new OrderType((long)3, "Cargo", new BigDecimal(1000), (long)170, (long)170, (long)300));
+        {
+            List<OrderType> orderTypes;
+            try {
+                orderTypes = new ArrayList<>(impl.orderTypeDao.findAll());
+            } catch (NullPointerException e) {
+                //TODO: remove this staff before release
+                orderTypes = new ArrayList<>(3);
+                orderTypes.add(new OrderType((long) 1, "Documents", new BigDecimal(1), (long) 35, (long) 25, (long) 2));
+                orderTypes.add(new OrderType((long) 2, "Package", new BigDecimal(30), (long) 150, (long) 150, (long) 150));
+                orderTypes.add(new OrderType((long) 3, "Cargo", new BigDecimal(1000), (long) 170, (long) 170, (long) 300));
+            }
+            for (OrderType ot : orderTypes)
+                travelModeMap.put(ot, ot.getName().equalsIgnoreCase("Cargo") ? TravelMode.DRIVING : TravelMode.WALKING);
         }
-        for(OrderType ot : orderTypes)
-            travelModeMap.put(ot, ot.getId() == 2 ? TravelMode.DRIVING : TravelMode.WALKING);
 
-        impl.walkOrders = new PriorityBlockingQueue<>(11, makeOrderComparator( impl, office,true,TravelMode.WALKING));
-        impl.driveOrders = new PriorityBlockingQueue<>(11, makeOrderComparator(impl, office,true,TravelMode.DRIVING));
+        impl.walkOrders = new PriorityBlockingQueue<>(11, makeOrderComparator( impl, office.getAddress().getLocation(),true,TravelMode.WALKING));
+        impl.driveOrders = new PriorityBlockingQueue<>(11, makeOrderComparator(impl, office.getAddress().getLocation(),true,TravelMode.DRIVING));
 
         Comparator<Person> cp = (Person p1, Person p2) -> {
           /*  LatLng l1 = p1.getLocation();
@@ -109,6 +113,9 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
                     .origins(a)
                     .destinations(b)
                     .mode(travelMode == null ? TravelMode.DRIVING : travelMode)
+                    .avoid(DirectionsApi.RouteRestriction.FERRIES)
+                    .avoid(DirectionsApi.RouteRestriction.TOLLS)
+                    .units(Unit.METRIC)
                     .await();
         } catch (Exception e) {
             e.printStackTrace();
@@ -117,6 +124,10 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
         long distance = 0;
         if(req != null) {
             for(DistanceMatrixElement d :req.rows[0].elements){
+                if(d.status != DistanceMatrixElementStatus.OK){
+                    System.err.println("DistanceMatrixRequest returns " + d.status.name());
+                    return Double.MAX_VALUE;
+                }
                 distance+=d.distance.inMeters;
             }
             return (double)distance;
@@ -135,7 +146,7 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
                 isVIP = true;
                 break;
             }
-            if (role.getRoleName().equalsIgnoreCase("ROLE_VIP_USER")){
+            if (role.getPriority().equals("VIP")){
                 isVIP = true;
                 break;
             }
@@ -147,23 +158,22 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
     }
 
     protected static TravelMode decide(Order o) {
-        return travelModeMap.get(o.getOrderType());
+        return travelModeMap.getOrDefault(o.getOrderType(), TravelMode.DRIVING);
     }
 
     @Override
     public boolean add(Person courier, CourierType type) {
-        //checking if is not a courier
-        //TODO: priority???
-        if (courier.getRoles().contains(new Role((long)(5), "ROLE_COURIER","NULL"))) {//5 == ROLE_COURIER
-            switch (type) {
-                case Walker:
-                    walkCouriers.add(courier);
-                    break;
-                case Driver:
-                    driveCouriers.add(courier);
-                    break;
+        for(Role role : courier.getRoles())
+            if (role.getRoleName().equals("ROLE_COURIER")) {
+                switch (type) {
+                    case Walker:
+                        walkCouriers.add(courier);
+                        return true;
+                    case Driver:
+                        driveCouriers.add(courier);
+                        return true;
+                }
             }
-        }
         return false;
     }
 
@@ -235,9 +245,24 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
         return p;
     }
 
+    public static double metersToEarthDegrees(double meters){
+        return meters*6.0/1000.0;
+    }
+
     // false if adding failed
+    @Override
     public boolean add(Order order) {
-        switch (travelModeMap.get(order.getOrderType())) {
+        if(order == null)
+            return false;
+        if(order.getOrderType() == null)
+            return false;
+        if(order.getOrderStatus() == null)
+            return false;
+        //TODO: check if this can be moved out
+        if(!order.getOrderStatus().getName().equalsIgnoreCase("CONFIRMED"))
+            return false;
+
+        switch (decide(order)) {
             case WALKING:
             case BICYCLING:
             case TRANSIT:
@@ -251,10 +276,6 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
                 return driveOrders.add(order);
         }
         return false;
-    }
-
-    public static double metersToEarthDegrees(double meters){
-        return meters*6.0/1000.0;
     }
 
     @Override
@@ -306,6 +327,9 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
     public boolean isOptimized() {
         return optimize;
     }
+
+    @Override
+    public abstract List<Order> getUnused();
 
     @Override
     public List<Order> getOrders() {

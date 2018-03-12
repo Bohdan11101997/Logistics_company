@@ -41,6 +41,8 @@ public interface FlowBuilder {
 
     boolean isOptimized();
 
+    List<Order> getUnused();
+
     List<Order> getOrders();
 
     List<Order> getOrders(OrderType type);
