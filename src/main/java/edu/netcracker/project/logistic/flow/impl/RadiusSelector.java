@@ -72,13 +72,15 @@ public class RadiusSelector extends FlowBuilderImpl {
     public void newPath(){
         Order pivot = null;
         returnOrders = new ArrayList<>();
+        resultSequence = new ArrayList<>();
+        //returnOrders.addAll(resultSequence);
         do {
             if(pivot != null)
                 returnOrders.add(pivot);
             pivot = pickNextOrder();
-            //TODO: check all branches!
             if(pivot == null)
                 return;
+            searchRadius = 99999.999999;
         } while(!canBePicked(pivot));
 
         duration = 0;
@@ -86,6 +88,7 @@ public class RadiusSelector extends FlowBuilderImpl {
         if(pivot != null) {
             resultSequence.add(pivot);
             center = pivot.getReceiverAddress().getLocation();
+            searchRadius = distance(office.getAddress().getLocation(), center, isUseMapRequests(), travelMode);
             candidates = new PriorityQueue<>(11, makeOrderComparator(this, center, false, null));
 
             switch(courierToPick){
@@ -100,7 +103,8 @@ public class RadiusSelector extends FlowBuilderImpl {
                     break;
             }
 
-            searchRadius = mapDistance(office.getAddress().getLocation(), center, travelMode);
+            staticMap = null;
+            searchRadius = distance(office.getAddress().getLocation(), center,isUseMapRequests(),travelMode);
             currentAproxDistance = searchRadius;
             currentWeight = pivot.getWeight();
         }
@@ -132,10 +136,9 @@ public class RadiusSelector extends FlowBuilderImpl {
     }
 
     private void updateTimeAndDistance(Order next){
-        currentAproxDistance += distance(center,next.getReceiverAddress().getLocation());
-        //currentAproxDistance += mapDistance(center,next.getReceiverAddress().getLocation(),travelMode);
+        currentAproxDistance += distance(center, next.getReceiverAddress().getLocation(), isUseMapRequests(),travelMode);
         //if(!next.getSenderAddress().equals(office.getAddress()))
-        //    currentAproxDistance += Distance(next.getSenderAddress().getLocation(),next.getReceiverAddress().getLocation(),travelMode);
+        //    currentAproxDistance += distance(center, next.getReceiverAddress().getLocation(), isUseMapRequests(),travelMode);
     }
 
     private static boolean nearlyEqual(double a, double b, double tollerance){
@@ -147,7 +150,8 @@ public class RadiusSelector extends FlowBuilderImpl {
         switch(courierToPick){
             case Driver:
                 next = driveOrders.poll();
-                break;
+                if(next != null)
+                    break;
             case Walker:
                 next = walkOrders.poll();
                 break;
@@ -189,31 +193,30 @@ public class RadiusSelector extends FlowBuilderImpl {
         if(resultSequence.size() >= maxOrderCount)
             return false;
 
-        double distance = mapDistance(center,o.getReceiverAddress().getLocation(), travelMode);
-        if(searchRadius <= distance)
+        double distance = distance(office.getAddress().getLocation(), center,isUseMapRequests(), travelMode);
+        if(distance >= searchRadius)
             return false;
-        /*
-         * if(searchRadius <= distance(o.getReceiverAddress().getLocation(), center))
-         *    return false;
-         */
+        if(travelMode != null)//not the first check
         {
-            double maxDistance = 0;
-            double approxSpeed = 0;
+            double maxDistance;
+            double approxSpeed;
             switch (travelMode) {
                 case WALKING:
                     maxDistance = getMaxWalkableDistance();
                     approxSpeed = 5/*km/hour*/;
 
                     //time check
-                    if ((resultSequence.size()+1)*clientWaitingTime+(currentAproxDistance+distance)/(approxSpeed*1000.0/60.0/60.0) > 5*60*60/*working day*/)
+                    if ((resultSequence.size()+1)*clientWaitingTime+(currentAproxDistance+distance)/(approxSpeed*1000.0/60.0/60.0) > 8*60*60/*working day*/)
                         return false;
                     break;
+
+                case DRIVING:
                 default:
                     maxDistance = getMaxDrivableDistance();
                     approxSpeed = 40/*km/hour*/;
 
                     //time check
-                    if ((resultSequence.size()+1)*clientWaitingTime+(currentAproxDistance+distance)/(approxSpeed*1000.0/60.0/60.0) > 7*60*60/*working day*/)
+                    if ((resultSequence.size()+1)*clientWaitingTime+(currentAproxDistance+distance)/(approxSpeed*1000.0/60.0/60.0) > 8*60*60/*working day*/)
                         return false;
                     break;
             }
@@ -350,6 +353,7 @@ public class RadiusSelector extends FlowBuilderImpl {
     public List<Order> confirmCourier() {
         for(Order o : resultSequence){
             o.setCourier(courier);
+
             //TODO: update database
         }
         return resultSequence;

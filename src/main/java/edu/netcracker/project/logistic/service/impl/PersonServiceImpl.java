@@ -15,9 +15,13 @@ public class PersonServiceImpl implements PersonService {
     private PersonCrudDao personCrudDao;
 
     @Autowired
-    public PersonServiceImpl(PersonCrudDao personCrudDao, PasswordEncoder passwordEncoder) {
-        this.passwordEncoder = passwordEncoder;
+    public PersonServiceImpl(PersonCrudDao personCrudDao) {
         this.personCrudDao = personCrudDao;
+    }
+
+    @Autowired
+    public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package edu.netcracker.project.logistic.model;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 public class OrderType {
     private Long id;
@@ -69,6 +70,15 @@ public class OrderType {
 
     public void setMaxLength(Long maxLength) {
         this.maxLength = maxLength;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        OrderType that = (OrderType) o;
+        return Objects.equals(id, that.id) &&
+                name == that.name;
     }
 
     @Override
