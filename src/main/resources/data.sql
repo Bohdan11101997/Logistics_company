@@ -14,7 +14,7 @@ INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALU
 INSERT INTO person(person_id,  user_name, password, contact_id)
 VALUES (1, 'Bohdan', '12121212', 1);
 INSERT INTO person (person_id, user_name, password, contact_id)
-VALUES (2, 'Bohdan1', '12121212', 2);
+VALUES (2, 'Bohdan1', '$2a$10$FaTZAFUbG7UmfDCkAjepf.CY5bHap7wjSsKU02AT6Q7MxB6pgSy1u', 2);
 INSERT INTO person (person_id, user_name, password, contact_id)
 VALUES (3, 'Bohdan2', '12121212', 3);
 INSERT INTO person (person_id, user_name, password, contact_id)

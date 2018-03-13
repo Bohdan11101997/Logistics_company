@@ -1,19 +1,16 @@
 package edu.netcracker.project.logistic.service.impl;
 
-import edu.netcracker.project.logistic.dao.AddressDao;
-import edu.netcracker.project.logistic.dao.ContactDao;
-import edu.netcracker.project.logistic.dao.OrderDao;
-import edu.netcracker.project.logistic.dao.OrderStatusDao;
-import edu.netcracker.project.logistic.model.Address;
-import edu.netcracker.project.logistic.model.Order;
-import edu.netcracker.project.logistic.model.OrderStatus;
+import edu.netcracker.project.logistic.dao.*;
+import edu.netcracker.project.logistic.model.*;
 import edu.netcracker.project.logistic.processing.TaskProcessor;
+import edu.netcracker.project.logistic.processing.TaskProcessorCourier;
 import edu.netcracker.project.logistic.service.OrderService;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class OrderServiceImpl implements OrderService {
@@ -21,15 +18,20 @@ public class OrderServiceImpl implements OrderService {
     private ContactDao contactDao;
     private OrderDao orderDao;
     private OrderStatusDao orderStatusDao;
+    private TaskDao taskDao;
     private TaskProcessor taskProcessor;
+    private TaskProcessorCourier taskProcessorCourier;
 
     public OrderServiceImpl(AddressDao addressDao, ContactDao contactDao, OrderDao orderDao,
-                            OrderStatusDao orderStatusDao, TaskProcessor taskProcessor) {
+                            OrderStatusDao orderStatusDao, TaskDao taskDao, TaskProcessor taskProcessor,
+                            TaskProcessorCourier taskProcessorCourier) {
         this.addressDao = addressDao;
         this.contactDao = contactDao;
         this.orderDao = orderDao;
         this.orderStatusDao = orderStatusDao;
+        this.taskDao = taskDao;
         this.taskProcessor = taskProcessor;
+        this.taskProcessorCourier = taskProcessorCourier;
     }
 
     @Override
@@ -53,8 +55,55 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public void confirmOrder(Long employeeId, Long orderId) {
+        Optional<Order> opt = orderDao.findOne(orderId);
+        if (!opt.isPresent()) {
+            throw new IllegalArgumentException("Employee not found");
+        }
+        Order order = opt.get();
+        Task task = taskDao.findByOrderId(order.getId()).orElseThrow(
+                () -> new IllegalStateException(
+                        String.format("Call centre agent processed order #%d but task not exists", order.getId()))
+        );
+        if (!employeeId.equals(task.getEmployeeId())) {
+            throw new IllegalArgumentException("Can't confirm not assigned order");
+        }
+        order.setOrderStatus(orderStatusDao.findByName("CONFIRMED")
+                .orElseThrow(
+                        () -> new IllegalStateException("Can't find order status 'CONFIRMED'")
+                ));
+        orderDao.save(order);
+        task.setCompleted(true);
+        taskDao.save(task);
+    }
+
+    @Override
+    public void rejectOrder(Long employeeId, Long orderId) {
+        Optional<Order> opt = orderDao.findOne(orderId);
+        if (!opt.isPresent()) {
+            throw new IllegalArgumentException("Employee not found");
+        }
+        Order order = opt.get();
+        Task task = taskDao.findByOrderId(order.getId()).orElseThrow(
+                () -> new IllegalStateException(
+                        String.format("Call centre agent processed order #%d but task not exists", order.getId()))
+        );
+        if (!employeeId.equals(task.getEmployeeId())) {
+            throw new IllegalArgumentException("Can't reject not assigned order");
+        }
+        order.setOrderStatus(orderStatusDao.findByName("DRAFT")
+                .orElseThrow(
+                        () -> new IllegalStateException("Can't find order status 'CONFIRMED'")
+                ));
+        orderDao.save(order);
+        task.setCompleted(true);
+        taskDao.save(task);
+        taskProcessorCourier.createTask(order);
+    }
+
+    @Override
     public List<Order> HistoryCompleteOrderReceiver(Long aLong) {
-        return orderDao.HistoryCompleteOrderReceiver( aLong);
+        return orderDao.HistoryCompleteOrderReceiver(aLong);
     }
 
     @Override
