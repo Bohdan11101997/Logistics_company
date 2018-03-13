@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.mail.MessagingException;
 import javax.validation.Valid;
 import java.security.Principal;
+import java.security.SecureRandom;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -282,6 +283,10 @@ public class AdminController {
     public String doCreateEmployee(Model model,
                                    @ModelAttribute("employee") Person employee,
                                    BindingResult bindingResult) {
+
+        String temporaryPassword = generateRandomPasswordWithSpecifiedLength(12);
+        employee.setPassword(temporaryPassword);
+
         employeeValidator.validateCreateData(employee, bindingResult);
         if (bindingResult.hasErrors()) {
             List<Role> availableRoles = roleService.findEmployeeRoles();
@@ -297,6 +302,17 @@ public class AdminController {
         }
 
         return "redirect:/admin/employees";
+    }
+
+    private String generateRandomPasswordWithSpecifiedLength(int passwordLength){
+
+        final String allowedSymbols = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+        SecureRandom rnd = new SecureRandom();
+
+        StringBuilder sb = new StringBuilder();
+        for( int i = 0; i < passwordLength; i++ )
+            sb.append( allowedSymbols.charAt( rnd.nextInt(allowedSymbols.length()) ) );
+        return sb.toString();
     }
 
     @GetMapping("/crud/office")

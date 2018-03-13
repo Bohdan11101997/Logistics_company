@@ -7,6 +7,7 @@ import edu.netcracker.project.logistic.dao.RoleCrudDao;
 import edu.netcracker.project.logistic.exception.NonUniqueRecordException;
 import edu.netcracker.project.logistic.model.*;
 import edu.netcracker.project.logistic.service.EmployeeService;
+import edu.netcracker.project.logistic.service.PersonService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     private RoleCrudDao roleDao;
     private Environment env;
     private JavaMailSender sender;
+    private PersonService personService;
 
     @Autowired
     public EmployeeServiceImpl(ContactDao contactDao, PersonCrudDao personDao,
@@ -49,17 +51,19 @@ public class EmployeeServiceImpl implements EmployeeService {
         this.sender = sender;
     }
 
+    @Autowired
+    public void setPersonService(PersonService personService) {
+        this.personService = personService;
+    }
+
     @Transactional(rollbackFor = {NonUniqueRecordException.class, DataIntegrityViolationException.class, MessagingException.class})
     @Override
     public Person create(Person employee) throws MessagingException {
         employee.setRegistrationDate(LocalDateTime.now());
 
         contactDao.save(employee.getContact());
-
-        String temporaryPassword = generateRandomPasswordWithSpecifiedLength(12);
-        // password encoder encode!!!
-        employee.setPassword(temporaryPassword);
-        personDao.save(employee);
+        String temporaryPassword = employee.getPassword();
+        personService.savePerson(employee);
 
         MimeMessage mimeMessage = sender.createMimeMessage();
         MimeMessageHelper msg = new MimeMessageHelper(mimeMessage, true, "UTF-8");
@@ -78,16 +82,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employee;
     }
 
-    private String generateRandomPasswordWithSpecifiedLength(int passwordLength){
 
-        final String allowedSymbols = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-        SecureRandom rnd = new SecureRandom();
-
-        StringBuilder sb = new StringBuilder();
-        for( int i = 0; i < passwordLength; i++ )
-            sb.append( allowedSymbols.charAt( rnd.nextInt(allowedSymbols.length()) ) );
-        return sb.toString();
-    }
 
     @Override
     public Person update(Person employee) {
