@@ -64,7 +64,7 @@ public class FlowController {
         if (orderGenDrives == null)
             orderGenDrives = new OrderGenerator(office).setTravelMode(TravelMode.DRIVING);
 
-        FlowBuilder fb = new RadiusSelector(roleService, orderTypeDao, office);
+        FlowBuilder fb = new RadiusSelector(roleService, orderTypeDao, office).optimize(true).setUseMapRequests(false);
         fb.add(orderGenWalks.generate(10));
         fb.add(orderGenDrives.generate(10));
 
@@ -75,25 +75,25 @@ public class FlowController {
         fb.add(new Person("Courier#2", "loggedin", LocalDateTime.now(), new Contact(), couriers), FlowBuilder.CourierType.Driver);
         fb.add(new Person("Courier#3", "loggedin", LocalDateTime.now(), new Contact(), couriers), FlowBuilder.CourierType.Walker);
         fb.add(new Person("Courier#4", "loggedin", LocalDateTime.now(), new Contact(), couriers), FlowBuilder.CourierType.Driver);
-        fb.optimize(true);
 
         logger.info("Begin flow building");
         while (!fb.isFinished()) {
             if (!fb.process()) {
                 logger.error(fb.getError());
 
-                fb.add(fb.getUnused());//return unpicked orders back
+            //fb.add(fb.getUnused());//return unpicked orders back
             }
-
-            try {
-                logger.info("New route finished;");
-                logger.info("Total distance: " + fb.getDistance() + "m");
-                logger.info("Total duration: " + fb.getDuration() * 1.0 / 60 / 60 + "h");
-                logger.info("Map url: " + fb.getStaticMap().toURL().toString() + "\t", fb.getStaticMap().toURL());
-                // return "redirect:" + fb.getStaticMap().toURL().toString();
-            } catch (MalformedURLException e) {
-                logger.error(e.getMessage());
-                //return "redirect:error/300";
+            else {
+                try {
+                    logger.info("New route finished;");
+                    logger.info("Total distance: " + fb.getDistance() + "m");
+                    logger.info("Total duration: " + fb.getDuration() * 1.0 / 60 / 60 + "h");
+                    logger.info("Map url: " + fb.getStaticMap().toURL().toString() + "\t", fb.getStaticMap().toURL());
+                    // return "redirect:" + fb.getStaticMap().toURL().toString();
+                } catch (MalformedURLException e) {
+                    logger.error(e.getMessage());
+                    //return "redirect:error/300";
+                }
             }
         }
         logger.info("End of flow building.");
@@ -113,8 +113,8 @@ public class FlowController {
         if (orderGenDrives == null)
             orderGenDrives = new OrderGenerator(office).setTravelMode(TravelMode.DRIVING);
 
-        System.out.println("Begin flow building");
-        FlowBuilder fb = new RadiusSelector(roleService, orderTypeDao, office);
+        logger.info("Begin flow building");
+        FlowBuilder fb = new RadiusSelector(roleService, orderTypeDao, office).optimize(true).setUseMapRequests(false);
         fb.add(orderGenWalks.generate(10));
         fb.add(orderGenDrives.generate(10));
 
@@ -125,17 +125,17 @@ public class FlowController {
         fb.add(new Person("Courier#2", "loggedin", LocalDateTime.now(), new Contact(), couriers), FlowBuilder.CourierType.Driver);
         fb.add(new Person("Courier#3", "loggedin", LocalDateTime.now(), new Contact(), couriers), FlowBuilder.CourierType.Walker);
         fb.add(new Person("Courier#4", "loggedin", LocalDateTime.now(), new Contact(), couriers), FlowBuilder.CourierType.Driver);
-        fb.optimize(true);
 
         if (!fb.process()) {
-            System.out.println(fb.getError());
+            logger.error(fb.getError());
+            logger.info(Arrays.toString(fb.getOrders().toArray()));
             return "redirect:error/400";
         }
 
         try {
-            System.out.println("End of flow building.");
-            System.out.println("Total distance: " + fb.getDistance() + "m");
-            System.out.println("Total duration: " + fb.getDuration() * 1.0 / 60 / 60 + "h");
+            logger.info("End of flow building.");
+            logger.info("Total distance: " + fb.getDistance() + "m");
+            logger.info("Total duration: " + fb.getDuration() * 1.0 / 60 / 60 + "h");
             return "redirect:" + fb.getStaticMap().toURL().toString();
         } catch (MalformedURLException e) {
             return "redirect:error/300";
@@ -151,7 +151,7 @@ public class FlowController {
     }
 
     class OrderGenerator {
-        private static final double radius = 0.1;//in map values - degrees
+        private static final double radius = 0.125;//in map values - degrees
         private TravelMode travelMode = TravelMode.WALKING;
         public static final int TRY_ITERATIONS = 2;
 
@@ -174,7 +174,7 @@ public class FlowController {
         }
 
         public List<Order> generate(int count, boolean ignoreOld) {
-            if (sequence != null || ignoreOld) {
+            if (sequence != null && !ignoreOld) {
                 if (sequence.size() == count)
                     return sequence;
                 else {
@@ -212,6 +212,7 @@ public class FlowController {
                 o.setReceiverContact(new Contact());
                 o.setSenderContact(new Contact());
                 o.setOrderType(orderTypes.get((int) (Math.random() + 0.33) * (orderTypes.size() - 1)));
+                //
                 o.setWeight(o.getOrderType().getId() == 1 ? BigDecimal.valueOf(Math.random() * 0.5) :
                         (o.getOrderType().getId() == 2 ? BigDecimal.valueOf(Math.random() * 8) : BigDecimal.valueOf(Math.random() * 50)));
                 //TODO: cange to debug

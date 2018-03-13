@@ -1,5 +1,6 @@
 package edu.netcracker.project.logistic.flow;
 
+import com.google.maps.model.TravelMode;
 import edu.netcracker.project.logistic.maps_wrapper.StaticMap;
 import com.google.maps.model.LatLng;
 import edu.netcracker.project.logistic.model.Order;
@@ -8,6 +9,7 @@ import edu.netcracker.project.logistic.model.Person;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 
 public interface FlowBuilder {
@@ -41,6 +43,10 @@ public interface FlowBuilder {
 
     boolean isOptimized();
 
+    boolean isUseMapRequests();
+
+    FlowBuilder setUseMapRequests(boolean useMapRequests);
+
     List<Order> getUnused();
 
     List<Order> getOrders();
@@ -50,6 +56,8 @@ public interface FlowBuilder {
     List<Person> getCouriers();
 
     Queue<Person> getCouriers(CourierType type);
+
+    Map<String,TravelMode> getTravelModeMap();
 
     void clear();
 
