@@ -3,12 +3,12 @@ package edu.netcracker.project.logistic.flow.impl;
 import com.google.maps.*;
 import com.google.maps.errors.ApiException;
 import com.google.maps.model.*;
+import edu.netcracker.project.logistic.dao.CourierDataDao;
 import edu.netcracker.project.logistic.dao.OrderTypeDao;
+import edu.netcracker.project.logistic.flow.FlowBuilder;
 import edu.netcracker.project.logistic.maps_wrapper.StaticMap;
 import edu.netcracker.project.logistic.maps_wrapper.GoogleApiRequest;
-import edu.netcracker.project.logistic.model.Office;
-import edu.netcracker.project.logistic.model.Order;
-import edu.netcracker.project.logistic.model.Person;
+import edu.netcracker.project.logistic.model.*;
 import edu.netcracker.project.logistic.service.RoleService;
 
 import java.io.IOException;
@@ -19,11 +19,11 @@ import java.util.*;
 
 public class RadiusSelector extends FlowBuilderImpl {
     /*
-    * //from super:
-    * protected RoleService roleService;
-    * protected Office office;
-    * protected LatLng center;
-    * */
+     * //from super:
+     * protected RoleService roleService;
+     * protected Office office;
+     * protected LatLng center;
+     * */
     private CourierType courierToPick;
     private TravelMode travelMode;
     private Person courier;
@@ -45,53 +45,35 @@ public class RadiusSelector extends FlowBuilderImpl {
 
     private List<LatLng> path;
 
-    private URL[] icons;
-
-    public RadiusSelector(RoleService roleService, OrderTypeDao orderTypeDao, Office office) {
-        super(roleService, orderTypeDao, office);
+    public RadiusSelector(RoleService roleService, OrderTypeDao orderTypeDao, CourierDataDao courierDataDao, Office office) {
+        super(roleService, orderTypeDao, courierDataDao, office);
         resultSequence = new LinkedList<>();
         center = office.getAddress().getLocation();
         courierToPick = CourierType.Driver;
         returnOrders = new LinkedList<>();
-
-        try {
-            icons = new URL[]{//TODO: max different icons - 5: rework
-                    new URL("https://image.flaticon.com/icons/png/128/46/46021.png"),         //0 - warehouse
-                    new URL("https://image.flaticon.com/icons/png/128/45/45880.png"),         //1 - car
-                    new URL("https://image.flaticon.com/icons/png/128/709/709790.png"),       //2 - carVIP
-                    new URL("https://image.flaticon.com/icons/png/128/93/93375.png"),         //3 - courier
-                    new URL("https://image.flaticon.com/icons/png/128/93/93381.png"),         //4 - courierCar
-                    new URL("https://image.flaticon.com/icons/png/128/45/45968.png"),         //5 - personal
-                    new URL("https://image.flaticon.com/icons/png/128/702/702441.png")        //6 - personalVIP
-            };
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
     }
 
-    public void newPath(){
+    public void newPath() {
         Order pivot = null;
         returnOrders = new ArrayList<>();
         resultSequence = new ArrayList<>();
         //returnOrders.addAll(resultSequence);
+        searchRadius = 99999.999999;
         do {
-            if(pivot != null)
+            if (pivot != null)
                 returnOrders.add(pivot);
             pivot = pickNextOrder();
-            if(pivot == null)
-                return;
-            searchRadius = 99999.999999;
-        } while(!canBePicked(pivot));
+        } while (!canBePicked(pivot));
 
         duration = 0;
         distance = 0;
-        if(pivot != null) {
+        if (pivot != null) {
             resultSequence.add(pivot);
             center = pivot.getReceiverAddress().getLocation();
-            searchRadius = distance(office.getAddress().getLocation(), center, isUseMapRequests(), travelMode);
+            searchRadius = FlowBuilder.distance(office.getAddress().getLocation(), center, isUseMapRequests(), travelMode);
             candidates = new PriorityQueue<>(11, makeOrderComparator(this, center, false, null));
 
-            switch(courierToPick){
+            switch (courierToPick) {
                 case Driver:
                     travelMode = TravelMode.DRIVING;
                     candidates.addAll(driveOrders);
@@ -104,7 +86,7 @@ public class RadiusSelector extends FlowBuilderImpl {
             }
 
             staticMap = null;
-            searchRadius = distance(office.getAddress().getLocation(), center,isUseMapRequests(),travelMode);
+            searchRadius = FlowBuilder.distance(office.getAddress().getLocation(), center, isUseMapRequests(), travelMode);
             currentAproxDistance = searchRadius;
             currentWeight = pivot.getWeight();
         }
@@ -113,44 +95,45 @@ public class RadiusSelector extends FlowBuilderImpl {
     private Person nextCourier() {
         return nextCourier(0);
     }
-    private Person nextCourier(int level){
-        if(level >= 2)
+
+    private Person nextCourier(int level) {
+        if (level >= 2)
             return null;
-        switch(courierToPick){
+        switch (courierToPick) {
             case Walker:
-                if(walkCouriers.isEmpty()) {
+                if (walkCouriers.isEmpty()) {
                     courierToPick = CourierType.Driver;
                     travelMode = TravelMode.DRIVING;
-                    return nextCourier(level+1);
+                    return nextCourier(level + 1);
                 }
                 return walkCouriers.poll();
             case Driver:
-                if(driveCouriers.isEmpty()) {
+                if (driveCouriers.isEmpty()) {
                     courierToPick = CourierType.Walker;
                     travelMode = TravelMode.WALKING;
-                    return nextCourier(level+1);
+                    return nextCourier(level + 1);
                 }
                 return driveCouriers.poll();
         }
         return null;
     }
 
-    private void updateTimeAndDistance(Order next){
-        currentAproxDistance += distance(center, next.getReceiverAddress().getLocation(), isUseMapRequests(),travelMode);
+    private void updateTimeAndDistance(Order next) {
+        currentAproxDistance += FlowBuilder.distance(center, next.getReceiverAddress().getLocation(), isUseMapRequests(), travelMode);
         //if(!next.getSenderAddress().equals(office.getAddress()))
-        //    currentAproxDistance += distance(center, next.getReceiverAddress().getLocation(), isUseMapRequests(),travelMode);
+        //    currentAproxDistance += FlowBuilder.distance(center, next.getReceiverAddress().getLocation(), isUseMapRequests(),travelMode);
     }
 
-    private static boolean nearlyEqual(double a, double b, double tollerance){
-        return Math.abs(a-b) < tollerance;
+    private static boolean nearlyEqual(double a, double b, double tollerance) {
+        return Math.abs(a - b) < tollerance;
     }
 
-    private Order pickNextOrder(){
+    private Order pickNextOrder() {
         Order next = null;
-        switch(courierToPick){
+        switch (courierToPick) {
             case Driver:
                 next = driveOrders.poll();
-                if(next != null)
+                if (next != null)
                     break;
             case Walker:
                 next = walkOrders.poll();
@@ -180,23 +163,22 @@ public class RadiusSelector extends FlowBuilderImpl {
                     returnOrders.add(next);
             }
             return next;
-        }
-        catch (NullPointerException e){
+        } catch (NullPointerException e) {
             returnOrders.add(next);
             return next;
         }
     }
 
-    private boolean canBePicked(Order o){
-        if(o == null)
+    private boolean canBePicked(Order o) {
+        if (o == null)
             return false;
-        if(resultSequence.size() >= maxOrderCount)
+        if (resultSequence.size() >= maxOrderCount)
             return false;
 
-        double distance = distance(office.getAddress().getLocation(), center,isUseMapRequests(), travelMode);
-        if(distance >= searchRadius)
+        double distance = FlowBuilder.distance(office.getAddress().getLocation(), center, isUseMapRequests(), travelMode);
+        if (distance >= searchRadius)
             return false;
-        if(travelMode != null)//not the first check
+        if (travelMode != null)//not the first check
         {
             double maxDistance;
             double approxSpeed;
@@ -206,7 +188,7 @@ public class RadiusSelector extends FlowBuilderImpl {
                     approxSpeed = 5/*km/hour*/;
 
                     //time check
-                    if ((resultSequence.size()+1)*clientWaitingTime+(currentAproxDistance+distance)/(approxSpeed*1000.0/60.0/60.0) > 8*60*60/*working day*/)
+                    if ((resultSequence.size() + 1) * clientWaitingTime + (currentAproxDistance + distance) / (approxSpeed * 1000.0 / 60.0 / 60.0) > 8 * 60 * 60/*working day*/)
                         return false;
                     break;
 
@@ -216,17 +198,17 @@ public class RadiusSelector extends FlowBuilderImpl {
                     approxSpeed = 40/*km/hour*/;
 
                     //time check
-                    if ((resultSequence.size()+1)*clientWaitingTime+(currentAproxDistance+distance)/(approxSpeed*1000.0/60.0/60.0) > 8*60*60/*working day*/)
+                    if ((resultSequence.size() + 1) * clientWaitingTime + (currentAproxDistance + distance) / (approxSpeed * 1000.0 / 60.0 / 60.0) > 8 * 60 * 60/*working day*/)
                         return false;
                     break;
             }
             //distance check
-            if (currentAproxDistance+distance > maxDistance)
+            if (currentAproxDistance + distance > maxDistance)
                 return false;
         }
 
         //weight check
-        if(currentWeight.compareTo(o.getOrderType().getMaxWeight()) > 0)
+        if (currentWeight.compareTo(o.getOrderType().getMaxWeight()) > 0)
             return false;
 
 
@@ -234,19 +216,19 @@ public class RadiusSelector extends FlowBuilderImpl {
         return true;
     }
 
-    public void setOrderComparator(Comparator<Order> c){
-        List<Order> tmp = new ArrayList<>(candidates.size()+1);
+    public void setOrderComparator(Comparator<Order> c) {
+        List<Order> tmp = new ArrayList<>(candidates.size() + 1);
         tmp.addAll(candidates);
-        candidates = new  PriorityQueue<>((tmp.size()+1), c);
+        candidates = new PriorityQueue<>((tmp.size() + 1), c);
     }
 
-    public RadiusSelector setMaxRadiusStep(int step){
+    public RadiusSelector setMaxRadiusStep(int step) {
         this.MAX_RADIUS_STEPS = step;
         return this;
     }
 
     @Override
-    public List<Order> getUnused(){
+    public List<Order> getUnused() {
         return returnOrders;
     }
 
@@ -260,11 +242,10 @@ public class RadiusSelector extends FlowBuilderImpl {
     @Override
     public List<Order> calculatePath() {
         LatLng[] waypoints = new LatLng[resultSequence.size()];
-        for(int i = 0; i < waypoints.length; i++)
+        for (int i = 0; i < waypoints.length; i++)
             waypoints[i] = resultSequence.get(i).getReceiverAddress().getLocation();
 
-
-        switch(courierToPick){
+        switch (courierToPick) {
             case Walker:
                 travelMode = TravelMode.WALKING;
                 break;
@@ -289,10 +270,9 @@ public class RadiusSelector extends FlowBuilderImpl {
             errorMessage = "StaticMapsError";
             return resultSequence;  //early out
         }
-        if(directionsResult.geocodedWaypoints[0].geocoderStatus != GeocodedWaypointStatus.OK){
+        if (directionsResult.geocodedWaypoints[0].geocoderStatus != GeocodedWaypointStatus.OK) {
             System.err.println("DirectionsApi returned ZERO_RESULTS");
-        }
-        else {
+        } else {
             path = directionsResult.routes[0].overviewPolyline.decodePath();
             staticMap = GoogleApiRequest.StaticMap()
                     .center(new StaticMap.GeoPoint(center.lat, center.lng))
@@ -311,36 +291,32 @@ public class RadiusSelector extends FlowBuilderImpl {
                 new StaticMap.GeoPoint(office.getAddress().getLocation().lat, office.getAddress().getLocation().lng));
 
         List<Order> return_value = new ArrayList<>(waypoints.length);
-        for(int i : directionsResult.routes[0].waypointOrder)
+        for (int i : directionsResult.routes[0].waypointOrder)
             return_value.add(resultSequence.get(i));
 
         resultSequence = return_value;
         //client markers
-        List<StaticMap.GeoPoint> markers = new ArrayList<>();
         {
             int index = 0;
             for (Order o : resultSequence) {
-                markers.add(new StaticMap.GeoPoint(
-                        o.getReceiverAddress().getLocation().lat, o.getReceiverAddress().getLocation().lng)
-                );
                 int color = 0xffffff;
-                switch(decide(o)){
-                    case WALKING: color = 0x33ff33; break;
-                    case DRIVING: color = 0x3333ff; break;
+                switch (decide(o)) {
+                    case WALKING:
+                        color = 0x33ff33;
+                        break;
+                    case DRIVING:
+                        color = 0x3333ff;
+                        break;
+                }
+                if (isVip(o)) {
+                    color = color & 0x00ffff + 0xff0000;
                 }
                 staticMap.marker(
                         new StaticMap.Marker.Style.Builder().label((char) ((index++) % 10 + '0')).color(color).build(),
                         new StaticMap.GeoPoint(
                                 o.getReceiverAddress().getLocation().lat, o.getReceiverAddress().getLocation().lng)
                 );
-                //staticMap.marker(o.getReceiverAddress().getName());
             }
-        /*
-        staticMap.marker(
-                new StaticMap.Marker.Style.Builder().label('P').color(0xff0000).build(),
-                markers.toArray(new StaticMap.GeoPoint[] {})
-                );
-        */
             //TODO: set via interface
             staticMap.size(640, 640)
                     .scale(2);
@@ -351,11 +327,23 @@ public class RadiusSelector extends FlowBuilderImpl {
 
     @Override
     public List<Order> confirmCourier() {
-        for(Order o : resultSequence){
-            o.setCourier(courier);
+        try {
+            for (Order o : resultSequence) {
+                CourierData cd = courierDataDao.findOne(courier).get();
+                while (cd == null) {
+                    if (getCouriers().size() == 0)
+                        throw new IllegalStateException("No couriers data's in the base");
+                    courier = nextCourier();
+                    cd = courierDataDao.findOne(courier).get();
+                }
+                o.setCourier(courier);
+                cd.setCourierStatus(CourierStatus.ON_WAY);
 
-            //TODO: update database
+            }
+        } catch (IllegalStateException e) {
+            System.err.println("IllegalStateException + " + e.getMessage());
         }
+        //TODO: update database
         return resultSequence;
     }
 
@@ -366,7 +354,7 @@ public class RadiusSelector extends FlowBuilderImpl {
 
     @Override
     public List<LatLng> getPath() {
-        if(path == null){
+        if (path == null) {
             calculatePath();
         }
         return path;
@@ -374,57 +362,57 @@ public class RadiusSelector extends FlowBuilderImpl {
 
     @Override
     public StaticMap getStaticMap() {
-        if(staticMap == null){
+        if (staticMap == null) {
             calculatePath();
         }
         return staticMap;
     }
 
     @Override
-    public long getDistance(){
-        if(distance == 0){
+    public long getDistance() {
+        if (distance == 0) {
             calculatePath();
         }
         return distance;
     }
 
     @Override
-    public long getDuration(){
-        if(duration == 0){
+    public long getDuration() {
+        if (duration == 0) {
             calculatePath();
         }
-        return duration*resultSequence.size()*clientWaitingTime;
+        return duration * resultSequence.size() * clientWaitingTime;
     }
 
     @Override
     public boolean process() {
-        for(int i = 0; i < MAX_RADIUS_STEPS && candidates == null; i++){
-            searchRadius*=radiusModifier;
+        for (int i = 0; i < MAX_RADIUS_STEPS && candidates == null; i++) {
+            searchRadius *= radiusModifier;
             newPath();
         }
 
-        if(candidates == null) {
+        if (candidates == null) {
             errorMessage = "Candidats queue wasn`t created.";
             return false;
         }
 
-        for(int i = 0; i < MAX_RADIUS_STEPS && candidates.size()==0; i++){
-            searchRadius*=radiusModifier;
+        for (int i = 0; i < MAX_RADIUS_STEPS && candidates.size() == 0; i++) {
+            searchRadius *= radiusModifier;
             newPath();
         }
 
-        if(candidates.size() == 0) {
+        if (candidates.size() == 0 && resultSequence.size() == 0) {
             errorMessage = "There are no candidates.";
             return false;
         }
 
         courier = nextCourier();
-        if(courier == null) {
+        if (courier == null) {
             errorMessage = "There are no couriers.";
             return false;
         }
 
-        for(int i = 0; i < MAX_RADIUS_STEPS; i++) {
+        for (int i = 0; i < MAX_RADIUS_STEPS; i++) {
             searchRadius *= radiusModifier;
             while (null != pickNextOrder()) ;
         }
@@ -432,7 +420,7 @@ public class RadiusSelector extends FlowBuilderImpl {
         resultSequence = calculatePath();
         confirmCourier();
 
-        if(candidates != null) {
+        if (candidates != null) {
             if (candidates.size() > 0)
                 this.add(candidates);
             candidates = null;

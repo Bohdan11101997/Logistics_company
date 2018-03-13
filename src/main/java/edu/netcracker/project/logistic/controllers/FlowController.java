@@ -6,15 +6,15 @@ import com.google.maps.model.DistanceMatrix;
 import com.google.maps.model.DistanceMatrixElementStatus;
 import com.google.maps.model.LatLng;
 import com.google.maps.model.TravelMode;
+import edu.netcracker.project.logistic.dao.CourierDataDao;
+import edu.netcracker.project.logistic.dao.OrderDao;
 import edu.netcracker.project.logistic.dao.OrderTypeDao;
 import edu.netcracker.project.logistic.flow.FlowBuilder;
+import edu.netcracker.project.logistic.flow.impl.FlowBuilderImpl;
 import edu.netcracker.project.logistic.flow.impl.RadiusSelector;
 import edu.netcracker.project.logistic.maps_wrapper.GoogleApiRequest;
 import edu.netcracker.project.logistic.model.*;
-import edu.netcracker.project.logistic.service.EmployeeService;
-import edu.netcracker.project.logistic.service.OfficeService;
-import edu.netcracker.project.logistic.service.PersonService;
-import edu.netcracker.project.logistic.service.RoleService;
+import edu.netcracker.project.logistic.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,18 +38,79 @@ public class FlowController {
     private RoleService roleService;
     private EmployeeService employeeService;
     private OrderTypeDao orderTypeDao;
+    private OrderDao orderDao;
+    private CourierDataDao courierDataDao;
 
     private OrderGenerator orderGenWalks = null;
     private OrderGenerator orderGenDrives = null;
 
 
     @Autowired
-    public FlowController(PersonService personService, OfficeService officeService, RoleService roleService, EmployeeService employeeService, OrderTypeDao orderTypeDao) {
+    public FlowController(PersonService personService,
+                          OfficeService officeService,
+                          RoleService roleService,
+                          EmployeeService employeeService,
+                          OrderTypeDao orderTypeDao,
+                          OrderDao orderDao,
+                          CourierDataDao courierDataDao) {
         this.personService = personService;
         this.officeService = officeService;
         this.roleService = roleService;
         this.employeeService = employeeService;
         this.orderTypeDao = orderTypeDao;
+        this.orderDao = orderDao;
+        this.courierDataDao = courierDataDao;
+    }
+
+    @RequestMapping(value = "/route", method = RequestMethod.GET)
+    public String generateRoutes(){
+        for(Office office : officeService.allOffices()) {
+            List<Order>  global = orderDao.findNotProcessed();
+            List<Person> couriers = employeeService.findCouriers();
+            List<Order> local = new ArrayList<>();
+            for(Order o : global){
+                if(o.getOffice() == office)
+                    local.add(o);
+                else if(o.getOffice() == null && FlowBuilder.distance(
+                        office.getAddress().getLocation(),
+                        o.getReceiverAddress().getLocation(),
+                        true, TravelMode.DRIVING) < 9999.9999);//TODO: add finding the closest one
+                    local.add(o);
+            }
+
+            FlowBuilder fb = new RadiusSelector(roleService, orderTypeDao, courierDataDao, office)
+                    .optimize(true)
+                    .setUseMapRequests(true);
+            fb.add(local);
+            for(Person p : couriers) {
+                CourierData cd = courierDataDao.findOne(p).get();
+                if (cd != null)
+                    if(cd.getCourierStatus().name() == "FREE")
+                    fb.add(p, cd.getTravelMode() == TravelMode.DRIVING ? FlowBuilder.CourierType.Driver : FlowBuilder.CourierType.Walker);
+            }
+
+            logger.info("Begin flow building");
+            while (!fb.isFinished()) {
+                if (!fb.process()) {
+                    logger.error(fb.getError());
+                    //global.add(fb.getUnused());//return unpicked orders back
+                } else {
+                    try {
+                        System.out.print(" \b");
+                        logger.info("New route finished;");
+                        logger.info("Total distance: " + fb.getDistance() + "m");
+                        logger.info("Total duration: " + fb.getDuration() * 1.0 / 60 / 60 + "h");
+                        logger.info("Map url: " + fb.getStaticMap().toURL().toString() + "\t", fb.getStaticMap().toURL());
+                        // return "redirect:" + fb.getStaticMap().toURL().toString();
+                    } catch (MalformedURLException e) {
+                        logger.error(e.getMessage());
+                        //return "redirect:error/300";
+                    }
+                }
+            }
+            logger.info("End of flow building.");
+        }
+        return "/flow";
     }
 
     @RequestMapping(value = "/test", method = RequestMethod.GET)
@@ -64,9 +125,10 @@ public class FlowController {
         if (orderGenDrives == null)
             orderGenDrives = new OrderGenerator(office).setTravelMode(TravelMode.DRIVING);
 
-        FlowBuilder fb = new RadiusSelector(roleService, orderTypeDao, office).optimize(true).setUseMapRequests(false);
-        fb.add(orderGenWalks.generate(10));
-        fb.add(orderGenDrives.generate(10));
+        FlowBuilder fb = new RadiusSelector(roleService, orderTypeDao, courierDataDao, office)
+                .optimize(true)
+                .setUseMapRequests(false);
+        fb.add(orderGenWalks.generate(20));
 
         Set<Role> couriers = new HashSet<>();
         couriers.add(new Role((long) (7), "ROLE_COURIER", null));
@@ -85,6 +147,7 @@ public class FlowController {
             }
             else {
                 try {
+                    System.out.print("");
                     logger.info("New route finished;");
                     logger.info("Total distance: " + fb.getDistance() + "m");
                     logger.info("Total duration: " + fb.getDuration() * 1.0 / 60 / 60 + "h");
@@ -114,9 +177,10 @@ public class FlowController {
             orderGenDrives = new OrderGenerator(office).setTravelMode(TravelMode.DRIVING);
 
         logger.info("Begin flow building");
-        FlowBuilder fb = new RadiusSelector(roleService, orderTypeDao, office).optimize(true).setUseMapRequests(false);
-        fb.add(orderGenWalks.generate(10));
-        fb.add(orderGenDrives.generate(10));
+        FlowBuilder fb = new RadiusSelector(roleService, orderTypeDao, courierDataDao, office)
+                .optimize(true)
+                .setUseMapRequests(false);
+        fb.add(orderGenWalks.generate(20));
 
         Set<Role> couriers = new HashSet<>();
         couriers.add(new Role((long) (7), "ROLE_COURIER", null));

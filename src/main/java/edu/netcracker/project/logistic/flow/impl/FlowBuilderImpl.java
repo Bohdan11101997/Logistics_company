@@ -1,6 +1,7 @@
 package edu.netcracker.project.logistic.flow.impl;
 
 import com.google.maps.DirectionsApi;
+import edu.netcracker.project.logistic.dao.CourierDataDao;
 import edu.netcracker.project.logistic.dao.OrderTypeDao;
 import edu.netcracker.project.logistic.maps_wrapper.StaticMap;
 import com.google.maps.model.*;
@@ -30,6 +31,7 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
 
     protected RoleService roleService;
     protected OrderTypeDao orderTypeDao;
+    protected CourierDataDao courierDataDao;
 
     protected static Map<String, TravelMode> travelModeMap;
 
@@ -43,8 +45,10 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
 
     protected String errorMessage = "No error";
 
-    public FlowBuilderImpl(RoleService roleService, OrderTypeDao orderTypeDao, Office office) {
+    public FlowBuilderImpl(RoleService roleService, OrderTypeDao orderTypeDao, CourierDataDao courierDataDao, Office office) {
         this.roleService = roleService;
+        this.courierDataDao = courierDataDao;
+        this.orderTypeDao = orderTypeDao;
         this.office = office;
         this.center = office.getAddress().getLocation();
 
@@ -67,7 +71,7 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
     }
 
     @Override
-    public Map<String,TravelMode> getTravelModeMap(){
+    public Map<String, TravelMode> getTravelModeMap() {
         return travelModeMap;
     }
 
@@ -78,11 +82,11 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
             Double dist1;
             Double dist2;
             if (useMap) {
-                dist1 = mapDistance(l1, center, travelMode);
-                dist2 = mapDistance(l2, center, travelMode);
+                dist1 = FlowBuilder.mapDistance(l1, center, travelMode);
+                dist2 = FlowBuilder.mapDistance(l2, center, travelMode);
             } else {
-                dist1 = distance(l1, center);
-                dist2 = distance(l2, center);
+                dist1 = FlowBuilder.distance(l1, center);
+                dist2 = FlowBuilder.distance(l2, center);
             }
             dist1 = updateOrderDistanceIfVip(impl, o1, dist1);
             dist2 = updateOrderDistanceIfVip(impl, o2, dist2);
@@ -108,72 +112,56 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
 
     }
 
-    protected static double distance(LatLng a, LatLng b, boolean useMap, TravelMode travelMode) {
-        if (useMap)
-            return mapDistance(a, b, travelMode);
-        else
-            return distance(a, b);
-    }
-
-    protected static double distance(LatLng a, LatLng b) {
-        double value =  Math.sqrt(
-                Math.pow(a.lat - b.lat, 2) +
-                Math.pow(a.lng - b.lng, 2));
-        return value;
-    }
-
-    protected static double mapDistance(LatLng a, LatLng b, TravelMode travelMode) {
-        DistanceMatrix req = null;
-        try {
-            req = GoogleApiRequest.DistanceMatrixApi()
-                    .origins(a)
-                    .destinations(b)
-                    .mode(travelMode == null ? TravelMode.DRIVING : travelMode)
-                    .avoid(DirectionsApi.RouteRestriction.FERRIES)
-                    .avoid(DirectionsApi.RouteRestriction.TOLLS)
-                    .units(Unit.METRIC)
-                    .await();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        long distance = 0;
-        if (req != null) {
-            for (DistanceMatrixElement d : req.rows[0].elements) {
-                if (d.status != DistanceMatrixElementStatus.OK) {
-                    System.err.println("DistanceMatrixRequest returns " + d.status.name());
-                    return Double.MAX_VALUE;
-                }
-                distance += d.distance.inMeters;
+    protected boolean isVip( Order o){
+        for (Role role :
+                this.roleService.findRolesByPersonId(
+                        o.getSenderContact().getContactId()
+                )) {
+            if (role.isEmployeeRole()) {
+                return true;
             }
-            return (double) distance;
-        } else
-            return Double.MAX_VALUE;
+            if (role.getPriority().equals("VIP")) {
+                return true;
+            }
+        }
+        return  false;
     }
 
-    protected static double updateOrderDistanceIfVip(FlowBuilderImpl impl, Order o, double distance) {
-        boolean isVIP = false;
+    protected static boolean isVip(FlowBuilderImpl impl, Order o){
         for (Role role :
                 impl.roleService.findRolesByPersonId(
                         o.getSenderContact().getContactId()
                 )) {
             if (role.isEmployeeRole()) {
-                isVIP = true;
-                break;
+                return true;
             }
             if (role.getPriority().equals("VIP")) {
-                isVIP = true;
-                break;
+                return true;
             }
         }
-        if (isVIP) {
+        return  false;
+    }
+
+    protected static double updateOrderDistanceIfVip(FlowBuilderImpl impl, Order o, double distance) {
+        if (impl.isVip(o)) {
             distance = (Double.MIN_VALUE + distance);
         }
         return distance;
     }
 
     protected static TravelMode decide(Order o) {
-        return travelModeMap.getOrDefault(o.getOrderType(), TravelMode.WALKING);
+        //return travelModeMap.getOrDefault(o.getOrderType(), TravelMode.WALKING);
+        switch (o.getOrderType().getId().intValue()) {
+            case 1:
+                return TravelMode.WALKING;
+            case 2:
+                return TravelMode.WALKING;
+            case 3:
+                return TravelMode.DRIVING;
+            default:
+                return TravelMode.DRIVING;
+
+        }
     }
 
     @Override
@@ -281,9 +269,9 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
             case WALKING:
             case BICYCLING:
             case TRANSIT:
-                if (distance(order.getReceiverAddress().getLocation(), office.getAddress().getLocation()) < metersToEarthDegrees(maxWalkableDistance) / 8) {
+                if (FlowBuilder.distance(order.getReceiverAddress().getLocation(), office.getAddress().getLocation()) < metersToEarthDegrees(maxWalkableDistance) / 8) {
                     if (!(order.getSenderAddress() == null ||
-                            distance(order.getSenderAddress().getLocation(),
+                            FlowBuilder.distance(order.getSenderAddress().getLocation(),
                                     office.getAddress().getLocation()) > metersToEarthDegrees(maxWalkableDistance) / 8))
                         return walkOrders.add(order);
                 }

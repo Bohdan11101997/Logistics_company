@@ -184,6 +184,17 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    public List<Person> findCouriers() {
+        Optional<Role> courier = roleDao.getByName("ROLE_COURIER");
+        if (!courier.isPresent()) {
+            String errorMsg = "Role for couriers not found";
+            logger.error(errorMsg);
+            throw new IllegalStateException(errorMsg);
+        }
+        return personDao.findByRoleId(courier.get().getRoleId());
+    }
+
+    @Override
     public boolean contains(Long id) {
         return findOne(id).isPresent();
     }
