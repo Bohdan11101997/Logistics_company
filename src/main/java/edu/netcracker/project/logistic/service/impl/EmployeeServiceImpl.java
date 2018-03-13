@@ -61,28 +61,44 @@ public class EmployeeServiceImpl implements EmployeeService {
     public Person create(Person employee) throws MessagingException {
         employee.setRegistrationDate(LocalDateTime.now());
 
+        addUserRoleToPerson(employee);
+
         contactDao.save(employee.getContact());
         String temporaryPassword = employee.getPassword();
         personService.savePerson(employee);
 
+        String email = employee.getContact().getEmail();
+        String username = employee.getUserName();
+        sendMessageWithNewCredentialsOnMail(email, username, temporaryPassword);
+
+        return employee;
+    }
+
+    private void addUserRoleToPerson(Person person){
+        Optional<Role> optionalUserRole = roleDao.getByName("ROLE_USER");
+        if (!optionalUserRole.isPresent()){
+            logger.error("No role with name ROLE_USER");
+        }
+
+        Role userRole = optionalUserRole.get();
+        person.getRoles().add(userRole);
+    }
+
+    private void sendMessageWithNewCredentialsOnMail(String email, String username, String temporaryPassword) throws MessagingException {
         MimeMessage mimeMessage = sender.createMimeMessage();
         MimeMessageHelper msg = new MimeMessageHelper(mimeMessage, true, "UTF-8");
         msg.setSubject("Successful registration!");
         String from = env.getProperty("spring.mail.username");
         msg.setFrom(from);
-        msg.setTo(employee.getContact().getEmail());
+        msg.setTo(email);
         msg.setText("You have been registered in our logistic company service!\n" +
                 "You can login with credentials below.\n" +
-                "Username: " + employee.getUserName() + "\n" +
+                "Username: " + username + "\n" +
                 "Password: " + temporaryPassword + "\n" +
                 "We recommend you log in and change temporary password!", false);
 
         sender.send(mimeMessage);
-
-        return employee;
     }
-
-
 
     @Override
     public Person update(Person employee) {
