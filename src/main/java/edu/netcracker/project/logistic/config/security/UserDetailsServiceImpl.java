@@ -31,17 +31,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     private PersonService personService;
     private RoleService roleService;
-    private PasswordEncoder passwordEncoder;
-    private JdbcTemplate jdbcTemplate;
 
     @Autowired
     public UserDetailsServiceImpl(PersonService personService,
-                                  RoleService roleService,
-                                  JdbcTemplate jdbcTemplate) {
+                                  RoleService roleService) {
         this.personService = personService;
         this.roleService = roleService;
-        this.passwordEncoder = passwordEncoder;
-        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override

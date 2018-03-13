@@ -12,6 +12,8 @@ import edu.netcracker.project.logistic.service.AdvertisementService;
 import edu.netcracker.project.logistic.validation.AdvertisementValidator;
 import edu.netcracker.project.logistic.validation.EmployeeValidator;
 import edu.netcracker.project.logistic.validation.SearchFormValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
@@ -19,8 +21,10 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import javax.validation.Valid;
 import java.security.Principal;
+import java.security.SecureRandom;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -31,6 +35,8 @@ import static java.util.concurrent.ForkJoinPool.commonPool;
 @Controller
 @RequestMapping(value = "/admin")
 public class AdminController {
+
+    private final Logger logger = LoggerFactory.getLogger(RegistrationController.class);
 
     private static final int INITIAL_PAGE_SIZE = 20;
     private static final int BUTTONS_TO_SHOW = 5;
@@ -279,6 +285,10 @@ public class AdminController {
     public String doCreateEmployee(Model model,
                                    @ModelAttribute("employee") Person employee,
                                    BindingResult bindingResult) {
+
+        String temporaryPassword = generateRandomPasswordWithSpecifiedLength(12);
+        employee.setPassword(temporaryPassword);
+
         employeeValidator.validateCreateData(employee, bindingResult);
         if (bindingResult.hasErrors()) {
             List<Role> availableRoles = roleService.findEmployeeRoles();
@@ -286,8 +296,25 @@ public class AdminController {
             model.addAttribute("availableRoles", availableRoles);
             return "/admin/admin_crud_employee";
         }
-        employeeService.create(employee);
+
+        try {
+            employeeService.create(employee);
+        } catch (MessagingException e) {
+            logger.error("Exception caught when sending confirmation mail", e);
+        }
+
         return "redirect:/admin/employees";
+    }
+
+    private String generateRandomPasswordWithSpecifiedLength(int passwordLength){
+
+        final String allowedSymbols = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+        SecureRandom rnd = new SecureRandom();
+
+        StringBuilder sb = new StringBuilder();
+        for( int i = 0; i < passwordLength; i++ )
+            sb.append( allowedSymbols.charAt( rnd.nextInt(allowedSymbols.length()) ) );
+        return sb.toString();
     }
 
     @GetMapping("/crud/office")
