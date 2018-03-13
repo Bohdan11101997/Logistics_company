@@ -9,6 +9,8 @@ import edu.netcracker.project.logistic.model.Role;
 import org.springframework.validation.Errors;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public abstract class AbstractPersonValidator {
@@ -34,6 +36,10 @@ public abstract class AbstractPersonValidator {
         Person person = personDao.findOne(employee.getId()).orElse(employee);
         employee.getContact().setContactId(person.getContact().getContactId());
 
+        String phoneNumber = employee.getContact().getPhoneNumber();
+        phoneNumber = phoneNumber.replaceAll("[()-]", "").replaceAll("\\s+", "");
+        employee.getContact().setPhoneNumber(phoneNumber);
+
         Contact contact = employee.getContact();
         List<Contact> duplicates =
                 contactDao.findByPhoneNumberOrEmail(contact.getPhoneNumber(), contact.getEmail());
@@ -43,6 +49,12 @@ public abstract class AbstractPersonValidator {
             } else if (!d.getContactId().equals(contact.getContactId()) && d.getPhoneNumber().equals(contact.getPhoneNumber())) {
                 errors.rejectValue("contact.phoneNumber", "Already exists.");
             }
+        }
+
+        String regex = "^\\+[1-9]{1}[0-9]{3,14}$";
+        Matcher matcher = Pattern.compile(regex).matcher(contact.getPhoneNumber());
+        if (!matcher.matches()){
+            errors.rejectValue("contact.phoneNumber", "Incorrect.phone");
         }
     }
 }

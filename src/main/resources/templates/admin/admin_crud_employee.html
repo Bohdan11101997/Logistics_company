@@ -78,8 +78,8 @@
                                    oninput="clearErrorStyles(this)"
                                    th:field="*{contact.phoneNumber}"/>
                             <div class="has-error help-block"
-                                 th:if="${#fields.hasErrors('contact.phoneNumber')}">
-                                Sorry, but this phone number is already taken.
+                                 th:if="${#fields.hasErrors('contact.phoneNumber')}"
+                                 th:errors="*{contact.phoneNumber}">
                             </div>
                         </div>
 
@@ -209,6 +209,13 @@
     </script>
     <script type="text/javascript" th:if="${newEmployee}">
         document.getElementById('crud_employee').className='active';
+    </script>
+    <script>
+        function phonenumber(inputtxt)
+        {
+            var phoneno = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
+            return(inputtxt.value.match(phoneno));
+        }
     </script>
 </body>
 </html>

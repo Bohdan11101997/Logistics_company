@@ -9,6 +9,8 @@ import org.springframework.validation.SmartValidator;
 import org.springframework.validation.Validator;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Component
 public class ContactValidator implements Validator {
@@ -28,7 +30,13 @@ public class ContactValidator implements Validator {
     @Override
     public void validate(Object o, Errors errors) {
         Contact contact = (Contact) o;
+
+        String phoneNumber = contact.getPhoneNumber();
+        phoneNumber = phoneNumber.replaceAll("[()-]", "").replaceAll("\\s+", "");
+        contact.setPhoneNumber(phoneNumber);
+
         checkDuplicatesForPhoneNumberOrEmail(contact, errors);
+        checkCorrectPhoneNumber(contact, errors);
     }
 
     private void checkDuplicatesForPhoneNumberOrEmail(Contact contact, Errors errors) {
@@ -40,6 +48,14 @@ public class ContactValidator implements Validator {
             } else if (!d.getContactId().equals(contact.getContactId()) && d.getPhoneNumber().equals(contact.getPhoneNumber())) {
                 errors.rejectValue("phoneNumber", "Duplicate.phone");
             }
+        }
+    }
+
+    private void checkCorrectPhoneNumber(Contact contact, Errors errors){
+        String regex = "^\\+[1-9]{1}[0-9]{3,14}$";
+        Matcher matcher = Pattern.compile(regex).matcher(contact.getPhoneNumber());
+        if (!matcher.matches()){
+            errors.rejectValue("phoneNumber", "Incorrect.phone");
         }
     }
 }
