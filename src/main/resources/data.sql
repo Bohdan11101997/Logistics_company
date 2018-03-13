@@ -14,7 +14,7 @@ INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALU
 INSERT INTO person(person_id,  user_name, password, contact_id)
 VALUES (1, 'Bohdan', '12121212', 1);
 INSERT INTO person (person_id, user_name, password, contact_id)
-VALUES (2, 'Bohdan1', '12121212', 2);
+VALUES (2, 'Bohdan1', '$2a$10$FaTZAFUbG7UmfDCkAjepf.CY5bHap7wjSsKU02AT6Q7MxB6pgSy1u', 2);
 INSERT INTO person (person_id, user_name, password, contact_id)
 VALUES (3, 'Bohdan2', '12121212', 3);
 INSERT INTO person (person_id, user_name, password, contact_id)
@@ -40,7 +40,7 @@ INSERT INTO role (role_id, role_name, is_employee_role) VALUES (7, 'ROLE_COURIER
 
 INSERT INTO person_role (person_id, role_id) VALUES (1, 1);
 INSERT INTO person_role (person_id, role_id) VALUES (2, 3);
-INSERT INTO person_role (person_id, role_id) VALUES (4, 2);
+INSERT INTO person_role (person_id, role_id) VALUES (4, 1);
 INSERT INTO person_role (person_id, role_id) VALUES (2, 2);
 INSERT INTO person_role (person_id, role_id) VALUES (5, 1);
 INSERT INTO person_role (person_id, role_id) VALUES (5, 5);
@@ -60,6 +60,8 @@ INSERT INTO work_day (employee_id, week_day, start_time, end_time)
 VALUES (4, trim(to_char(CURRENT_DATE, 'DAY')) :: logistic_company.week_day, '16:00', '02:00');
 INSERT INTO work_day (employee_id, week_day, start_time, end_time)
 VALUES (5, trim(to_char(CURRENT_DATE, 'DAY')) :: logistic_company.week_day, '06:00', '15:00');
+INSERT INTO work_day (employee_id, week_day, start_time, end_time)
+VALUES (6, trim(to_char(CURRENT_DATE, 'DAY')) :: logistic_company.week_day, '00:00', '23:59');
 
 INSERT INTO address (address_id, address_name) VALUES (1, 'Zodchykh St, 34А, Kyiv');
 INSERT INTO address (address_id, address_name) VALUES (2, 'Lesya Kurbasa Ave, 18, Kyiv');

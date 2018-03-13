@@ -220,8 +220,7 @@ public class UserController {
     }
 
     @GetMapping(value = "/orders")
-    public  String historyCompleteReceiverOrder(Model model, Principal principal)
-    {
+    public String historyCompleteReceiverOrder(Model model, Principal principal) {
         Optional<Person> opt = userService.findOne(principal.getName());
         Person user = opt.get();
         model.addAttribute("orders", orderService.HistoryCompleteOrderReceiver(user.getId()));
@@ -235,10 +234,7 @@ public class UserController {
     }
 
     @GetMapping(value = "")
-    public String viewSentOrders(){
+    public String viewSentOrders() {
         return "user_my_orders";
     }
-
-
-
 }
