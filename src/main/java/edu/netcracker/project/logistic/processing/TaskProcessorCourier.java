@@ -130,21 +130,21 @@ public class TaskProcessorCourier {
             Task task = taskEntry.task;
             Long employeeId = employeeEntry.employeeId;
 
-            // Check if employee is still call center agent
+            // Check if employee is still courier
             Optional<Person> employeeRecord = personDao.findOne(employeeId);
             if (!employeeRecord.isPresent()) {
                 logger.info("Employee instance not found.");
                 taskQueue.put(taskEntry);
                 return;
             }
-            boolean Courier = false;
+            boolean courier = false;
             for (Role r : employeeRecord.get().getRoles()) {
-                if (r.getRoleName().equals("ROLE_Courier")) {
-                    Courier = true;
+                if (r.getRoleName().equals("ROLE_COURIER")) {
+                    courier = true;
                     break;
                 }
             }
-            if (!Courier) {
+            if (!courier) {
                 logger.info("Person instance is not courier");
                 taskQueue.put(taskEntry);
                 return;
@@ -207,7 +207,7 @@ public class TaskProcessorCourier {
                 try {
                     workerQueue.put(entry);
                 } catch (InterruptedException ex) {
-                    throw new RuntimeException("Interrupted on adding call center agent", ex);
+                    throw new RuntimeException("Interrupted on adding courier", ex);
                 }
         }
 

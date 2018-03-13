@@ -13,6 +13,10 @@ public interface OrderService {
 
     void rejectOrder(Long employeeId, Long orderId);
 
+    void confirmDelivered(Long employeeId, Long orderId);
+
+    void confirmFailed(Long employeeId, Long orderId);
+
     List<Order> HistoryCompleteOrderReceiver(Long aLong);
 
     List<Order> HistoryCompleteOrderSender(Long aLong);

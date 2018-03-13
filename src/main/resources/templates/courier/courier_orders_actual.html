@@ -31,52 +31,27 @@
                                 <th>Receiver Name</th>
                                 <th>Receiver Address</th>
                                 <th>Receiver Phone</th>
-                                <th>Office Address</th>
                                 <th>Order Status</th>
                             </tr>
                             </thead>
                             <tbody>
-                            <tr>
-                                <td>#</td>
-                                <td>Sender Name</td>
-                                <td>Sender Address</td>
-                                <td>Sender Phone</td>
-                                <td>Receiver Name</td>
-                                <td>Receiver Address</td>
-                                <td>Receiver Phone</td>
-                                <td>Office Address</td>
-                                <td>Order Status</td>
+                            <tr th:each="order: ${orders}">
+                                <td th:text="${order.id}">#</td>
+                                <td th:text="${order.senderContact.firstName}">Sender Name</td>
+                                <td th:text="${order.senderAddress.name}">Sender Address</td>
+                                <td th:text="${order.senderContact.phoneNumber}">Sender Phone</td>
+                                <td th:text="${order.receiverContact.firstName}">Receiver Name</td>
+                                <td th:text="${order.receiverAddress.name}">Receiver Address</td>
+                                <td th:text="${order.receiverContact.phoneNumber}">Receiver Phone</td>
+                                <td th:text="${order.orderStatus.name}">Order Status</td>
                                 <td>
-                                    <input type="radio" name="optradio"  />Delivered
-                                </td>
-                                <td>
-                                    <input type="radio" name="optradio" />Failed
-                                </td>
-                                <td>
-                                    <form th:method="POST">
-                                        <button class="btn btn-link">Save</button>
+                                    <form method="POST" th:action="@{'/courier/orders/' + ${order.id} + '/delivered'}">
+                                        <button class="btn btn-link">Delivered</button>
                                     </form>
                                 </td>
-                            </tr>
-                            <tr>
-                                <td>#</td>
-                                <td>Sender Name</td>
-                                <td>Sender Address</td>
-                                <td>Sender Phone</td>
-                                <td>Receiver Name</td>
-                                <td>Receiver Address</td>
-                                <td>Receiver Phone</td>
-                                <td>Office Address</td>
-                                <td>Order Status</td>
                                 <td>
-                                    <input type="radio" name="optradio1" />Delivered
-                                </td>
-                                <td>
-                                    <input type="radio" name="optradio1" />Failed
-                                </td>
-                                <td>
-                                    <form th:method="POST">
-                                        <button class="btn btn-link">Save</button>
+                                    <form method="POST" th:action="@{'/courier/orders/' + ${order.id} + '/failed'}">
+                                        <button class="btn btn-link">Failed</button>
                                     </form>
                                 </td>
                             </tr>
