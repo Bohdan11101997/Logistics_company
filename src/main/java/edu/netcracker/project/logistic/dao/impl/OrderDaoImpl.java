@@ -3,30 +3,41 @@ package edu.netcracker.project.logistic.dao.impl;
 import edu.netcracker.project.logistic.dao.OrderDao;
 import edu.netcracker.project.logistic.model.*;
 import edu.netcracker.project.logistic.service.QueryService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Component;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalTime;
+import java.util.*;
 
 @Component
 public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
     private QueryService queryService;
     private JdbcTemplate jdbcTemplate;
+    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private RowMapper<Contact> contactMapper;
+    private RowMapper<Address> addressRowMapper;
+    private RowMapper<OrderStatus> orderStatusRowMapper;
+    private RowMapper<OrderType> orderTypeRowMapper;
 
-    public OrderDaoImpl(QueryService queryService, JdbcTemplate jdbcTemplate) {
+    @Autowired
+    public OrderDaoImpl(QueryService queryService, JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate, RowMapper<Contact> contactMapper, RowMapper<Address> addressRowMapper, RowMapper<OrderStatus> orderStatusRowMapper, RowMapper<OrderType> orderTypeRowMapper) {
         this.queryService = queryService;
         this.jdbcTemplate = jdbcTemplate;
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+        this.contactMapper = contactMapper;
+        this.addressRowMapper = addressRowMapper;
+        this.orderStatusRowMapper = orderStatusRowMapper;
+        this.orderTypeRowMapper = orderTypeRowMapper;
     }
+
+
 
     private Contact mapContact(ResultSet rs, String prefix) throws SQLException {
         Contact c = new Contact();
@@ -60,6 +71,7 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
         office.setName(rs.getString("office_name"));
         return office;
     }
+
 
     private Person mapPerson(ResultSet rs) throws SQLException {
         Person courier = new Person();
@@ -126,7 +138,7 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
         ps.setObject(7, order.getSenderContact() == null ? null : order.getSenderContact().getContactId());
         ps.setObject(8, order.getSenderAddress() == null ? null : order.getSenderAddress().getId());
         ps.setObject(9, order.getOffice() == null ? null : order.getOffice().getOfficeId());
-        ps.setLong(10, order.getOrderStatus().getId());
+        ps.setLong(10,  order.getOrderStatus().getId());
         ps.setObject(11, order.getOrderType() == null ? null : order.getOrderType().getId());
         ps.setBigDecimal(12, order.getWeight());
         ps.setObject(13, order.getWidth());
@@ -194,13 +206,85 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
             return Collections.emptyList();
         }
     }
+    private List<Order> extractMany(ResultSet rs) throws SQLException {
+        List<Order> result = new ArrayList<>();
 
-    @Override
+        boolean rowsLeft = rs.next();
+        for (int i = 0; rowsLeft; i++) {
+            Order order = new Order();
+            order.setId(rs.getLong("order_id"));
+
+
+            Contact contact = contactMapper.mapRow(rs, i);
+            order.setSenderContact(contact);
+            order.setReceiverContact(contact);
+
+            Address address = addressRowMapper.mapRow(rs, i);
+            order.setSenderAddress(address);
+            order.setReceiverAddress(address);
+
+             OrderStatus orderStatus =orderStatusRowMapper.mapRow(rs, i);
+             order.setOrderStatus(orderStatus);
+
+             OrderType orderType = orderTypeRowMapper.mapRow(rs, i);
+             order.setOrderType(orderType);
+            result.add(order);
+        }
+        return result;
+    }
+
+    private String prepareSearchString(String input) {
+        return "%" + input.replace("%", "\\%") + "%";
+    }
+
+    public List<Order> search(SearchFormOrder searchFormOrder) {
+        String firstName = searchFormOrder.getFirstName();
+        firstName = firstName == null ? "%%" : prepareSearchString(firstName);
+
+        String lastName = searchFormOrder.getLastName();
+        lastName = lastName == null ? "%%" : prepareSearchString(lastName);
+
+        LocalDateTime from = searchFormOrder.getFrom();
+        if (from == null) {
+            from = LocalDateTime.MIN;
+        } else {
+            from = from.with(LocalTime.MIN);
+        }
+
+        LocalDateTime to = searchFormOrder.getTo();
+        if (to == null) {
+            to = LocalDateTime.now();
+        } else {
+            to = to.with(LocalTime.MAX);
+        }
+        Map<String, Object> paramMap = new HashMap<>(7);
+        paramMap.put("first_name_contact", firstName);
+        paramMap.put("last_name_contact", lastName);
+        paramMap.put("start_date", from);
+        paramMap.put("end_date", to);
+        paramMap.put("destination_type", searchFormOrder.getDestination_typeIds());
+//        paramMap.put("order_status", searchFormOrder.getOrder_statusIds());
+
+        try {
+            return namedParameterJdbcTemplate.query(
+                    getSearchQuery(),
+                    paramMap,
+                    this
+
+            );
+
+        } catch (EmptyResultDataAccessException ex) {
+            return Collections.emptyList();
+        }
+
+    }
+
+
     public List<Order> HistoryCompleteOrderSender(Long aLong) {
         try {
             return jdbcTemplate.query(
-                    getHistoryCompleteOrderSenderQuery(),
-                    new Object[]{aLong},
+                    getOrderByUser(),
+                    new Object[]{aLong, aLong},
                     this
             );
         } catch (EmptyResultDataAccessException e) {
@@ -208,19 +292,10 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
         }
     }
 
+     private  String getOrderByUser(){
 
-    @Override
-    public List<Order> HistoryCompleteOrderReceiver(Long aLong) {
-        try {
-       return jdbcTemplate.query(
-               getHistoryCompleteOrderReceiverQuery(),
-                    new Object[]{aLong},
-                    this
-            );
-        } catch (EmptyResultDataAccessException e) {
-            return Collections.emptyList();
-        }
-    }
+        return queryService.getQuery("select.order.by.user");
+     }
 
 
     private String getFindOneQuery() {
@@ -239,10 +314,12 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
         return queryService.getQuery("delete.order");
     }
 
-    private String getHistoryCompleteOrderReceiverQuery() { return queryService.getQuery("select.order.by.complete.receiver");
+    private String getSearchQuery()
+    {
+
+        return queryService.getQuery("select.order.search");
     }
-    private String getHistoryCompleteOrderSenderQuery() { return queryService.getQuery("select.order.by.complete.sender");
-    }
+
     private String getFindNotProcessedQuery() {
         return queryService.getQuery("select.order.not_processed");
     }

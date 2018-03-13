@@ -45,6 +45,8 @@ public class ContactDaoImpl implements ContactDao, QueryDao, RowMapper<Contact> 
         return c;
     }
 
+
+
     @Override
     public Contact save(Contact contact) {
         boolean hasPrimaryKey = contact.getContactId() != null;

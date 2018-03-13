@@ -1,7 +1,12 @@
 package edu.netcracker.project.logistic.controllers;
 
+import edu.netcracker.project.logistic.dao.OrderDao;
+import edu.netcracker.project.logistic.dao.OrderStatusDao;
 import edu.netcracker.project.logistic.dao.OrderTypeDao;
+import edu.netcracker.project.logistic.dao.impl.OrderDaoImpl;
+import edu.netcracker.project.logistic.dao.impl.OrderStatusDaoImpl;
 import edu.netcracker.project.logistic.model.*;
+import edu.netcracker.project.logistic.processing.TaskProcessor;
 import edu.netcracker.project.logistic.service.OrderService;
 import edu.netcracker.project.logistic.service.SecurityService;
 import edu.netcracker.project.logistic.service.UserService;
@@ -38,6 +43,11 @@ public class UserController {
     private SecurityService securityService;
     private OrderTypeDao orderTypeDao;
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private OrderDaoImpl orderDao;
+
+    @Autowired
+    OrderStatusDaoImpl orderStatusDao;
 
     @Autowired
     public UserController(SmartValidator fieldValidator, UpdateUserValidator updateUserValidator,
@@ -219,12 +229,31 @@ public class UserController {
         return "redirect:/main";
     }
 
-    @GetMapping(value = "/orders")
-    public  String historyCompleteReceiverOrder(Model model, Principal principal)
+    @GetMapping("/orders")
+    public  String gethistoryCompleteSenderOrder(Model model, Principal principal)
     {
         Optional<Person> opt = userService.findOne(principal.getName());
         Person user = opt.get();
-        model.addAttribute("orders", orderService.HistoryCompleteOrderReceiver(user.getId()));
+        System.out.println(orderDao.HistoryCompleteOrderSender(user.getId()));
+        System.out.println(orderStatusDao.findAll());
+        System.out.println(orderTypeDao.findAll());
+        model.addAttribute("orders", orderDao.HistoryCompleteOrderSender(user.getId()));
+        model.addAttribute("destination_typeOrders", orderTypeDao.findAll());
+//        model.addAttribute("status_OrdersList", orderStatusDao.findAll());
+        model.addAttribute("searchFormOrder", new SearchFormOrder());
+        return "user/user_my_orders";
+    }
+
+
+    @PostMapping("/orders")
+    public  String historyCompleteSenderOrder(@ModelAttribute("searchFormOrder") SearchFormOrder searchFormOrder, Model model)
+    {
+        System.out.println(searchFormOrder.getFirstName());
+        List<Order> orders = orderDao.search(searchFormOrder);
+        model.addAttribute("orders", orders);
+        model.addAttribute("destination_typeOrders", orderTypeDao.findAll());
+//        model.addAttribute("status_OrdersList", orderStatusDao.findAll());
+        model.addAttribute("searchFormOrder",searchFormOrder);
         return "user/user_my_orders";
     }
 
@@ -236,7 +265,7 @@ public class UserController {
 
     @GetMapping(value = "")
     public String viewSentOrders(){
-        return "user_my_orders";
+        return "user/user_order_history";
     }
 
 

@@ -3,6 +3,7 @@ package edu.netcracker.project.logistic.model;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class Order {
     private Long id;
@@ -151,6 +152,35 @@ public class Order {
 
     public void setLength(Long length) {
         this.length = length;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Order order = (Order) o;
+        return Objects.equals(id, order.id) &&
+                Objects.equals(creationTime, order.creationTime) &&
+                Objects.equals(deliveryTime, order.deliveryTime) &&
+                Objects.equals(orderStatusTime, order.orderStatusTime) &&
+                Objects.equals(courier, order.courier) &&
+                Objects.equals(receiverContact, order.receiverContact) &&
+                Objects.equals(senderContact, order.senderContact) &&
+                Objects.equals(receiverAddress, order.receiverAddress) &&
+                Objects.equals(senderAddress, order.senderAddress) &&
+                Objects.equals(office, order.office) &&
+                Objects.equals(orderStatus, order.orderStatus) &&
+                Objects.equals(orderType, order.orderType) &&
+                Objects.equals(weight, order.weight) &&
+                Objects.equals(width, order.width) &&
+                Objects.equals(height, order.height) &&
+                Objects.equals(length, order.length);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(id, creationTime, deliveryTime, orderStatusTime, courier, receiverContact, senderContact, receiverAddress, senderAddress, office, orderStatus, orderType, weight, width, height, length);
     }
 
     @Override

@@ -22,40 +22,58 @@
                 <div class="col-lg-10 col-md-10 col-md-offset-1 col-lg-offset-1">
                     <div class="well">
                         <h3 align="center">Search Filters</h3>
-                        <form method="post" class="form-horizontal">
+
+                        <form method="post" class="form-horizontal"   th:object="${searchFormOrder}">
 
                             <div class="form-group">
                                 <label for="first-name" class="control-label">First Name</label>
-                                <input type="text" class="form-control" id="first-name"/>
+                                <input type="text" class="form-control" id="first-name"
+                                       th:field="*{firstName}"/>
                             </div>
 
                             <div class="form-group">
                                 <label for="last-name" class="control-label">Last Name</label>
-                                <input type="text" class="form-control" id="last-name"/>
+                                <input type="text" class="form-control" id="last-name"
+                                       th:field="*{lastName}"/>
                             </div>
 
-                            <div class="form-group">
-                                <label class="control-label">Creation Date</label>
-                                    <input type="date" class="form-control" id="creation-date" title="Creation Date"/>
-                            </div>
 
                             <div class="form-group">
-                                <label class="control-label">Delivery Date</label>
-                                <input type="date" class="form-control" id="delivery-date" title="Delivery Date"/>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="destination-type" class="control-label">Destination type</label>
-                                <select id="destination-type" class="form-control">
-                                    <option>Sent</option>
-                                    <option>Received</option>
-                                    <option>All</option>
+                                <label for="destination_typeIds" class="control-label">Destination type</label>
+                                <br/>
+                                <select id="destination_typeIds" multiple="multiple"
+                                        th:field="*{destination_typeIds}">
+                                    <option th:each="orderType: ${destination_typeOrders}"
+                                            th:value="${orderType.id}"
+                                            th:text="${{orderType}}">Order Type</option>
                                 </select>
                             </div>
 
+                            <div class="form-group"
+                                 th:classappend="${#fields.hasErrors('from')}? 'has-error'">
+                                <label class="control-label">Registration date interval</label>
+                                <div class="form-inline">
+                                    <input type="date" class="form-control" id="from-date" title="From"
+                                           th:field="*{{from}}" oninput="onSearchDateClick(this)"/>
+                                    <input type="date" class="form-control" id="to-date" title="To"
+                                           th:field="*{{to}}" oninput="onSearchDateClick(this)"/>
+                                </div>
+                            </div>
+                            <!---->
+                            <!--<div class="form-group">-->
+                                <!--<label for="order_statusIds" class="control-label">Order</label>-->
+                                <!--<br />-->
+                                <!--<select id="order_statusIds" multiple="multiple"-->
+                                        <!--th:field="*{order_statusIds}">-->
+                                    <!--<option th:each="orderStatus: ${status_OrdersList}"-->
+                                            <!--th:value="${orderStatus.id}"-->
+                                            <!--th:text="${{orderStatus}}">Role</option>-->
+                                <!--</select>-->
+                            <!--</div>-->
+
                             <div class="form-group">
-                                <label for="order-status" class="control-label">Order status</label>
-                                <select id="order-status" class="form-control">
+                                <label for="order_status" class="control-label">Order status</label>
+                                <select id="order_status" class="form-control">
                                     <option>Actual</option>
                                     <option>History</option>
                                     <option>Draft</option>
@@ -69,7 +87,7 @@
                             </div>
 
                             <button class="btn btn-primary">
-                                Search
+                                <input type="submit" value=" Search"/>
                             </button>
                         </form>
                     </div>

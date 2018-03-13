@@ -30,7 +30,9 @@ public class OrderStatus {
 
     @Override
     public String toString() {
-        return
-                " " + name;
+        return "OrderStatus{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
     }
 }

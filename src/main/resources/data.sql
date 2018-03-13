@@ -35,14 +35,14 @@ INSERT INTO role (role_id, role_name, is_employee_role, priority) VALUES (2, 'RO
 INSERT INTO role (role_id, role_name, is_employee_role) VALUES (3, 'ROLE_UNCONFIRMED', FALSE);
 INSERT INTO role (role_id, role_name, is_employee_role) VALUES (4, 'ROLE_MANAGER', TRUE);
 INSERT INTO role (role_id, role_name, is_employee_role) VALUES (5, 'ROLE_CALL_CENTER', TRUE);
-INSERT INTO role (role_id, role_name, is_employee_role, priority) VALUES (6, 'ROLE_VIP_USER', FALSE, 'VIP');
+INSERT INTO role (role_id, role_name, is_employee_role, priority) VALUES (6, 'ROLE_VIP_USER', FALSE , 'VIP');
 INSERT INTO role (role_id, role_name, is_employee_role) VALUES (7, 'ROLE_COURIER', TRUE );
 
 INSERT INTO person_role (person_id, role_id) VALUES (1, 1);
 INSERT INTO person_role (person_id, role_id) VALUES (2, 3);
 INSERT INTO person_role (person_id, role_id) VALUES (4, 2);
 INSERT INTO person_role (person_id, role_id) VALUES (2, 2);
-INSERT INTO person_role (person_id, role_id) VALUES (5, 2);
+INSERT INTO person_role (person_id, role_id) VALUES (5, 2 );
 INSERT INTO person_role (person_id, role_id) VALUES (6, 5);
 INSERT INTO person_role (person_id, role_id) VALUES (7, 7);
 INSERT INTO person_role (person_id, role_id) VALUES (8, 7);
@@ -95,8 +95,8 @@ INSERT INTO advertisement_type(type_advertisement_id, advertisement_name) VALUES
 INSERT INTO reset_password(person_id, reset_token) VALUES (4, '47a95c8c-a5d1-4984-9ce5-904ecd81e637');
 
 INSERT INTO logistic_company."order"(order_id, estimated_delivery_time,  courier_id, receiver_contact_id, receiver_address_id, sender_contact_id, sender_address_id, office_id, order_status_id, order_type_id, weight, width, height, length)
-VALUES (1, '04:05:06', 7, 5, 1,2,2, 1, 6,1, 12,12,12,12);
+VALUES (1, '04:05:06', 7, 5, 1,5,2, 1, 6,1, 12,12,12,12);
 INSERT INTO logistic_company."order"(order_id, estimated_delivery_time,  courier_id, receiver_contact_id, receiver_address_id, sender_contact_id, sender_address_id, office_id, order_status_id, order_type_id, weight, width, height, length)
-VALUES (3, '14:05:06', 7, 5, 1,2,2, 1, 6,1, 12,12,12,12);
+VALUES (3, '14:05:06', 7, 5, 1,5,2, 1, 6,1, 12,12,12,12);
 INSERT INTO logistic_company."order"(order_id, estimated_delivery_time,  courier_id, receiver_contact_id, receiver_address_id, sender_contact_id, sender_address_id, office_id, order_status_id, order_type_id, weight, width, height, length)
-VALUES (2, '04:05:06', 7, 2, 1,5,2, 1, 6,2, 112,132,1322,12);
+VALUES (2, '04:05:06', 7, 5, 1,5,2, 1, 6,2, 112,132,1322,12);

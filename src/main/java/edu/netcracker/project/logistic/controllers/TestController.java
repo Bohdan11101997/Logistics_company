@@ -3,7 +3,9 @@ package edu.netcracker.project.logistic.controllers;
 import com.google.maps.model.GeocodingResult;
 import edu.netcracker.project.logistic.dao.ContactDao;
 import edu.netcracker.project.logistic.dao.OfficeDao;
+import edu.netcracker.project.logistic.dao.OrderDao;
 import edu.netcracker.project.logistic.dao.impl.AddressDaoImpl;
+import edu.netcracker.project.logistic.dao.impl.OrderDaoImpl;
 import edu.netcracker.project.logistic.model.Address;
 import edu.netcracker.project.logistic.model.Office;
 import edu.netcracker.project.logistic.service.AddressService;
@@ -38,6 +40,7 @@ public class TestController {
 
     Address address;
 
+  OrderDaoImpl orderDao;
 
     AddressDaoImpl addressDao;
     private RoleService roleService;
@@ -53,18 +56,21 @@ public class TestController {
 
     @RequestMapping(value = "/test")
     public String test(Model model) {
-        Address address = new Address("Київ, Академіка Янгеля, 5");
-        Address address1 = new Address((long) 3, "erer");
-        addressService.save(address);
-        addressService.save(address1);
 
-        System.out.println(address.check("qwqw"));
 
-        for(GeocodingResult gr : Address.getListOfAddresses(address.getName()))
-            System.out.println(gr.formattedAddress);
-        System.out.println("===========================================");
-        for(GeocodingResult gr : Address.getListOfAddresses(address1.getLocation()))
-            System.out.println(gr.formattedAddress);
+
+//        Address address = new Address("Київ, Академіка Янгеля, 5");
+//        Address address1 = new Address((long) 3, "erer");
+//        addressService.save(address);
+//        addressService.save(address1);
+//
+//        System.out.println(address.check("qwqw"));
+//
+//        for(GeocodingResult gr : Address.getListOfAddresses(address.getName()))
+//            System.out.println(gr.formattedAddress);
+//        System.out.println("===========================================");
+//        for(GeocodingResult gr : Address.getListOfAddresses(address1.getLocation()))
+//            System.out.println(gr.formattedAddress);
 //        Contact contact = new Contact(1L, "lol", "lol", "+2312312313");
 //        contactDao.save(contact);
 //        Person person1 = new Person("nick_name", "1121212", localDate, "sdfffsfsdf", contact);
