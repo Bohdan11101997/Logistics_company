@@ -8,6 +8,9 @@
     <link rel="stylesheet" th:href="@{/css/left_menu.css}" type="text/css" href="../static/css/left_menu.css" />
     <link rel="stylesheet" th:href="@{/css/paginator.css}" type="text/css" href="../static/css/paginator.css" />
 
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css" />
+
 
 </head>
 <body>
@@ -26,17 +29,46 @@
 
                 <div class="col-lg-10 col-md-10 col-md-offset-1 col-lg-offset-1">
 
-                    <div class="form-group">
-                        <label for="selectEmployee">Select list:</label>
-                        <select class="form-control" id="selectEmployee" onchange="showCourierMove()">
-                            <option value="couriers" id="couriers">Couriers</option>	<!-- First, Last name; Work Day; Car or foot or Any -->
-                            <option value="call-center-agents" id="call-center-agents">Call center agents</option> <!-- First, Last name -->
-                        </select>
-                    </div>
+                    <div class="well">
+                        <h3 align="center">Search Filters</h3>
+                        <form method="post" class="form-horizontal">
 
-                    <div class="form-group" style="display:block" id="radio-courier-move">
-                        <label class="radio-inline"><input type="radio" name="optradio" />Car</label>
-                        <label class="radio-inline"><input type="radio" name="optradio" />On foot</label>
+                            <div class="form-group">
+                                <label for="first-name" class="control-label">First Name</label>
+                                <input type="text" class="form-control" id="first-name"/>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="last-name" class="control-label">Last Name</label>
+                                <input type="text" class="form-control" id="last-name"/>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="selectWorkDay" class="control-label">Work Days</label>
+                                <select id="selectWorkDay" class="selectpicker" multiple="multiple">
+                                    <option>Monday</option>
+                                    <option>Tuesday</option>
+                                    <option>Friday</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="selectEmployee">Select list</label>
+                                <select class="form-control" id="selectEmployee" onchange="showCourierMove()">
+                                    <option value="couriers" id="couriers">Couriers</option>
+                                    <option value="call-center-agents" id="call-center-agents">Call center agents</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group" style="display:block" id="radio-courier-move">
+                                <label class="radio-inline"><input type="radio" name="optradio" checked="checked" />Car</label>
+                                <label class="radio-inline"><input type="radio" name="optradio" />On foot</label>
+                            </div>
+
+                            <button class="btn btn-primary">
+                                Search
+                            </button>
+                        </form>
                     </div>
 
                     <div class="table-responsive">
@@ -48,6 +80,7 @@
                                 <th>E-mail</th>
                                 <th>Phone</th>
                                 <th>Move</th>
+                                <th>Work Days</th>
                                 <th>Registration date</th>
                                 <th>Orders handled</th>
                                 <th>Usefulness</th>
@@ -80,6 +113,9 @@
 
 <th:block th:replace="fragments/footer :: footer"/>
 <th:block th:replace="fragments/left_menu :: left-menu-footer" />
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
 
 <script>
     function showCourierMove(){
