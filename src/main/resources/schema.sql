@@ -190,8 +190,6 @@ ALTER TABLE "logistic_company"."person"
   ADD UNIQUE ("contact_id");
 ALTER TABLE "logistic_company"."contact"
   ADD UNIQUE ("email");
-ALTER TABLE "logistic_company"."contact"
-  ADD UNIQUE ("phone_number");
 ALTER TABLE logistic_company.registration_link
   ADD UNIQUE ("person_id");
 ALTER TABLE logistic_company.reset_password

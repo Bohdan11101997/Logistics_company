@@ -14,8 +14,8 @@ import java.util.regex.Pattern;
 
 @Component
 public class ContactValidator implements Validator {
-
     private ContactDao contactDao;
+    private Pattern phoneNumberRegex = Pattern.compile("^((\\+380)|0)*(?<phone>\\d{9})$");
 
     @Autowired
     public ContactValidator(ContactDao contactDao) {
@@ -29,33 +29,39 @@ public class ContactValidator implements Validator {
 
     @Override
     public void validate(Object o, Errors errors) {
-        Contact contact = (Contact) o;
-
-        String phoneNumber = contact.getPhoneNumber();
-        phoneNumber = phoneNumber.replaceAll("[()-]", "").replaceAll("\\s+", "");
-        contact.setPhoneNumber(phoneNumber);
-
-        checkDuplicatesForPhoneNumberOrEmail(contact, errors);
-        checkCorrectPhoneNumber(contact, errors);
+        validate(o, errors, null);
     }
 
-    private void checkDuplicatesForPhoneNumberOrEmail(Contact contact, Errors errors) {
+    public void validate(Object o, Errors errors, String fieldName) {
+        String prefix = fieldName == null ? "" : fieldName + ".";
+
+        Contact contact = (Contact) o;
+
+        checkCorrectPhoneNumber(contact, errors, prefix);
+        checkDuplicatesForPhoneNumberOrEmail(contact, errors, prefix);
+    }
+
+    private void checkDuplicatesForPhoneNumberOrEmail(Contact contact, Errors errors, String prefix) {
         List<Contact> duplicates =
                 contactDao.findByPhoneNumberOrEmail(contact.getPhoneNumber(), contact.getEmail());
         for (Contact d : duplicates) {
             if (!d.getContactId().equals(contact.getContactId()) && d.getEmail().equals(contact.getEmail())) {
-                errors.rejectValue("email", "Duplicate.mail");
+                errors.rejectValue(prefix + "email", "Duplicate.mail");
             } else if (!d.getContactId().equals(contact.getContactId()) && d.getPhoneNumber().equals(contact.getPhoneNumber())) {
-                errors.rejectValue("phoneNumber", "Duplicate.phone");
+                errors.rejectValue(prefix + "phoneNumber", "Duplicate.phone");
             }
         }
     }
 
-    private void checkCorrectPhoneNumber(Contact contact, Errors errors){
-        String regex = "^\\+[1-9]{1}[0-9]{3,14}$";
-        Matcher matcher = Pattern.compile(regex).matcher(contact.getPhoneNumber());
-        if (!matcher.matches()){
-            errors.rejectValue("phoneNumber", "Invalid.PhoneNumber");
+    private void checkCorrectPhoneNumber(Contact contact, Errors errors, String prefix) {
+        String phoneNumber = contact.getPhoneNumber();
+        phoneNumber = phoneNumber.replaceAll("[()-]|\\s+", "");
+        Matcher matcher = phoneNumberRegex.matcher(phoneNumber);
+        if (!matcher.matches()) {
+            errors.rejectValue(prefix + "phoneNumber", "Invalid.PhoneNumber");
+        } else {
+            String phone = matcher.group("phone");
+            contact.setPhoneNumber(phone);
         }
     }
 }
