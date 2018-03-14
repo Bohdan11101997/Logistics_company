@@ -45,7 +45,7 @@
 
                             <div class="form-group">
                                 <label for="selectWorkDay" class="control-label">Work Days</label>
-                                <select id="selectWorkDay" class="selectpicker" multiple="multiple">
+                                <select id="selectWorkDay" class="selectpicker" multiple="multiple" title="You can select some">
                                     <option>Monday</option>
                                     <option>Tuesday</option>
                                     <option>Friday</option>
@@ -65,6 +65,16 @@
                                 <label class="radio-inline"><input type="radio" name="optradio" />On foot</label>
                             </div>
 
+                            <div class="form-group">
+                                <label for="sortEmployees">Sort by</label>
+                                <select class="form-control" id="sortEmployees">
+                                    <option>Last name</option>
+                                    <option>Registration date</option>
+                                    <option>Orders handled</option>
+                                    <option>Usefulness</option>
+                                </select>
+                            </div>
+
                             <button class="btn btn-primary">
                                 Search
                             </button>
@@ -76,7 +86,8 @@
                             <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Name</th>
+                                <th>First name</th>
+                                <th>Last name</th>
                                 <th>E-mail</th>
                                 <th>Phone</th>
                                 <th>Move</th>
@@ -89,10 +100,12 @@
                             <tbody>
                             <tr>
                                 <td>1</td>
-                                <td>First Last</td>
+                                <td>First</td>
+                                <td>Last</td>
                                 <td>mail@gmail.com</td>
                                 <td>+380777777777</td>
                                 <td>Car</td>
+                                <td>Monday, Tuesday</td>
                                 <td>2018-03-02</td>
                                 <td>252</td>
                                 <td>32</td>
