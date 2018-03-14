@@ -51,17 +51,17 @@ INSERT INTO person_role (person_id, role_id) VALUES (8, 7);
 INSERT INTO person_role (person_id, role_id) VALUES (11, 5);
 
 INSERT INTO work_day (employee_id, week_day, start_time, end_time)
-VALUES (1, trim(to_char(CURRENT_DATE, 'DAY')) :: logistic_company.week_day, '12:00', '22:00');
+VALUES (1, trim(to_char(CURRENT_DATE, 'DAY')) :: week_day, '12:00', '22:00');
 INSERT INTO work_day (employee_id, week_day, start_time, end_time)
-VALUES (2, trim(to_char(CURRENT_DATE, 'DAY')) :: logistic_company.week_day, '07:00', '15:00');
+VALUES (2, trim(to_char(CURRENT_DATE, 'DAY')) :: week_day, '07:00', '15:00');
 INSERT INTO work_day (employee_id, week_day, start_time, end_time)
-VALUES (3, trim(to_char(CURRENT_DATE, 'DAY')) :: logistic_company.week_day, '15:00', '21:00');
+VALUES (3, trim(to_char(CURRENT_DATE, 'DAY')) :: week_day, '15:00', '21:00');
 INSERT INTO work_day (employee_id, week_day, start_time, end_time)
-VALUES (4, trim(to_char(CURRENT_DATE, 'DAY')) :: logistic_company.week_day, '16:00', '02:00');
+VALUES (4, trim(to_char(CURRENT_DATE, 'DAY')) :: week_day, '16:00', '02:00');
 INSERT INTO work_day (employee_id, week_day, start_time, end_time)
-VALUES (5, trim(to_char(CURRENT_DATE, 'DAY')) :: logistic_company.week_day, '06:00', '15:00');
+VALUES (5, trim(to_char(CURRENT_DATE, 'DAY')) :: week_day, '06:00', '23:00');
 INSERT INTO work_day (employee_id, week_day, start_time, end_time)
-VALUES (6, trim(to_char(CURRENT_DATE, 'DAY')) :: logistic_company.week_day, '00:00', '23:59');
+VALUES (6, trim(to_char(CURRENT_DATE, 'DAY')) :: week_day, '00:00', '23:59');
 
 INSERT INTO address (address_id, address_name) VALUES (1, 'Zodchykh St, 34А, Kyiv');
 INSERT INTO address (address_id, address_name) VALUES (2, 'Lesya Kurbasa Ave, 18, Kyiv');

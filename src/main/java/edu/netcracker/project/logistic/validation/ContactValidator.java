@@ -55,7 +55,7 @@ public class ContactValidator implements Validator {
         String regex = "^\\+[1-9]{1}[0-9]{3,14}$";
         Matcher matcher = Pattern.compile(regex).matcher(contact.getPhoneNumber());
         if (!matcher.matches()){
-            errors.rejectValue("phoneNumber", "Incorrect.phone");
+            errors.rejectValue("phoneNumber", "Invalid.PhoneNumber");
         }
     }
 }

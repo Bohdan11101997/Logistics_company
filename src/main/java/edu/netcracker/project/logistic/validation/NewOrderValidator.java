@@ -52,7 +52,7 @@ public class NewOrderValidator implements Validator {
         if (order.getWeight() == null) {
             errors.rejectValue("weight", "Required.Order.Weight");
         } else if (order.getWeight().compareTo(orderType.getMaxWeight()) > 0) {
-            errors.rejectValue("weight", "Exceeded.Order.Weight");
+            errors.rejectValue("weight", "Exceeded.Order.Weight", new Object[]{orderType.getMaxWeight()}, null);
         }
     }
 
@@ -60,7 +60,7 @@ public class NewOrderValidator implements Validator {
         if (order.getWidth() == null) {
             errors.rejectValue("width", "Required.Order.Width");
         } else if (order.getWidth().compareTo(orderType.getMaxWidth()) > 0) {
-            errors.rejectValue("width", "Exceeded.Order.Width");
+            errors.rejectValue("width", "Exceeded.Order.Width", new Object[]{orderType.getMaxWidth().toString()}, null);
         }
     }
 
@@ -68,7 +68,7 @@ public class NewOrderValidator implements Validator {
         if (order.getHeight() == null) {
             errors.rejectValue("height", "Required.Order.Height");
         } else if (order.getHeight().compareTo(orderType.getMaxHeight()) > 0) {
-            errors.rejectValue("height", "Exceeded.Order.Height");
+            errors.rejectValue("height", "Exceeded.Order.Height", new Object[]{orderType.getMaxHeight().toString()}, null);
         }
     }
 
@@ -76,7 +76,7 @@ public class NewOrderValidator implements Validator {
         if (order.getLength() == null) {
             errors.rejectValue("length", "Required.Order.Length");
         } else if (order.getLength().compareTo(orderType.getMaxLength()) > 0) {
-            errors.rejectValue("length", "Exceeded.Order.Length");
+            errors.rejectValue("length", "Exceeded.Order.Length", new Object[]{orderType.getMaxLength().toString()}, null);
         }
     }
 
