@@ -11,6 +11,7 @@ import edu.netcracker.project.logistic.service.PersonService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -28,6 +29,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@PropertySource("classpath:mail.properties")
 public class EmployeeServiceImpl implements EmployeeService {
     private final Logger logger = LoggerFactory.getLogger(EmployeeServiceImpl.class);
 
