@@ -28,5 +28,10 @@ public class ManagerController {
         return "/manager/manager_statistics_common";
     }
 
+    @GetMapping("/statistics/employee/{id}")
+    public String viewSimpleEmployeeStatistics(){
+        return "/manager/manager_statistics_employee_single";
+    }
+
 
 }
