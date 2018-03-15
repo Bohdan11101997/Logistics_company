@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -72,8 +73,11 @@ public class OrderStatusDaoImpl implements OrderStatusDao, RowMapper<OrderStatus
 
     public List<OrderStatus> findAll()
     {
-
+        try {
         return jdbcTemplate.query(getAllStatusQuery(),this);
+        } catch (EmptyResultDataAccessException ex) {
+            return Collections.emptyList();
+        }
     }
 
     private String getAllStatusQuery()

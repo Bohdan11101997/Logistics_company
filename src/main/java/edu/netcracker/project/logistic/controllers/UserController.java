@@ -229,30 +229,31 @@ public class UserController {
         return "redirect:/main";
     }
 
+
+
+
     @GetMapping("/orders")
     public  String gethistoryCompleteSenderOrder(Model model, Principal principal)
     {
         Optional<Person> opt = userService.findOne(principal.getName());
         Person user = opt.get();
-        System.out.println(orderDao.HistoryCompleteOrderSender(user.getId()));
-        System.out.println(orderStatusDao.findAll());
-        System.out.println(orderTypeDao.findAll());
         model.addAttribute("orders", orderDao.HistoryCompleteOrderSender(user.getId()));
         model.addAttribute("destination_typeOrders", orderTypeDao.findAll());
-//        model.addAttribute("status_OrdersList", orderStatusDao.findAll());
+        model.addAttribute("status_OrdersList", orderStatusDao.findAll());
         model.addAttribute("searchFormOrder", new SearchFormOrder());
         return "user/user_my_orders";
     }
 
 
     @PostMapping("/orders")
-    public  String historyCompleteSenderOrder(@ModelAttribute("searchFormOrder") SearchFormOrder searchFormOrder, Model model)
+    public  String historyCompleteSenderOrder(@ModelAttribute("searchFormOrder") SearchFormOrder searchFormOrder, Model model, Principal principal)
     {
-        System.out.println(searchFormOrder.getFirstName());
-        List<Order> orders = orderDao.search(searchFormOrder);
+        Optional<Person> opt = userService.findOne(principal.getName());
+        Person user = opt.get();
+        List<Order> orders = orderDao.search(searchFormOrder, user.getId());
         model.addAttribute("orders", orders);
         model.addAttribute("destination_typeOrders", orderTypeDao.findAll());
-//        model.addAttribute("status_OrdersList", orderStatusDao.findAll());
+        model.addAttribute("status_OrdersList", orderStatusDao.findAll());
         model.addAttribute("searchFormOrder",searchFormOrder);
         return "user/user_my_orders";
     }
@@ -261,6 +262,18 @@ public class UserController {
     public String draftOrder(@ModelAttribute("order") Order order) {
         orderService.draft(order);
         return "redirect:/main";
+    }
+
+    @GetMapping("/order/update/{id}")
+    public String updateOrder(@PathVariable long id, Model model) {
+        model.addAttribute("order", orderDao.findOne(id));
+        return "/user/order";
+    }
+
+    @GetMapping("/order/delete/{id}")
+    public String deleteOffice(@PathVariable Long id) {
+        orderDao.delete(id);
+        return "redirect:/user/orders";
     }
 
     @GetMapping(value = "")

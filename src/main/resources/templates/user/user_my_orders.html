@@ -5,7 +5,29 @@
     <th:block th:replace="fragments/header :: header-bootstrap-config-IE" />
     <link rel="stylesheet" th:href="@{/css/left_menu.css}" type="text/css" href="../../static/css/left_menu.css" />
     <script th:src="@{/js/forms.js}" src="../../static/js/forms.js"></script>
+    <style>
+        @media (min-width: 768px)  {
+            #from-date {
+                margin-right: 5px;
+            }
+        }
+
+        @media (max-width: 767px) {
+            #from-date {
+                margin-bottom: 5px;
+            }
+        }
+
+        .glyphicon-search {
+            color: white;
+        }
+
+        .form-horizontal {
+            padding: 0 15px;
+        }
+    </style>
 </head>
+
 <body>
 
 <div class="row">
@@ -59,32 +81,18 @@
                                            th:field="*{{to}}" oninput="onSearchDateClick(this)"/>
                                 </div>
                             </div>
-                            <!---->
-                            <!--<div class="form-group">-->
-                                <!--<label for="order_statusIds" class="control-label">Order</label>-->
-                                <!--<br />-->
-                                <!--<select id="order_statusIds" multiple="multiple"-->
-                                        <!--th:field="*{order_statusIds}">-->
-                                    <!--<option th:each="orderStatus: ${status_OrdersList}"-->
-                                            <!--th:value="${orderStatus.id}"-->
-                                            <!--th:text="${{orderStatus}}">Role</option>-->
-                                <!--</select>-->
-                            <!--</div>-->
 
                             <div class="form-group">
-                                <label for="order_status" class="control-label">Order status</label>
-                                <select id="order_status" class="form-control">
-                                    <option>Actual</option>
-                                    <option>History</option>
-                                    <option>Draft</option>
-                                    <option>Cancelled</option>
-                                    <option>Processing</option>
-                                    <option>Confirmed</option>
-                                    <option>Delivering</option>
-                                    <option>Delivered</option>
-                                    <option>All</option>
+                                <label for="order_statusIds" class="control-label">Order status</label>
+                                <br/>
+                                <select id="order_statusIds" multiple="multiple"
+                                        th:field="*{order_statusIds}">
+                                    <option th:each="orderStatus: ${status_OrdersList}"
+                                            th:value="${orderStatus.id}"
+                                            th:text="${{orderStatus.name}}">Order status</option>
                                 </select>
                             </div>
+
 
                             <button class="btn btn-primary">
                                 <input type="submit" value=" Search"/>
@@ -118,10 +126,6 @@
                                 <td th:text="${order.deliveryTime}"></td>
                                 <td th:text="${order.orderType}"></td>
                                 <td th:text="${order.orderStatus}"></td>
-                                <td>
-                                    <a class="material-icons button delete" th:href="${'/admin/office/delete/' +order.id}">delete</a>
-                                    <a class="material-icons button delete" th:href="${'/admin/office/update/' + order.id}">edit</a>
-                                </td>
                             </tr>
                             </tbody>
                         </table>

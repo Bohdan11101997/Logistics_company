@@ -150,8 +150,8 @@ CREATE TABLE "logistic_company"."office"
 
 CREATE TABLE "logistic_company"."order_status"
 (
-  "order_status_id" INT4 DEFAULT nextval('main_seq_id' :: REGCLASS)   NOT NULL,
-  "status_name"     VARCHAR(60) COLLATE "default"                     NOT NULL
+  "order_status_id" INT4 DEFAULT nextval('main_seq_id' :: REGCLASS) NOT NULL,
+  "status_name"     VARCHAR(60) COLLATE "default"                    NOT NULL
 );
 
 CREATE TABLE "logistic_company"."address"

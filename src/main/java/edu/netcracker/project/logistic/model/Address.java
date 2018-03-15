@@ -27,19 +27,27 @@ public class Address {
 
     public Address(Long id, LatLng location) {
         this.id = id;
-        this.name = null;
+        this.name = "";
+        this.location = location;
+    }
+
+    public Address(Long id, String name, LatLng location) {
+        this.id = id;
+        this.name = name;
         this.location = location;
     }
 
     //TODO: add default name or create rerequest
     private static String LocationToAddress(LatLng location) {
-        GeocodingResult result = getListOfAddresses(location)[0];
+        /*GeocodingResult result = getListOfAddresses(location)[0];
         for(AddressComponent ac : result.addressComponents){
             for(AddressComponentType act : ac.types)
                 if(act.toCanonicalLiteral().equalsIgnoreCase("locality"))
                     return result.formattedAddress;
         }
         return "";
+        */
+        return getListOfAddresses(location)[0].formattedAddress;
     }
 
     private static LatLng AddressToLocation(String name) {
@@ -47,35 +55,35 @@ public class Address {
         if (addressList.length == 0) {
             return null;
         }
-        GeocodingResult result = addressList[0];
+        /*GeocodingResult result = addressList[0];
         for(AddressComponent ac : result.addressComponents){
             for(AddressComponentType act : ac.types)
                 if(act.toCanonicalLiteral().equalsIgnoreCase("locality"))
                     return result.geometry.location;
         }
-        return null;
+        return null;*/
+        return addressList[0].geometry.location;
     }
 
-    public static GeocodingResult[] getListOfAddresses(LatLng location){
+    public static GeocodingResult[] getListOfAddresses(LatLng location) {
         GeocodingResult[] result = null;
         try {
-            result = GoogleApiRequest.GeocodingApi().latlng(location).
-                    components(ComponentFilter.country("ua"))
-                    .bounds(new LatLng(50.243848, 30.204895),new LatLng(50.674379, 30.735831))
-                    .region("ua").await();
+            result = GoogleApiRequest.GeocodingApi().latlng(location)
+                    .locationType(LocationType.APPROXIMATE)
+                    .bounds(new LatLng(50.243848, 30.204895), new LatLng(50.674379, 30.735831))
+                    .await();
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }
         return result;
     }
 
-    public static GeocodingResult[] getListOfAddresses(String address){
+    public static GeocodingResult[] getListOfAddresses(String address) {
         GeocodingResult[] result = null;
         try {
             result = GoogleApiRequest.GeocodingApi().address(address)
-            .components(ComponentFilter.country("ua"))
-                    .bounds(new LatLng(50.243848, 30.204895),new LatLng(50.674379, 30.735831))
-                    .region("ua").await();
+                    .bounds(new LatLng(50.243848, 30.204895), new LatLng(50.674379, 30.735831))
+                    .await();
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }
@@ -101,7 +109,7 @@ public class Address {
     }
 
     public void setName(String name) {
-        if(this.name != name) {
+        if (!Objects.equals(this.name, name)) {
             this.location = null;
             this.name = name;
         }
@@ -121,7 +129,7 @@ public class Address {
         return check(new Address(address), TravelMode.WALKING);
     }
 
-    public boolean check(String address, TravelMode travelMode ) {
+    public boolean check(String address, TravelMode travelMode) {
         return check(new Address(address), travelMode);
     }
 
@@ -136,21 +144,26 @@ public class Address {
             result = GoogleApiRequest.DistanceMatrixApi()
                     .origins(this.getLocation())
                     .destinations(with.getLocation())
-                    .mode(travelMode)
+                    .mode(travelMode == null ? TravelMode.DRIVING : travelMode)
                     .avoid(DirectionsApi.RouteRestriction.FERRIES)
                     .avoid(DirectionsApi.RouteRestriction.TOLLS)
+                    .units(Unit.METRIC)
                     .await();
 
-            return (result.rows[0].elements[0].status == DistanceMatrixElementStatus.OK
-                    && result.rows[0].elements[0].fare.value.equals(BigDecimal.valueOf(0.0))//Check on money wastes
-            );
+            if (result.rows[0].elements[0].status != DistanceMatrixElementStatus.OK) {
+                System.err.println("DistansMatrixRequest return " + result.rows[0].elements[0].status.name());
+                return false; // not OK
+            }
+
+            return true;//OK
+            //(result.rows[0].elements[0].fare.value.equals(BigDecimal.valueOf(0.0)));
         } catch (ApiException | InterruptedException | IOException e) {
             e.printStackTrace();
-            return false;
-        }
-        catch (NullPointerException e )
-        {
-            return false;
+            System.err.println("DistansMatrixRequest caught API's exception");
+            return false;   //bad request
+        } catch (NullPointerException e) {
+            System.err.println("DistansMatrixRequest caught NullPointerException");
+            return false;   //no return|not valid input
         }
     }
 
@@ -158,10 +171,14 @@ public class Address {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Address that = (Address) o;
-        return Objects.equals(id, that.id) &&
-                name == that.name &&
-                Objects.equals(location, that.location);
+        Address address = (Address) o;
+        return Objects.equals(id, address.id) &&
+                Objects.equals(name, address.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
     }
 
     @Override

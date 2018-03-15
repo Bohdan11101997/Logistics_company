@@ -1,5 +1,6 @@
 package edu.netcracker.project.logistic.controllers;
 
+import com.google.maps.model.GeocodingResult;
 import edu.netcracker.project.logistic.model.*;
 import edu.netcracker.project.logistic.service.*;
 
@@ -293,7 +294,8 @@ public class AdminController {
         addressService.save(office.getAddress());
         addressService.findOne(office.getAddress().getName()).get();
         System.out.println(office);
-
+        for(GeocodingResult gr : Address.getListOfAddresses(office.getAddress().getLocation()))
+            System.out.println(gr.formattedAddress);
         officeService.save(office);
         return "redirect:/admin/offices";
     }

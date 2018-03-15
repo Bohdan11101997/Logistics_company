@@ -129,7 +129,7 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
     }
 
     private void prepareUpdate(PreparedStatement ps, Order order, boolean hasPrimaryKey) throws SQLException {
-        ps.setObject(1, order.getCreationTime());
+        ps.setObject(1, order.getCreationTime().toLocalDate());
         ps.setObject(2, order.getDeliveryTime());
         ps.setObject(3, order.getOrderStatusTime());
         ps.setObject(4, order.getCourier() == null ? null : order.getCourier().getId());
@@ -206,38 +206,15 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
             return Collections.emptyList();
         }
     }
-    private List<Order> extractMany(ResultSet rs) throws SQLException {
-        List<Order> result = new ArrayList<>();
 
-        boolean rowsLeft = rs.next();
-        for (int i = 0; rowsLeft; i++) {
-            Order order = new Order();
-            order.setId(rs.getLong("order_id"));
-
-
-            Contact contact = contactMapper.mapRow(rs, i);
-            order.setSenderContact(contact);
-            order.setReceiverContact(contact);
-
-            Address address = addressRowMapper.mapRow(rs, i);
-            order.setSenderAddress(address);
-            order.setReceiverAddress(address);
-
-             OrderStatus orderStatus =orderStatusRowMapper.mapRow(rs, i);
-             order.setOrderStatus(orderStatus);
-
-             OrderType orderType = orderTypeRowMapper.mapRow(rs, i);
-             order.setOrderType(orderType);
-            result.add(order);
-        }
-        return result;
-    }
 
     private String prepareSearchString(String input) {
         return "%" + input.replace("%", "\\%") + "%";
     }
 
-    public List<Order> search(SearchFormOrder searchFormOrder) {
+    public List<Order> search(SearchFormOrder searchFormOrder, Long id) {
+
+
         String firstName = searchFormOrder.getFirstName();
         firstName = firstName == null ? "%%" : prepareSearchString(firstName);
 
@@ -263,7 +240,9 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
         paramMap.put("start_date", from);
         paramMap.put("end_date", to);
         paramMap.put("destination_type", searchFormOrder.getDestination_typeIds());
-//        paramMap.put("order_status", searchFormOrder.getOrder_statusIds());
+        paramMap.put("order_status", searchFormOrder.getOrder_statusIds());
+        paramMap.put("sender_contact_id", id);
+        paramMap.put("receiver_contact_id", id);
 
         try {
             return namedParameterJdbcTemplate.query(

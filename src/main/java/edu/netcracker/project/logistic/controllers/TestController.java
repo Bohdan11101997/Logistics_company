@@ -12,6 +12,7 @@ import edu.netcracker.project.logistic.service.AddressService;
 import edu.netcracker.project.logistic.service.PersonService;
 import edu.netcracker.project.logistic.service.RoleService;
 
+import edu.netcracker.project.logistic.service.impl.PdfView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -57,25 +58,25 @@ public class TestController {
     @RequestMapping(value = "/test")
     public String test(Model model) {
 
-
+        PdfView pdfView;
 
 //        Address address = new Address("Київ, Академіка Янгеля, 5");
-//        Address address1 = new Address((long) 3, "erer");
-//        addressService.save(address);
+//        Address address1 = new Address((long) 3, "Академіка Янгеля, 5");
+////        addressService.save(address);
 //        addressService.save(address1);
-//
-//        System.out.println(address.check("qwqw"));
-//
-//        for(GeocodingResult gr : Address.getListOfAddresses(address.getName()))
-//            System.out.println(gr.formattedAddress);
-//        System.out.println("===========================================");
+////
+////        System.out.println(address.check("qwqw"));
+////
+////        for(GeocodingResult gr : Address.getListOfAddresses(address.getName()))
+////            System.out.println(gr.formattedAddress);
+////        System.out.println("===========================================");
 //        for(GeocodingResult gr : Address.getListOfAddresses(address1.getLocation()))
 //            System.out.println(gr.formattedAddress);
 //        Contact contact = new Contact(1L, "lol", "lol", "+2312312313");
 //        contactDao.save(contact);
 //        Person person1 = new Person("nick_name", "1121212", localDate, "sdfffsfsdf", contact);
 //        personService.savePerson(person1);
-
+model.addAttribute("pdfView");
         return "test";
     }
 

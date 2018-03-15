@@ -1,8 +1,10 @@
 package edu.netcracker.project.logistic.model;
 
 public class OrderStatus {
+
     private Long id;
     private String name;
+
 
     public OrderStatus() {
     }
@@ -30,9 +32,6 @@ public class OrderStatus {
 
     @Override
     public String toString() {
-        return "OrderStatus{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                '}';
+        return " " + name;
     }
 }
