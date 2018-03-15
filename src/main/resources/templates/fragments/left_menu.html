@@ -67,9 +67,10 @@
                                 <div id="dropdown-manager" class="panel-collapse collapse">
                                     <div class="panel-body">
                                         <ul class="nav navbar-nav">
-                                            <li><a href="#">Manager Func 1</a></li>
-                                            <li><a href="#">Manager Func 2</a></li>
-                                            <li><a href="#">Manager Func 3</a></li>
+                                            <li><a id="manager_statistics_common" th:href = "@{/manager/statistics/common}">Common statistics</a></li>
+                                            <li><a id="manager_statistics_employees" th:href = "@{/manager/statistics/employees}">Employee statistics</a></li>
+                                            <li><a id="manager_statistics_offices" th:href = "@{/manager/statistics/offices}">Office statistics</a></li>
+                                            <li><a id="manager_statistics_orders" th:href = "@{/manager/statistics/orders}">Order statistics</a></li>
                                         </ul>
                                     </div>
                                 </div>

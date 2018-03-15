@@ -1,14 +1,16 @@
-INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (1, 'Bohdan', 'Zinkevich', '984565656', 'bohdan.zsnkevich@ukr.net');
-INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (2, 'Stanislav', 'Popov', '984565657', 'stanis1.stanis1@ukr.net');
-INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (3, 'Ned', 'Stark', '984565658', 'Ned.Stark@ukr.net');
-INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (4, 'Jaime', 'Lannister', '984565659', 'Jaime.Lannister@ukr.net');
-INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (5, 'Tyrion', 'Lannister', '984565660', 'Tyrion.Lannister@ukr.net');
-INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (6, 'Tywin', 'Lannister', '984565661', 'Tywin.Lannister@ukr.net');
-INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (7, 'Khal', 'Drogo', '984565662', 'Khal.Drogo@example.com');
-INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (8, 'Daenerys', 'Targaryen', '984565663', 'Daenerys.Targaryen@example.com');
-INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (9, 'courier', 'rapidman', '984565664', 'courier.rapidman@example.com');
-INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (10, 'Sansa', 'Stark', '984565665', 'Sansa.Stark@example.com');
-INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (11, 'callcenter', 'callcenter', '984565666', 'callcenter.callcenter@example.com');
+
+INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (1, 'Bohdan', 'Zinkevich', '111-111-11', 'bohdan.zsnkevich@ukr.net');
+INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (2, 'Stanislav', 'Popov', '555-535-55', 'stanis1.stanis1@ukr.net');
+INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (3, 'Ned', 'Stark', '222-223-22', 'Ned.Stark@ukr.net');
+INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (4, 'Jaime', 'Lannister', '3313-33-33', 'Jaime.Lannister@ukr.net');
+INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (5, 'Tyrion', 'Lannister', '4414-44-44', 'Tyrion.Lannister@ukr.net');
+INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (6, 'Tywin', 'Lannister', '5553-55-55', 'Tywin.Lannister@ukr.net');
+INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (7, 'Khal', 'Drogo', '666-66-661', 'Khal.Drogo@example.com');
+INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (8, 'Daenerys', 'Targaryen', '6636-66-636', 'Daenerys.Targaryen@example.com');
+INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (9, 'courier', 'rapidman', '777-616-636', 'courier.rapidman@example.com');
+INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (10, 'Sansa', 'Stark', '777-66-1636', 'Sansa.Stark@example.com');
+INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (11, 'callcenter', 'callcenter', '888-66-1636', 'callcenter.callcenter@example.com');
+INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (12, 'manager', 'manager', '888-46-1636', 'manager.manager@example.com');
 
 
 INSERT INTO person(person_id,  user_name, password, contact_id)
@@ -29,6 +31,8 @@ INSERT INTO person (person_id, user_name, password, contact_id)
 VALUES (8, 'courier', '$2a$10$xAqw2EDobxgMKPp3.yBt5OJAuWa/eQxajk2W1ALNuW5MiFxWs4YZC', 8);
 INSERT INTO person (person_id, user_name, password, contact_id)
 VALUES (11, 'callcenter', '$2a$10$GgaiWAHTSsCZYdUJt.9Wo.Pr9z/3.r5mIbmzGV2gESwXm9NRKmpd6', 11);
+INSERT INTO person (person_id, user_name, password, contact_id)
+VALUES (12, 'manager', '$2a$10$PKTqjODixGFeY4SG/6uUMOdmPS2neZBJiqOkoe2xgzYz7wPHlO/c.', 12);
 
 INSERT INTO role (role_id, role_name, is_employee_role) VALUES (1, 'ROLE_ADMIN', TRUE);
 INSERT INTO role (role_id, role_name, is_employee_role, priority) VALUES (2, 'ROLE_USER', FALSE, 'NORMAL');
@@ -49,6 +53,7 @@ INSERT INTO person_role (person_id, role_id) VALUES (6, 5);
 INSERT INTO person_role (person_id, role_id) VALUES (7, 7);
 INSERT INTO person_role (person_id, role_id) VALUES (8, 7);
 INSERT INTO person_role (person_id, role_id) VALUES (11, 5);
+INSERT INTO person_role (person_id, role_id) VALUES (12, 4);
 
 INSERT INTO work_day (employee_id, week_day, start_time, end_time)
 VALUES (1, trim(to_char(CURRENT_DATE, 'DAY')) :: week_day, '12:00', '22:00');

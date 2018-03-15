@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+
+    <th:block th:replace="fragments/header :: header-bootstrap-config" />
+    <th:block th:replace="fragments/header :: header-bootstrap-config-IE" />
+
+    <link rel="stylesheet" th:href="@{/css/left_menu.css}" type="text/css" href="../static/css/left_menu.css" />
+    <link rel="stylesheet" th:href="@{/css/paginator.css}" type="text/css" href="../static/css/paginator.css" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css" />
+
+</head>
+<body>
+
+<div class="row">
+
+    <div th:replace="fragments/left_menu :: left-menu-header">
+    </div>
+
+    <!-- Main Content -->
+    <div class="container-fluid">
+        <div class="side-body">
+            <div class="row">
+
+                <h1 style="text-align:center"> Single employee statistics </h1>
+
+                <div class="col-lg-10 col-md-10 col-md-offset-1 col-lg-offset-1">
+
+                    <h2>Full name: Ivan Petrov</h2>
+                    <h3>Occupation: Courier</h3>
+
+                    <div class="well">
+                        <h3 align="center">Search Filters</h3>
+                        <form method="post" class="form-horizontal">
+
+                            <div class="form-group">
+                                <label for="first-name" class="control-label">First Name</label>
+                                <input type="text" class="form-control" id="first-name"/>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="last-name" class="control-label">Last Name</label>
+                                <input type="text" class="form-control" id="last-name"/>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="select-order-type">Order Type</label>
+                                <select class="form-control" id="select-order-type">
+                                    <option>All</option>
+                                    <option>Documents</option>
+                                    <option>Package</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="select-order-status" class="control-label">Order status</label>
+                                <select id="select-order-status" class="selectpicker" multiple="multiple" title="You can select some">
+                                    <option>Confirmed</option>
+                                    <option>Delivered</option>
+                                    <option>Cancelled</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="sortEmployees">Sort by</label>
+                                <select class="form-control" id="sortEmployees">
+                                    <option>Delivery Date</option>
+                                </select>
+                            </div>
+
+                            <button class="btn btn-primary">
+                                Search
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>Sender Name</th>
+                                <th>Sender Address</th>
+                                <th>Receiver Name</th>
+                                <th>Receiver Address</th>
+                                <th>Office Address</th>
+                                <th>Creation Time</th>
+                                <th>Delivery Time</th>
+                                <th>Order Type</th>
+                                <th>Order Status</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>Sender Name</td>
+                                <td>Sender Address</td>
+                                <td>Receiver Name</td>
+                                <td>Receiver Address</td>
+                                <td>Office Address</td>
+                                <td>Creation Time</td>
+                                <td>Delivery Time</td>
+                                <td>Order Type</td>
+                                <td>Order Status</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block th:replace="fragments/footer :: footer"/>
+<th:block th:replace="fragments/left_menu :: left-menu-footer" />
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
+
+</body>
+</html>
