@@ -39,8 +39,7 @@
                                             th:field="*{{orderType}}">
                                         <option th:each="type: ${orderTypes}"
                                                 th:value="${type.id}"
-                                                th:text="${{type}}"
-                                                th:selected="${order.orderType.name == type.name}">
+                                                th:text="${{type}}">
                                             Order Type
                                         </option>
                                     </select>
@@ -52,9 +51,9 @@
                                 <div class="form-group" id="order-weight" style="display: none"
                                      th:classappend="${#fields.hasErrors('weight')}? 'has-error'">
                                     <label for="weight" class="control-label">Weight (kg)</label>
-                                    <input id="weight" class="form-control"
+                                    <input id="weight" class="form-control" oninput="clearErrorStyles(this)"
                                            pattern="\d{1,}(.\d{1,})*" title="Decimal value representing order weight"
-                                           oninput="clearErrorStyles(this)"
+                                           required="required"
                                            th:field="*{weight}"/>
                                     <div class="has-error help-block"
                                          th:errors="*{weight}">
@@ -68,13 +67,16 @@
                                         <input type="number" id="width" class="form-control" placeholder="Width"
                                                title="Width" min="1"
                                                oninput="clearErrorStyles(this)"
+                                               required="required"
                                                th:field="*{width}"/>
                                         <input type="number" id="height" class="form-control" placeholder="Height"
                                                title="Height" min="1"
                                                oninput="clearErrorStyles(this)"
+                                               required="required"
                                                th:field="*{height}"/>
                                         <input type="number" id="length" class="form-control" placeholder="Length"
                                                title="Length" min="1"
+                                               required="required"
                                                oninput="clearErrorStyles(this)"
                                                th:field="*{length}"/>
                                     </div>
@@ -163,9 +165,8 @@
                                      th:classappend="${#fields.hasErrors('receiverContact.phoneNumber')}? 'has-error'">
                                     <label for="phone" class="control-label">Phone</label>
                                     <input type="text" class="form-control" id="phone" placeholder=""
-                                           required="required" pattern="(\+380)?\d{9}"
+                                           required="required" pattern="(\+380)?[\d\s-()]+"
                                            oninput="clearErrorStyles(this)"
-                                           title="(+380)XXXXXXXXX"
                                            th:field="*{receiverContact.phoneNumber}"/>
                                     <div class="has-error help-block"
                                          th:errors="*{receiverContact.phoneNumber}">

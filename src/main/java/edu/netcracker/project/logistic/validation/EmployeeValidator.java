@@ -17,11 +17,13 @@ import java.util.Set;
 @Component
 public class EmployeeValidator extends AbstractPersonValidator {
     private SmartValidator validator;
+    private ContactValidator contactValidator;
 
     @Autowired
-    public EmployeeValidator(SmartValidator validator, RoleCrudDao roleDao, PersonCrudDao personDao, ContactDao contactDao) {
-        super(roleDao, personDao, contactDao);
+    public EmployeeValidator(SmartValidator validator, RoleCrudDao roleDao, PersonCrudDao personDao, ContactValidator contactValidator) {
+        super(roleDao, personDao);
         this.validator = validator;
+        this.contactValidator = contactValidator;
     }
 
     private void checkRoleData(Person employee, Errors errors) {
@@ -41,7 +43,7 @@ public class EmployeeValidator extends AbstractPersonValidator {
         }
         Contact contact = employee.getContact();
         validator.validate(contact, errors);
-        checkContactData(employee, errors);
+        contactValidator.validate(employee, errors, "contact");
     }
 
     public void validateCreateData(Person employee, Errors errors) {
@@ -55,7 +57,7 @@ public class EmployeeValidator extends AbstractPersonValidator {
             errors.rejectValue("roles", "", "At least one role must be selected");
         }
         checkPersonData(employee, errors);
-        checkContactData(employee, errors);
+        contactValidator.validate(employee, errors, "contact");
         checkRoleData(employee, errors);
     }
 }

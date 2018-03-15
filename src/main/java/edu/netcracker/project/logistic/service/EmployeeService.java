@@ -20,6 +20,7 @@ public interface EmployeeService {
     Optional<Person> findOne(String userName);
     List<Person> findAll();
     List<Person> findCallCenterAgents();
+    List<Person> findCouriers();
     boolean contains(Long id);
     List<Person> search(SearchForm searchForm);
 }

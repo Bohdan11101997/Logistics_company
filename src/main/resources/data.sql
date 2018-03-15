@@ -1,3 +1,4 @@
+
 INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (1, 'Bohdan', 'Zinkevich', '111-111-11', 'bohdan.zsnkevich@ukr.net');
 INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (2, 'Stanislav', 'Popov', '555-535-55', 'stanis1.stanis1@ukr.net');
 INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (3, 'Ned', 'Stark', '222-223-22', 'Ned.Stark@ukr.net');
@@ -10,6 +11,7 @@ INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALU
 INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (10, 'Sansa', 'Stark', '777-66-1636', 'Sansa.Stark@example.com');
 INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (11, 'callcenter', 'callcenter', '888-66-1636', 'callcenter.callcenter@example.com');
 INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (12, 'manager', 'manager', '888-46-1636', 'manager.manager@example.com');
+
 
 INSERT INTO person(person_id,  user_name, password, contact_id)
 VALUES (1, 'Bohdan', '12121212', 1);
@@ -54,17 +56,17 @@ INSERT INTO person_role (person_id, role_id) VALUES (11, 5);
 INSERT INTO person_role (person_id, role_id) VALUES (12, 4);
 
 INSERT INTO work_day (employee_id, week_day, start_time, end_time)
-VALUES (1, trim(to_char(CURRENT_DATE, 'DAY')) :: logistic_company.week_day, '12:00', '22:00');
+VALUES (1, trim(to_char(CURRENT_DATE, 'DAY')) :: week_day, '12:00', '22:00');
 INSERT INTO work_day (employee_id, week_day, start_time, end_time)
-VALUES (2, trim(to_char(CURRENT_DATE, 'DAY')) :: logistic_company.week_day, '07:00', '15:00');
+VALUES (2, trim(to_char(CURRENT_DATE, 'DAY')) :: week_day, '07:00', '15:00');
 INSERT INTO work_day (employee_id, week_day, start_time, end_time)
-VALUES (3, trim(to_char(CURRENT_DATE, 'DAY')) :: logistic_company.week_day, '15:00', '21:00');
+VALUES (3, trim(to_char(CURRENT_DATE, 'DAY')) :: week_day, '15:00', '21:00');
 INSERT INTO work_day (employee_id, week_day, start_time, end_time)
-VALUES (4, trim(to_char(CURRENT_DATE, 'DAY')) :: logistic_company.week_day, '16:00', '02:00');
+VALUES (4, trim(to_char(CURRENT_DATE, 'DAY')) :: week_day, '16:00', '02:00');
 INSERT INTO work_day (employee_id, week_day, start_time, end_time)
-VALUES (5, trim(to_char(CURRENT_DATE, 'DAY')) :: logistic_company.week_day, '06:00', '15:00');
+VALUES (5, trim(to_char(CURRENT_DATE, 'DAY')) :: week_day, '06:00', '23:00');
 INSERT INTO work_day (employee_id, week_day, start_time, end_time)
-VALUES (6, trim(to_char(CURRENT_DATE, 'DAY')) :: logistic_company.week_day, '00:00', '23:59');
+VALUES (6, trim(to_char(CURRENT_DATE, 'DAY')) :: week_day, '00:00', '23:59');
 
 INSERT INTO address (address_id, address_name) VALUES (1, 'Zodchykh St, 34А, Kyiv');
 INSERT INTO address (address_id, address_name) VALUES (2, 'Lesya Kurbasa Ave, 18, Kyiv');
@@ -121,3 +123,10 @@ INSERT INTO logistic_company."order"(order_id, estimated_delivery_time,  courier
 VALUES (3, '14:05:06', 7, 5, 1,2,2, 1, 6,1, 12,12,12,12);
 INSERT INTO logistic_company."order"(order_id, estimated_delivery_time,  courier_id, receiver_contact_id, receiver_address_id, sender_contact_id, sender_address_id, office_id, order_status_id, order_type_id, weight, width, height, length)
 VALUES (2, '04:05:06', 7, 2, 1,5,2, 1, 6,2, 112,132,1322,12);
+
+INSERT INTO logistic_company."courier_data"(person_id,  courier_status, courier_last_location,  courier_travel_mode)
+VALUES (5 , trim('free'):: logistic_company.courier_status, '', 'driving');
+INSERT INTO logistic_company."courier_data"(person_id,  courier_status, courier_last_location,  courier_travel_mode)
+VALUES (7 , trim('free'):: logistic_company.courier_status, '', 'walking');
+INSERT INTO logistic_company."courier_data"(person_id,  courier_status, courier_last_location,  courier_travel_mode)
+VALUES (8 , trim('free'):: logistic_company.courier_status, '', 'driving');

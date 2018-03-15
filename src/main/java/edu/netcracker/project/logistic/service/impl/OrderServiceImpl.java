@@ -75,6 +75,7 @@ public class OrderServiceImpl implements OrderService {
         orderDao.save(order);
         task.setCompleted(true);
         taskDao.save(task);
+        taskProcessorCourier.createTask(order);
     }
 
     @Override
@@ -93,12 +94,58 @@ public class OrderServiceImpl implements OrderService {
         }
         order.setOrderStatus(orderStatusDao.findByName("DRAFT")
                 .orElseThrow(
-                        () -> new IllegalStateException("Can't find order status 'CONFIRMED'")
+                        () -> new IllegalStateException("Can't find order status 'DRAFT'")
                 ));
         orderDao.save(order);
         task.setCompleted(true);
         taskDao.save(task);
-        taskProcessorCourier.createTask(order);
+    }
+
+    @Override
+    public void confirmDelivered(Long employeeId, Long orderId) {
+        Optional<Order> opt = orderDao.findOne(orderId);
+        if (!opt.isPresent()) {
+            throw new IllegalArgumentException("Employee not found");
+        }
+        Order order = opt.get();
+        Task task = taskDao.findByOrderId(order.getId()).orElseThrow(
+                () -> new IllegalStateException(
+                        String.format("Call centre agent processed order #%d but task not exists", order.getId()))
+        );
+        if (!employeeId.equals(task.getEmployeeId())) {
+            throw new IllegalArgumentException("Can't confirm not assigned order");
+        }
+        order.setOrderStatus(orderStatusDao.findByName("DELIVERED")
+                .orElseThrow(
+                        () -> new IllegalStateException("Can't find order status 'DELIVERED'")
+                ));
+        orderDao.save(order);
+        task.setCompleted(true);
+        taskDao.save(task);
+    }
+
+    @Override
+    public void confirmFailed(Long employeeId, Long orderId) {
+        Optional<Order> opt = orderDao.findOne(orderId);
+        if (!opt.isPresent()) {
+            throw new IllegalArgumentException("Employee not found");
+        }
+        Order order = opt.get();
+        Task task = taskDao.findByOrderId(order.getId()).orElseThrow(
+                () -> new IllegalStateException(
+                        String.format("Call centre agent processed order #%d but task not exists", order.getId()))
+        );
+        if (!employeeId.equals(task.getEmployeeId())) {
+            throw new IllegalArgumentException("Can't confirm not assigned order");
+        }
+        order.setOrderStatus(orderStatusDao.findByName("PROCESSING")
+                .orElseThrow(
+                        () -> new IllegalStateException("Can't find order status 'PROCESSING'")
+                ));
+        orderDao.save(order);
+        task.setCompleted(true);
+        taskDao.save(task);
+        taskProcessor.createTask(order);
     }
 
     @Override

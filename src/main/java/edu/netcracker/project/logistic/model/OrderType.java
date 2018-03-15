@@ -11,7 +11,7 @@ public class OrderType {
     private Long maxWidth;
     private Long maxLength;
 
-    public OrderType(){
+    public OrderType() {
 
     }
 
@@ -76,9 +76,18 @@ public class OrderType {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        OrderType that = (OrderType) o;
-        return Objects.equals(id, that.id) &&
-                name == that.name;
+        OrderType orderType = (OrderType) o;
+        return Objects.equals(id, orderType.id) &&
+                Objects.equals(name, orderType.name) &&
+                Objects.equals(maxWeight, orderType.maxWeight) &&
+                Objects.equals(maxHeight, orderType.maxHeight) &&
+                Objects.equals(maxWidth, orderType.maxWidth) &&
+                Objects.equals(maxLength, orderType.maxLength);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, maxWeight, maxHeight, maxWidth, maxLength);
     }
 
     @Override

@@ -1,6 +1,5 @@
 package edu.netcracker.project.logistic.validation;
 
-import edu.netcracker.project.logistic.dao.ContactDao;
 import edu.netcracker.project.logistic.model.Address;
 import edu.netcracker.project.logistic.model.Contact;
 import edu.netcracker.project.logistic.model.Order;
@@ -9,16 +8,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import java.util.List;
-
 @Component
 public class NewOrderValidator implements Validator {
-    private ContactDao contactDao;
+    private ContactValidator contactValidator;
 
-    public NewOrderValidator(ContactDao contactDao) {
-        this.contactDao = contactDao;
+    public NewOrderValidator(ContactValidator contactValidator) {
+        this.contactValidator = contactValidator;
     }
-
 
     @Override
     public boolean supports(Class<?> clazz) {
@@ -45,14 +41,20 @@ public class NewOrderValidator implements Validator {
 
         validateAddress("senderAddress", order.getSenderAddress(), errors);
         validateAddress("receiverAddress", order.getReceiverAddress(), errors);
-        validateReceiverContact(order.getReceiverContact(), errors);
+
+        Contact receiverContact = order.getReceiverContact();
+        if (receiverContact == null) {
+            errors.rejectValue("receiverContact", "Required.Contact");
+            return;
+        }
+        contactValidator.validate(receiverContact, errors, "receiverContact");
     }
 
     private void validateWeight(Order order, Errors errors, OrderType orderType) {
         if (order.getWeight() == null) {
             errors.rejectValue("weight", "Required.Order.Weight");
         } else if (order.getWeight().compareTo(orderType.getMaxWeight()) > 0) {
-            errors.rejectValue("weight", "Exceeded.Order.Weight");
+            errors.rejectValue("weight", "Exceeded.Order.Weight", new Object[]{orderType.getMaxWeight()}, null);
         }
     }
 
@@ -60,7 +62,7 @@ public class NewOrderValidator implements Validator {
         if (order.getWidth() == null) {
             errors.rejectValue("width", "Required.Order.Width");
         } else if (order.getWidth().compareTo(orderType.getMaxWidth()) > 0) {
-            errors.rejectValue("width", "Exceeded.Order.Width");
+            errors.rejectValue("width", "Exceeded.Order.Width", new Object[]{orderType.getMaxWidth().toString()}, null);
         }
     }
 
@@ -68,7 +70,7 @@ public class NewOrderValidator implements Validator {
         if (order.getHeight() == null) {
             errors.rejectValue("height", "Required.Order.Height");
         } else if (order.getHeight().compareTo(orderType.getMaxHeight()) > 0) {
-            errors.rejectValue("height", "Exceeded.Order.Height");
+            errors.rejectValue("height", "Exceeded.Order.Height", new Object[]{orderType.getMaxHeight().toString()}, null);
         }
     }
 
@@ -76,33 +78,7 @@ public class NewOrderValidator implements Validator {
         if (order.getLength() == null) {
             errors.rejectValue("length", "Required.Order.Length");
         } else if (order.getLength().compareTo(orderType.getMaxLength()) > 0) {
-            errors.rejectValue("length", "Exceeded.Order.Length");
-        }
-    }
-
-    private void validateReceiverContact(Contact contact, Errors errors) {
-        if (contact == null) {
-            errors.rejectValue("receiverContact", "Required.Contact");
-            return;
-        }
-        if (contact.getFirstName() == null || contact.getFirstName().isEmpty()) {
-            errors.rejectValue("receiverContact.firstName", "Not.Empty");
-        }
-        if (contact.getLastName() == null || contact.getLastName().isEmpty()) {
-            errors.rejectValue("receiverContact.lastName", "Not.Empty");
-        }
-        if (contact.getPhoneNumber() == null || contact.getPhoneNumber().isEmpty()) {
-            errors.rejectValue("receiverContact.phoneNumber", "Not.Empty");
-        }
-        if (!contact.getPhoneNumber().matches("(\\+380)?\\d{9}")) {
-            errors.rejectValue("receiverContact.phoneNumber", "Invalid.PhoneNumber");
-        }
-        List<Contact> duplicates =
-                contactDao.findByPhoneNumberOrEmail(contact.getPhoneNumber(), contact.getEmail());
-        for (Contact d : duplicates) {
-            if (!d.getContactId().equals(contact.getContactId()) && d.getEmail().equals(contact.getEmail())) {
-                errors.rejectValue("receiverContact.email", "Duplicate.mail");
-            }
+            errors.rejectValue("length", "Exceeded.Order.Length", new Object[]{orderType.getMaxLength().toString()}, null);
         }
     }
 
