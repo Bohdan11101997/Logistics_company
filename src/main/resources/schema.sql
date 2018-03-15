@@ -29,7 +29,7 @@ DROP SCHEMA IF EXISTS "logistic_company" CASCADE;
 CREATE SCHEMA "logistic_company";
 
 CREATE TYPE logistic_company.WEEK_DAY AS ENUM ('MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY');
-CREATE TYPE logistic_company.COURIER_STATUS AS ENUM ('on_way');
+CREATE TYPE logistic_company.COURIER_STATUS AS ENUM ('on_way','free');
 CREATE SEQUENCE "logistic_company"."main_seq_id"
   INCREMENT 1
   MINVALUE 1
@@ -53,7 +53,8 @@ CREATE TABLE "logistic_company"."courier_data"
 (
   "person_id"             INT4,
   "courier_status"        COURIER_STATUS,
-  "courier_last_location" VARCHAR(45) COLLATE "default" NOT NULL
+  "courier_last_location" VARCHAR(45) COLLATE "default" NOT NULL,
+  "courier_travel_mode"   VARCHAR(45) COLLATE "default" NOT NULL
 );
 
 CREATE TABLE "logistic_company"."person" (
@@ -189,8 +190,6 @@ ALTER TABLE "logistic_company"."person"
   ADD UNIQUE ("contact_id");
 ALTER TABLE "logistic_company"."contact"
   ADD UNIQUE ("email");
-ALTER TABLE "logistic_company"."contact"
-  ADD UNIQUE ("phone_number");
 ALTER TABLE logistic_company.registration_link
   ADD UNIQUE ("person_id");
 ALTER TABLE logistic_company.reset_password

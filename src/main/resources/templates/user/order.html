@@ -5,7 +5,8 @@
     <th:block th:replace="fragments/header :: header-bootstrap-config-IE"/>
     <title>Create new order</title>
     <link rel="stylesheet" th:href="@{/css/left_menu.css}" type="text/css" href="/static/css/left_menu.css"/>
-
+    <script th:src="@{/js/forms.js}"></script>
+    <script th:src="@{/js/websocket.js}"></script>
     <style>
         #order-size input {
             margin-bottom: 5px;
@@ -38,8 +39,7 @@
                                             th:field="*{{orderType}}">
                                         <option th:each="type: ${orderTypes}"
                                                 th:value="${type.id}"
-                                                th:text="${{type}}"
-                                                th:selected="${order.orderType.name == type.name}">
+                                                th:text="${{type}}">
                                             Order Type
                                         </option>
                                     </select>
@@ -48,32 +48,35 @@
                                     </div>
                                 </div>
 
-                                <div class="form-group"
+                                <div class="form-group" id="order-weight" style="display: none"
                                      th:classappend="${#fields.hasErrors('weight')}? 'has-error'">
                                     <label for="weight" class="control-label">Weight (kg)</label>
-                                    <input id="weight" class="form-control"
+                                    <input id="weight" class="form-control" oninput="clearErrorStyles(this)"
                                            pattern="\d{1,}(.\d{1,})*" title="Decimal value representing order weight"
-                                           oninput="clearErrorStyles(this)"
+                                           required="required"
                                            th:field="*{weight}"/>
                                     <div class="has-error help-block"
                                          th:errors="*{weight}">
                                     </div>
                                 </div>
 
-                                <div class="form-group"
+                                <div class="form-group" id="order-size" style="display: none"
                                      th:classappend="${#fields.hasErrors('width') || #fields.hasErrors('height') || #fields.hasErrors('length')}? 'has-error'">
                                     <label class="control-label">Size (cm)</label>
-                                    <div id="order-size" class="form-inline">
+                                    <div class="form-inline">
                                         <input type="number" id="width" class="form-control" placeholder="Width"
                                                title="Width" min="1"
                                                oninput="clearErrorStyles(this)"
+                                               required="required"
                                                th:field="*{width}"/>
                                         <input type="number" id="height" class="form-control" placeholder="Height"
                                                title="Height" min="1"
                                                oninput="clearErrorStyles(this)"
+                                               required="required"
                                                th:field="*{height}"/>
                                         <input type="number" id="length" class="form-control" placeholder="Length"
                                                title="Length" min="1"
+                                               required="required"
                                                oninput="clearErrorStyles(this)"
                                                th:field="*{length}"/>
                                     </div>
@@ -162,9 +165,8 @@
                                      th:classappend="${#fields.hasErrors('receiverContact.phoneNumber')}? 'has-error'">
                                     <label for="phone" class="control-label">Phone</label>
                                     <input type="text" class="form-control" id="phone" placeholder=""
-                                           required="required" pattern="(\+380)?\d{9}"
+                                           required="required" pattern="(\+380)?[\d\s-()]+"
                                            oninput="clearErrorStyles(this)"
-                                           title="(+380)XXXXXXXXX"
                                            th:field="*{receiverContact.phoneNumber}"/>
                                     <div class="has-error help-block"
                                          th:errors="*{receiverContact.phoneNumber}">
@@ -190,19 +192,23 @@
 <script type="text/javascript">
     document.getElementById('user_create_new_order').className = 'active';
     var orderSizeElement = document.getElementById('order-size');
-    var orderWeightElement = document.getElementById('weight');
+    var orderWeightElement = document.getElementById('order-weight');
+    var orderDetailsParent = orderSizeElement.parentElement;
+
     var orderTypeSelect = document.getElementById('order-type');
     orderTypeSelect.addEventListener("change", function (ev) {
         var orderType = orderTypeSelect.options[orderTypeSelect.selectedIndex].label;
         if (orderType === "Documents") {
-            orderWeightElement.parentElement.style.display = "none";
-            orderSizeElement.parentElement.style.display = "none";
+            orderDetailsParent.removeChild(orderWeightElement);
+            orderDetailsParent.removeChild(orderSizeElement);
         } else {
-            orderWeightElement.parentElement.style.display = "block";
-            orderSizeElement.parentElement.style.display = "block";
+            orderDetailsParent.appendChild(orderWeightElement);
+            orderDetailsParent.appendChild(orderSizeElement);
         }
     });
     orderTypeSelect.dispatchEvent(new Event("change"));
+    orderWeightElement.style.display = "block";
+    orderSizeElement.style.display = "block";
     var form = document.getElementById("form-order");
     var draftButton = document.getElementById("btn-draft");
     draftButton.addEventListener(

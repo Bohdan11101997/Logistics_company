@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+
+    <th:block th:replace="fragments/header :: header-bootstrap-config" />
+    <th:block th:replace="fragments/header :: header-bootstrap-config-IE" />
+
+    <link rel="stylesheet" th:href="@{/css/left_menu.css}" type="text/css" href="../static/css/left_menu.css" />
+    <link rel="stylesheet" th:href="@{/css/paginator.css}" type="text/css" href="../static/css/paginator.css" />
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css" />
+
+
+</head>
+<body>
+
+<div class="row">
+
+    <div th:replace="fragments/left_menu :: left-menu-header">
+    </div>
+
+    <!-- Main Content -->
+    <div class="container-fluid">
+        <div class="side-body">
+            <div class="row">
+
+                <h1 style="text-align:center"> Employee statistics </h1>
+
+                <div class="col-lg-10 col-md-10 col-md-offset-1 col-lg-offset-1">
+
+                    <div class="well">
+                        <h3 align="center">Search Filters</h3>
+                        <form method="post" class="form-horizontal">
+
+                            <div class="form-group">
+                                <label for="first-name" class="control-label">First Name</label>
+                                <input type="text" class="form-control" id="first-name"/>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="last-name" class="control-label">Last Name</label>
+                                <input type="text" class="form-control" id="last-name"/>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="selectWorkDay" class="control-label">Work Days</label>
+                                <select id="selectWorkDay" class="selectpicker" multiple="multiple" title="You can select some">
+                                    <option>Monday</option>
+                                    <option>Tuesday</option>
+                                    <option>Friday</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="selectEmployee">Select list</label>
+                                <select class="form-control" id="selectEmployee" onchange="showCourierMove()">
+                                    <option value="couriers" id="couriers">Couriers</option>
+                                    <option value="call-center-agents" id="call-center-agents">Call center agents</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group" style="display:block" id="radio-courier-move">
+                                <label class="radio-inline"><input type="radio" name="optradio" checked="checked" />Car</label>
+                                <label class="radio-inline"><input type="radio" name="optradio" />On foot</label>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="sortEmployees">Sort by</label>
+                                <select class="form-control" id="sortEmployees">
+                                    <option>Last name</option>
+                                    <option>Registration date</option>
+                                    <option>Orders handled</option>
+                                    <option>Usefulness</option>
+                                </select>
+                            </div>
+
+                            <button class="btn btn-primary">
+                                Search
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>First name</th>
+                                <th>Last name</th>
+                                <th>E-mail</th>
+                                <th>Phone</th>
+                                <th>Move</th>
+                                <th>Work Days</th>
+                                <th>Registration date</th>
+                                <th>Orders handled</th>
+                                <th>Usefulness</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>First</td>
+                                <td>Last</td>
+                                <td>mail@gmail.com</td>
+                                <td>+380777777777</td>
+                                <td>Car</td>
+                                <td>Monday, Tuesday</td>
+                                <td>2018-03-02</td>
+                                <td>252</td>
+                                <td>32</td>
+                                <td>
+                                    <a th:href="@{/manager/statistics/employee/1}">More</a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block th:replace="fragments/footer :: footer"/>
+<th:block th:replace="fragments/left_menu :: left-menu-footer" />
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
+
+<script>
+    function showCourierMove(){
+        if(document.getElementById('selectEmployee').value === "couriers"){
+            document.getElementById('radio-courier-move').style.display = "block";
+        } else{
+            document.getElementById('radio-courier-move').style.display = "none";
+        }
+    }
+</script>
+
+</body>
+</html>

@@ -7,8 +7,11 @@ import edu.netcracker.project.logistic.dao.OrderDao;
 import edu.netcracker.project.logistic.dao.impl.AddressDaoImpl;
 import edu.netcracker.project.logistic.dao.impl.OrderDaoImpl;
 import edu.netcracker.project.logistic.model.Address;
+import edu.netcracker.project.logistic.model.Advertisement;
 import edu.netcracker.project.logistic.model.Office;
+import edu.netcracker.project.logistic.model.Pager;
 import edu.netcracker.project.logistic.service.AddressService;
+import edu.netcracker.project.logistic.service.AdvertisementService;
 import edu.netcracker.project.logistic.service.PersonService;
 import edu.netcracker.project.logistic.service.RoleService;
 
@@ -19,10 +22,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Optional;
 
 
 @Controller
@@ -90,5 +96,6 @@ model.addAttribute("pdfView");
     public String user() {
         return "person_main";
     }
+
 
 }

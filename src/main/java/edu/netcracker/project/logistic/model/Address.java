@@ -69,7 +69,6 @@ public class Address {
         GeocodingResult[] result = null;
         try {
             result = GoogleApiRequest.GeocodingApi().latlng(location)
-                    .locationType(LocationType.APPROXIMATE)
                     .bounds(new LatLng(50.243848, 30.204895), new LatLng(50.674379, 30.735831))
                     .await();
         } catch (Exception e) {
@@ -82,6 +81,7 @@ public class Address {
         GeocodingResult[] result = null;
         try {
             result = GoogleApiRequest.GeocodingApi().address(address)
+                    .locationType(LocationType.APPROXIMATE)
                     .bounds(new LatLng(50.243848, 30.204895), new LatLng(50.674379, 30.735831))
                     .await();
         } catch (Exception e) {
@@ -183,6 +183,10 @@ public class Address {
 
     @Override
     public String toString() {
-        return " " + name;
+        return "Address{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", location=" + location +
+                '}';
     }
 }

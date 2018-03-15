@@ -63,6 +63,20 @@ public class TaskDaoImpl implements TaskDao, RowMapper<Task> {
     }
 
     @Override
+    public Optional<Task> findByOrderId(Long orderId) {
+        try {
+            Task task = jdbcTemplate.queryForObject(
+                    getFindByOrderIdQuery(),
+                    new Object[]{orderId},
+                    this
+            );
+            return Optional.of(task);
+        } catch (EmptyResultDataAccessException ex) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
     public Task save(Task task) {
         boolean hasPrimaryKey = task.getId() != null;
         if (hasPrimaryKey) {
@@ -116,4 +130,6 @@ public class TaskDaoImpl implements TaskDao, RowMapper<Task> {
     private String getFindUncompletedByEmployeeIdQuery() {
         return queryService.getQuery("select.task.uncompleted.by.employee_id");
     }
+
+    private String getFindByOrderIdQuery() { return queryService.getQuery("select.task.by.order_id"); }
 }

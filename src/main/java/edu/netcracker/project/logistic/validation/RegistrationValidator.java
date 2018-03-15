@@ -1,6 +1,5 @@
 package edu.netcracker.project.logistic.validation;
 
-import edu.netcracker.project.logistic.dao.ContactDao;
 import edu.netcracker.project.logistic.dao.PersonCrudDao;
 import edu.netcracker.project.logistic.dao.RoleCrudDao;
 import edu.netcracker.project.logistic.model.Person;
@@ -15,14 +14,17 @@ import java.util.Set;
 
 @Component
 public class RegistrationValidator extends AbstractPersonValidator {
+    private ContactValidator contactValidator;
+
     @Autowired
-    public RegistrationValidator(PersonCrudDao personDao, RoleCrudDao roleDao, ContactDao contactDao) {
-        super(roleDao, personDao, contactDao);
+    public RegistrationValidator(PersonCrudDao personDao, RoleCrudDao roleDao, ContactValidator contactValidator) {
+        super(roleDao, personDao);
+        this.contactValidator = contactValidator;
     }
 
     public void validate(Person user, Errors errors) {
         checkPersonData(user, errors);
-        checkContactData(user, errors);
+        contactValidator.validate(user, errors, "contact");
     }
 
     private void checkRoleData(Person user, Errors errors) {

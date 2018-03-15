@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+
+    <th:block th:replace="fragments/header :: header-bootstrap-config" />
+    <th:block th:replace="fragments/header :: header-bootstrap-config-IE" />
+
+    <link rel="stylesheet" th:href="@{/css/left_menu.css}" type="text/css" href="../static/css/left_menu.css" />
+    <link rel="stylesheet" th:href="@{/css/paginator.css}" type="text/css" href="../static/css/paginator.css" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css" />
+
+</head>
+<body>
+
+<div class="row">
+
+    <div th:replace="fragments/left_menu :: left-menu-header">
+    </div>
+
+    <!-- Main Content -->
+    <div class="container-fluid">
+        <div class="side-body">
+            <div class="row">
+
+                <h1 style="text-align:center"> Order statistics </h1>
+
+                <div class="col-lg-10 col-md-10 col-md-offset-1 col-lg-offset-1">
+
+                    <div class="well">
+                        <h3 align="center">Search Filters</h3>
+                        <form method="post" class="form-horizontal">
+
+                            <div class="form-group">
+                                <label for="select-interval">Choose range</label>
+                                <select class="form-control" id="select-interval" onchange="showChosenRangeInputs()">
+                                    <option value="year">Year</option>
+                                    <option value="month">Month</option>
+                                    <option value="interval">Interval</option>
+                                    <option value="all">All time</option>
+                                </select>
+                            </div>
+
+                            <div style="display: block" class="form-group" id="select-year-block">
+                                <label for="select-year">Choose year</label>
+                                <select class="form-control" id="select-year">
+                                    <option>2017</option>
+                                    <option>2018</option>
+                                    <option>2019</option>
+                                </select>
+                            </div>
+
+                            <div style="display: none" class="form-group" id="select-month-block">
+                                <label for="select-month">Choose month</label>
+                                <select class="form-control" id="select-month">
+                                    <option>january</option>
+                                    <option>february</option>
+                                    <option>december</option>
+                                </select>
+                            </div>
+
+                            <div style="display: none" class="form-group required" id="select-interval-block">
+                                <label class="control-label">Date Interval</label>
+                                <div class="form-inline">
+                                    <input type="date" class="form-control" id="from-date" title="From"/>
+                                    <input type="date" class="form-control" id="to-date" title="To"/>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="select-order-type">Order Type</label>
+                                <select class="form-control" id="select-order-type">
+                                    <option>All</option>
+                                    <option>Documents</option>
+                                    <option>Package</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="select-order-status" class="control-label">Order status</label>
+                                <select id="select-order-status" class="selectpicker" multiple="multiple" title="You can select some">
+                                    <option>Confirmed</option>
+                                    <option>Delivered</option>
+                                    <option>Cancelled</option>
+                                </select>
+                            </div>
+
+                            <button class="btn btn-primary">
+                                Search
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- For year. Maybe there will be diagram -->
+                    <h2>Year: 2018</h2>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Month</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <th>Percentage</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>January</td>
+                                <td>Documents, Packages, Cargo</td>
+                                <td>420</td>
+                                <td>13%</td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>May</td>
+                                <td>Documents, Packages, Cargo</td>
+                                <td>200</td>
+                                <td>20%</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Total</td>
+                                <td>Documents, Packages, Cargo</td>
+                                <td>750, 829, 321</td>
+                                <td>40%, 50%, 10%</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- For month. Maybe there will be diagram -->
+                    <h2>Year: 2018 Month: February</h2>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>Day number</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <th>Percentage</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>All</td>
+                                <td>420</td>
+                                <td>13%</td>
+                            </tr>
+                            <tr>
+                                <td>7</td>
+                                <td>All</td>
+                                <td>820</td>
+                                <td>20%</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Total</td>
+                                <td>All</td>
+                                <td>4458</td>
+                                <td>100%</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- For interval -->
+                    <h2>Date range: 2018/05/12 - 2018/10/12</h2>
+                    <h5>Total days:</h5><label>75</label>
+                    <h5>Types:</h5><label>Documents, Cargo</label>
+                    <h5>Total orders:</h5><label>820, 560</label>
+
+                    <!-- For all time -->
+                    <h2>All time</h2>
+                    <h5>Total days:</h5><label>560</label>
+                    <h5>Types:</h5><label>Documents, Cargo</label>
+                    <h5>Total orders:</h5><label>1234, 5600</label>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block th:replace="fragments/footer :: footer"/>
+<th:block th:replace="fragments/left_menu :: left-menu-footer" />
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
+
+<script>
+    function showChosenRangeInputs(){
+
+        var selectValue = document.getElementById('select-interval').value;
+
+        if(selectValue === "year"){
+            document.getElementById('select-year-block').style.display = "block";
+            document.getElementById('select-month-block').style.display = "none";
+            document.getElementById('select-interval-block').style.display = "none";
+        } else if(selectValue === "month"){
+            document.getElementById('select-year-block').style.display = "block";
+            document.getElementById('select-month-block').style.display = "block";
+            document.getElementById('select-interval-block').style.display = "none";
+        } else if(selectValue === "interval"){
+            document.getElementById('select-year-block').style.display = "none";
+            document.getElementById('select-month-block').style.display = "none";
+            document.getElementById('select-interval-block').style.display = "block";
+        } else {
+            document.getElementById('select-year-block').style.display = "none";
+            document.getElementById('select-month-block').style.display = "none";
+            document.getElementById('select-interval-block').style.display = "block";
+        }
+    }
+</script>
+
+</body>
+</html>
