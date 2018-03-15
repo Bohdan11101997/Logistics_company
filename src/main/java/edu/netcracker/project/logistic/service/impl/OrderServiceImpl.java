@@ -148,15 +148,7 @@ public class OrderServiceImpl implements OrderService {
         taskProcessor.createTask(order);
     }
 
-    @Override
-    public List<Order> HistoryCompleteOrderReceiver(Long aLong) {
-        return orderDao.HistoryCompleteOrderReceiver(aLong);
-    }
 
-    @Override
-    public List<Order> HistoryCompleteOrderSender(Long aLong) {
-        return orderDao.HistoryCompleteOrderSender(aLong);
-    }
 
     @Override
     public void draft(Order order) {

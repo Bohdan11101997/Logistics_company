@@ -1,6 +1,5 @@
 package edu.netcracker.project.logistic.config.web;
 
-import edu.netcracker.project.logistic.config.resolver.PdfViewResolver;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,49 +31,4 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 		return messageSource;
 	}
 
-	@Bean
-	public LocaleResolver localeResolver(){
-		SessionLocaleResolver slr = new SessionLocaleResolver();
-		slr.setDefaultLocale(Locale.US);
-		return slr;
-	}
-
-  @Bean
-	public HttpSessionEventPublisher httpSessionEventPublisher() {
-		return new HttpSessionEventPublisher();
-	}
-
-	@Override
-	public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
-		configurer
-				.defaultContentType(MediaType.APPLICATION_JSON)
-				.favorPathExtension(true);
-	}
-
-	/*
-	 * Configure ContentNegotiatingViewResolver
-	 */
-	@Bean
-	public ViewResolver contentNegotiatingViewResolver(ContentNegotiationManager manager) {
-		ContentNegotiatingViewResolver resolver = new ContentNegotiatingViewResolver();
-		resolver.setContentNegotiationManager(manager);
-
-		// Define all possible view resolvers
-		List<ViewResolver> resolvers = new ArrayList<>();
-
-		resolvers.add(pdfViewResolver());
-
-		resolver.setViewResolvers(resolvers);
-		return resolver;
-	}
-
-
-	/*
-	 * Configure View resolver to provide Pdf output using iText library to
-	 * generate pdf output for an object content
-	 */
-	@Bean
-	public ViewResolver pdfViewResolver() {
-		return new PdfViewResolver();
-	}
 }

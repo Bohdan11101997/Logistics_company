@@ -47,6 +47,7 @@ INSERT INTO person_role (person_id, role_id) VALUES (2, 3);
 INSERT INTO person_role (person_id, role_id) VALUES (4, 1);
 INSERT INTO person_role (person_id, role_id) VALUES (2, 2);
 INSERT INTO person_role (person_id, role_id) VALUES (5, 1);
+INSERT INTO person_role (person_id, role_id) VALUES (5, 2);
 INSERT INTO person_role (person_id, role_id) VALUES (5, 5);
 INSERT INTO person_role (person_id, role_id) VALUES (5, 7);
 INSERT INTO person_role (person_id, role_id) VALUES (6, 5);

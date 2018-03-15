@@ -233,10 +233,11 @@ public class UserController {
 
 
     @GetMapping("/orders")
-    public  String gethistoryCompleteSenderOrder(Model model, Principal principal)
+    public  String getOrderByUser(Model model, Principal principal)
     {
         Optional<Person> opt = userService.findOne(principal.getName());
         Person user = opt.get();
+        System.out.println(orderDao.HistoryCompleteOrderSender(user.getId()));
         model.addAttribute("orders", orderDao.HistoryCompleteOrderSender(user.getId()));
         model.addAttribute("destination_typeOrders", orderTypeDao.findAll());
         model.addAttribute("status_OrdersList", orderStatusDao.findAll());
@@ -246,7 +247,7 @@ public class UserController {
 
 
     @PostMapping("/orders")
-    public  String historyCompleteSenderOrder(@ModelAttribute("searchFormOrder") SearchFormOrder searchFormOrder, Model model, Principal principal)
+    public  String SearchOrdersByUser(@ModelAttribute("searchFormOrder") SearchFormOrder searchFormOrder, Model model, Principal principal)
     {
         Optional<Person> opt = userService.findOne(principal.getName());
         Person user = opt.get();

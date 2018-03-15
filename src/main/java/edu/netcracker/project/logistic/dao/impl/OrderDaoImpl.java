@@ -257,7 +257,14 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
         }
 
     }
-
+    @Override
+    public List<Order> findNotProcessedByEmployeeId(Long employeeId) {
+        return jdbcTemplate.query(
+                getFindByEmployeeIdNotProcessedQuery(),
+                new Object[]{employeeId},
+                this
+        );
+    }
 
     public List<Order> HistoryCompleteOrderSender(Long aLong) {
         try {
@@ -276,7 +283,9 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
         return queryService.getQuery("select.order.by.user");
      }
 
-
+    private String getFindByEmployeeIdNotProcessedQuery() {
+        return queryService.getQuery("select.order.not_processed.by.employee_id");
+    }
     private String getFindOneQuery() {
         return queryService.getQuery("select.order");
     }

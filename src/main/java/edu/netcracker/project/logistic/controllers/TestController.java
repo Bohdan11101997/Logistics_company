@@ -15,7 +15,7 @@ import edu.netcracker.project.logistic.service.AdvertisementService;
 import edu.netcracker.project.logistic.service.PersonService;
 import edu.netcracker.project.logistic.service.RoleService;
 
-import edu.netcracker.project.logistic.service.impl.PdfView;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -64,7 +64,7 @@ public class TestController {
     @RequestMapping(value = "/test")
     public String test(Model model) {
 
-        PdfView pdfView;
+    //        PdfView pdfView;
 
 //        Address address = new Address("Київ, Академіка Янгеля, 5");
 //        Address address1 = new Address((long) 3, "Академіка Янгеля, 5");

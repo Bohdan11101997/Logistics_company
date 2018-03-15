@@ -17,7 +17,5 @@ public interface OrderService {
 
     void confirmFailed(Long employeeId, Long orderId);
 
-    List<Order> HistoryCompleteOrderReceiver(Long aLong);
 
-    List<Order> HistoryCompleteOrderSender(Long aLong);
 }
