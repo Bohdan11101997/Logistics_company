@@ -1,18 +1,12 @@
 package edu.netcracker.project.logistic.controllers;
 
-import com.google.maps.DirectionsApi;
-import com.google.maps.errors.ApiException;
-import com.google.maps.model.DistanceMatrix;
-import com.google.maps.model.DistanceMatrixElementStatus;
 import com.google.maps.model.LatLng;
 import com.google.maps.model.TravelMode;
 import edu.netcracker.project.logistic.dao.CourierDataDao;
 import edu.netcracker.project.logistic.dao.OrderDao;
 import edu.netcracker.project.logistic.dao.OrderTypeDao;
 import edu.netcracker.project.logistic.flow.FlowBuilder;
-import edu.netcracker.project.logistic.flow.impl.FlowBuilderImpl;
 import edu.netcracker.project.logistic.flow.impl.RadiusSelector;
-import edu.netcracker.project.logistic.maps_wrapper.GoogleApiRequest;
 import edu.netcracker.project.logistic.model.*;
 import edu.netcracker.project.logistic.service.*;
 import org.slf4j.Logger;
@@ -25,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -100,7 +96,7 @@ public class FlowController {
                         logger.info("New route finished;");
                         logger.info("Total distance: " + fb.getDistance() + "m");
                         logger.info("Total duration: " + fb.getDuration() * 1.0 / 60 / 60 + "h");
-                        logger.info("Map url: " + fb.getStaticMap().toURL().toString() + "\t", fb.getStaticMap().toURL());
+                        logger.info("Map url: " + fb.getStaticMap().toURL().toString());
                         // return "redirect:" + fb.getStaticMap().toURL().toString();
                     } catch (MalformedURLException e) {
                         logger.error(e.getMessage());
@@ -128,7 +124,8 @@ public class FlowController {
         FlowBuilder fb = new RadiusSelector(roleService, orderTypeDao, courierDataDao, office)
                 .optimize(true)
                 .setUseMapRequests(false);
-        fb.add(orderGenWalks.generate(20));
+        fb.add(orderGenWalks.generate(10));
+        fb.add(orderGenDrives.generate(10));
 
         Set<Role> couriers = new HashSet<>();
         couriers.add(new Role((long) (7), "ROLE_COURIER", null));
@@ -150,8 +147,14 @@ public class FlowController {
                     System.out.print("");
                     logger.info("New route finished;");
                     logger.info("Total distance: " + fb.getDistance() + "m");
+                    URI uri = null;
+                    try {
+                        uri = fb.getStaticMap().toURL().toURI();
+                    } catch (URISyntaxException e) {
+                        logger.warn(e.getMessage());
+                    }
                     logger.info("Total duration: " + fb.getDuration() * 1.0 / 60 / 60 + "h");
-                    logger.info("Map url: " + fb.getStaticMap().toURL().toString() + "\t", fb.getStaticMap().toURL());
+                    logger.info("Map url: " + uri.toASCIIString() + "\t", fb.getStaticMap().toURL());
                     // return "redirect:" + fb.getStaticMap().toURL().toString();
                 } catch (MalformedURLException e) {
                     logger.error(e.getMessage());
@@ -180,7 +183,8 @@ public class FlowController {
         FlowBuilder fb = new RadiusSelector(roleService, orderTypeDao, courierDataDao, office)
                 .optimize(true)
                 .setUseMapRequests(false);
-        fb.add(orderGenWalks.generate(20));
+        fb.add(orderGenWalks.generate(10));
+        fb.add(orderGenDrives.generate(10));
 
         Set<Role> couriers = new HashSet<>();
         couriers.add(new Role((long) (7), "ROLE_COURIER", null));
@@ -275,11 +279,11 @@ public class FlowController {
                 o.setOrderStatus(new OrderStatus((long) (-1), "CONFIRMED"));
                 o.setReceiverContact(new Contact());
                 o.setSenderContact(new Contact());
-                o.setOrderType(orderTypes.get((int) (Math.random() + 0.33) * (orderTypes.size() - 1)));
+                o.setOrderType(orderTypes.get(travelMode == TravelMode.DRIVING ? 2 : 1));
                 //
                 o.setWeight(o.getOrderType().getId() == 1 ? BigDecimal.valueOf(Math.random() * 0.5) :
                         (o.getOrderType().getId() == 2 ? BigDecimal.valueOf(Math.random() * 8) : BigDecimal.valueOf(Math.random() * 50)));
-                //TODO: cange to debug
+                //TODO: change to debug
                 logger.info("Generated Order #" + i + ": " + o);
                 sequence.add(o);
             }

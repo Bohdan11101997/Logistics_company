@@ -311,4 +311,8 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
     private String getFindNotProcessedQuery() {
         return queryService.getQuery("select.order.not_processed");
     }
+
+    private String getConfirmedQuery() {
+        return queryService.getQuery("select.order.confirmed");
+    }
 }
