@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <th:block th:replace="fragments/header :: header-bootstrap-config" />
-    <th:block th:replace="fragments/header :: header-bootstrap-config-IE" />
-    <link rel="stylesheet" th:href="@{/css/left_menu.css}" type="text/css" href="../../static/css/left_menu.css" />
+    <th:block th:replace="fragments/header :: header-bootstrap-config"/>
+    <th:block th:replace="fragments/header :: header-bootstrap-config-IE"/>
+    <link rel="stylesheet" th:href="@{/css/left_menu.css}" type="text/css" href="../../static/css/left_menu.css"/>
     <script th:src="@{/js/forms.js}" src="../../static/js/forms.js"></script>
     <style>
-        @media (min-width: 768px)  {
+        @media (min-width: 768px) {
             #from-date {
                 margin-right: 5px;
             }
@@ -29,7 +29,7 @@
 </head>
 <body>
 
-    <div class="row">
+<div class="row">
 
     <div th:replace="fragments/left_menu :: left-menu-header">
     </div>
@@ -49,36 +49,39 @@
                             <div class="form-group">
                                 <label for="first-name" class="control-label">First Name</label>
                                 <input type="text" class="form-control" id="first-name"
-                                    th:field="*{firstName}" />
+                                       th:field="*{firstName}"/>
                             </div>
 
                             <div class="form-group">
                                 <label for="last-name" class="control-label">Last Name</label>
                                 <input type="text" class="form-control" id="last-name"
-                                    th:field="*{lastName}"/>
+                                       th:field="*{lastName}"/>
                             </div>
 
                             <div class="form-group">
                                 <label for="role" class="control-label">Role</label>
-                                <br />
+                                <br/>
                                 <select id="role" multiple="multiple"
                                         th:field="*{roleIds}">
                                     <option th:each="role: ${availableRoles}"
                                             th:value="${role.roleId}"
-                                            th:text="${{role}}">Role</option>
+                                            th:text="${{role}}">Role
+                                    </option>
                                 </select>
                             </div>
 
                             <div class="form-group"
-                                th:classappend="${#fields.hasErrors('from')}? 'has-error'">
+                                 th:classappend="${#fields.hasErrors('from')}? 'has-error'">
                                 <label class="control-label">Registration date interval</label>
                                 <div class="form-inline">
                                     <input class="form-control" id="from-date" title="From"
-                                        pattern="[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01])" placeholder="yyyy-mm-dd"
-                                        th:field="*{{from}}" oninput="onSearchDateClick(this)"/>
+                                           pattern="[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01])"
+                                           placeholder="yyyy-mm-dd"
+                                           th:field="*{{from}}"/>
                                     <input class="form-control" id="to-date" title="To"
-                                        pattern="[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01])" placeholder="yyyy-mm-dd"
-                                        th:field="*{{to}}" oninput="onSearchDateClick(this)"/>
+                                           pattern="[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01])"
+                                           placeholder="yyyy-mm-dd"
+                                           th:field="*{{to}}"/>
                                 </div>
                                 <div class="has-error help-block"
                                      th:if="${#fields.hasErrors('from')}"
@@ -130,14 +133,22 @@
     </div>
 </div>
 
-    <th:block th:replace="fragments/footer :: footer"/>
-    <th:block th:replace="fragments/left_menu :: left-menu-footer" />
+<th:block th:replace="fragments/footer :: footer"/>
+<th:block th:replace="fragments/left_menu :: left-menu-footer"/>
 
-    <script type="text/javascript">
-        document.getElementById('employees').className='active';
-        createMultiSelect("#role", true);
-        createDatePicker("#from-date");
-        createDatePicker("#to-date");
-    </script>
+<script type="text/javascript">
+    document.getElementById('employees').className = 'active';
+    createMultiSelect("#role", true);
+
+    var fromDateElem = document.getElementById("from-date");
+    var toDateElem = document.getElementById("to-date");
+
+    createDatePicker("#from-date", function () {
+        onSearchDateClick(fromDateElem);
+    });
+    createDatePicker("#to-date", function () {
+        onSearchDateClick(toDateElem);
+    });
+</script>
 </body>
 </html>
