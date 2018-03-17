@@ -33,13 +33,13 @@ VALUES (11, 'callcenter', '$2a$10$GgaiWAHTSsCZYdUJt.9Wo.Pr9z/3.r5mIbmzGV2gESwXm9
 INSERT INTO person (person_id, user_name, password, contact_id)
 VALUES (12, 'manager', '$2a$10$PKTqjODixGFeY4SG/6uUMOdmPS2neZBJiqOkoe2xgzYz7wPHlO/c.', 12);
 
-INSERT INTO role (role_id, role_name, is_employee_role) VALUES (1, 'ROLE_ADMIN', TRUE);
+INSERT INTO role (role_id, role_name, is_employee_role, priority) VALUES (1, 'ROLE_ADMIN', TRUE, 'VIP');
 INSERT INTO role (role_id, role_name, is_employee_role, priority) VALUES (2, 'ROLE_USER', FALSE, 'NORMAL');
-INSERT INTO role (role_id, role_name, is_employee_role) VALUES (3, 'ROLE_UNCONFIRMED', FALSE);
-INSERT INTO role (role_id, role_name, is_employee_role) VALUES (4, 'ROLE_MANAGER', TRUE);
-INSERT INTO role (role_id, role_name, is_employee_role) VALUES (5, 'ROLE_CALL_CENTER', TRUE);
+INSERT INTO role (role_id, role_name, is_employee_role, priority) VALUES (3, 'ROLE_UNCONFIRMED', FALSE, 'NORMAL');
+INSERT INTO role (role_id, role_name, is_employee_role, priority) VALUES (4, 'ROLE_MANAGER', TRUE, 'VIP');
+INSERT INTO role (role_id, role_name, is_employee_role, priority) VALUES (5, 'ROLE_CALL_CENTER', TRUE, 'VIP');
 INSERT INTO role (role_id, role_name, is_employee_role, priority) VALUES (6, 'ROLE_VIP_USER', FALSE, 'VIP');
-INSERT INTO role (role_id, role_name, is_employee_role) VALUES (7, 'ROLE_COURIER', TRUE );
+INSERT INTO role (role_id, role_name, is_employee_role, priority) VALUES (7, 'ROLE_COURIER', TRUE, 'VIP');
 
 INSERT INTO person_role (person_id, role_id) VALUES (1, 1);
 INSERT INTO person_role (person_id, role_id) VALUES (2, 3);
