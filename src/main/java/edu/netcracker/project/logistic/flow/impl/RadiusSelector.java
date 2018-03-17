@@ -51,6 +51,7 @@ public class RadiusSelector extends FlowBuilderImpl {
         center = office.getAddress().getLocation();
         courierToPick = CourierType.Driver;
         returnOrders = new LinkedList<>();
+        travelMode = TravelMode.DRIVING;
     }
 
     public void newPath() {
@@ -249,6 +250,7 @@ public class RadiusSelector extends FlowBuilderImpl {
             case Walker:
                 travelMode = TravelMode.WALKING;
                 break;
+            default:
             case Driver:
                 travelMode = TravelMode.DRIVING;
                 break;
@@ -273,6 +275,8 @@ public class RadiusSelector extends FlowBuilderImpl {
         if (directionsResult.geocodedWaypoints[0].geocoderStatus != GeocodedWaypointStatus.OK) {
             System.err.println("DirectionsApi returned ZERO_RESULTS");
         } else {
+            duration = 0;
+            distance = 0;
             path = directionsResult.routes[0].overviewPolyline.decodePath();
             staticMap = GoogleApiRequest.StaticMap()
                     .center(new StaticMap.GeoPoint(center.lat, center.lng))
@@ -329,7 +333,7 @@ public class RadiusSelector extends FlowBuilderImpl {
     public List<Order> confirmCourier() {
         try {
             for (Order o : resultSequence) {
-                CourierData cd = courierDataDao.findOne(courier).get();
+                CourierData cd = courierDataDao.findOne(courier).orElse(null);
                 while (cd == null) {
                     if (getCouriers().size() == 0)
                         throw new IllegalStateException("No couriers data's in the base");

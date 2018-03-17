@@ -3,35 +3,56 @@ package edu.netcracker.project.logistic.dao.impl;
 import com.google.maps.model.LatLng;
 import com.google.maps.model.TravelMode;
 import edu.netcracker.project.logistic.dao.CourierDataDao;
+import edu.netcracker.project.logistic.dao.PersonCrudDao;
 import edu.netcracker.project.logistic.dao.QueryDao;
-import edu.netcracker.project.logistic.model.CourierData;
-import edu.netcracker.project.logistic.model.CourierStatus;
-import edu.netcracker.project.logistic.model.Office;
-import edu.netcracker.project.logistic.model.Person;
+import edu.netcracker.project.logistic.model.*;
 import edu.netcracker.project.logistic.service.QueryService;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Repository
-public class CourierDataDaoImpl implements CourierDataDao, QueryDao {
+public class CourierDataDaoImpl implements CourierDataDao, RowMapper<CourierData> {
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(CourierDataDaoImpl.class);
 
     private JdbcTemplate jdbcTemplate;
     private QueryService queryService;
+    private PersonCrudDao personCrudDao;
 
     @Autowired
-    public CourierDataDaoImpl(QueryService queryService, JdbcTemplate jdbcTemplate) {
+    public CourierDataDaoImpl(QueryService queryService, JdbcTemplate jdbcTemplate, PersonCrudDao personCrudDao) {
         this.queryService = queryService;
         this.jdbcTemplate = jdbcTemplate;
+        this.personCrudDao = personCrudDao;
+    }
+
+    @Override
+    public CourierData mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+        CourierData courierData = new CourierData();
+
+        Optional<Person> person = personCrudDao.findOne(rs.getLong("person_id"));
+        if (!person.isPresent()) {
+            return null;
+        }
+        courierData.setId(person.get());
+        courierData.setCourierStatus(CourierStatus.valueOf(rs.getString("courier_status").toUpperCase()));
+        courierData.setLastLocation(rs.getString("courier_last_location"));
+        courierData.setTravelMode(TravelMode.valueOf(rs.getString("courier_travel_mode").toUpperCase()));
+
+        return courierData;
     }
 
     @Override
@@ -39,16 +60,9 @@ public class CourierDataDaoImpl implements CourierDataDao, QueryDao {
         try {
             CourierData courierData = jdbcTemplate.queryForObject(
                     getFindOneQuery(),
-                    //TODO: review this
-                    (resultSet, i) -> {
-                        CourierData cd = new CourierData();
-                        cd.setId(id);
-                        resultSet.getLong("person_id");
-                        cd.setCourierStatus(CourierStatus.valueOf(resultSet.getString("courier_status")));
-                        cd.setLastLocation(resultSet.getString("courier_last_location"));
-                        cd.setTravelMode(TravelMode.valueOf(resultSet.getString("courier_travel_mode")));
-                        return cd;
-                    });
+                    new Object[]{id.getId()},
+                    this
+            );
             return Optional.of(courierData);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -98,7 +112,7 @@ public class CourierDataDaoImpl implements CourierDataDao, QueryDao {
 
     @Override
     public String getFindOneQuery() {
-        return queryService.getQuery("select.courier_data");
+        return queryService.getQuery("select.courier_data.by_id");
     }
 
 }

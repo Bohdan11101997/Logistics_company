@@ -6,7 +6,7 @@ import edu.netcracker.project.logistic.model.Person;
 
 import java.util.Optional;
 
-public interface CourierDataDao {
+public interface CourierDataDao extends QueryDao {
     Optional<CourierData> findOne(Person id);
     CourierData save(CourierData courierData);
 }

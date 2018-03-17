@@ -81,7 +81,6 @@ public class Address {
         GeocodingResult[] result = null;
         try {
             result = GoogleApiRequest.GeocodingApi().address(address)
-                    .locationType(LocationType.APPROXIMATE)
                     .bounds(new LatLng(50.243848, 30.204895), new LatLng(50.674379, 30.735831))
                     .await();
         } catch (Exception e) {
