@@ -1,6 +1,5 @@
 package edu.netcracker.project.logistic.validation;
 
-import edu.netcracker.project.logistic.dao.ContactDao;
 import edu.netcracker.project.logistic.dao.PersonCrudDao;
 import edu.netcracker.project.logistic.dao.RoleCrudDao;
 import edu.netcracker.project.logistic.model.Contact;
@@ -15,15 +14,16 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Component
-public class EmployeeValidator extends AbstractPersonValidator {
-    private SmartValidator validator;
+public class EmployeeValidator {
     private ContactValidator contactValidator;
+    private RoleCrudDao roleDao;
+    private PersonValidator personValidator;
 
     @Autowired
-    public EmployeeValidator(SmartValidator validator, RoleCrudDao roleDao, PersonCrudDao personDao, ContactValidator contactValidator) {
-        super(roleDao, personDao);
-        this.validator = validator;
+    public EmployeeValidator(ContactValidator contactValidator, RoleCrudDao roleDao, PersonValidator personValidator) {
         this.contactValidator = contactValidator;
+        this.roleDao = roleDao;
+        this.personValidator = personValidator;
     }
 
     private void checkRoleData(Person employee, Errors errors) {
@@ -31,7 +31,7 @@ public class EmployeeValidator extends AbstractPersonValidator {
         Set<Role> employeeRoles = new HashSet<>(roleDao.findEmployeeRoles());
         rolesCopy.removeAll(employeeRoles);
         if (rolesCopy.size() != 0) {
-            errors.rejectValue("person.roles", "", "Only employee roles can be set.");
+            errors.rejectValue("person.roles", "Invalid.Roles");
         }
     }
 
@@ -39,25 +39,19 @@ public class EmployeeValidator extends AbstractPersonValidator {
     public void validateUpdateData(Person employee, Errors errors) {
         Set<Role> roles = employee.getRoles();
         if (roles == null || roles.size() < 1) {
-            errors.rejectValue("roles", "Employee must have at least one role");
+            errors.rejectValue("roles", "Required.Roles");
         }
-        Contact contact = employee.getContact();
-        validator.validate(contact, errors);
-        contactValidator.validate(employee, errors, "contact");
+        contactValidator.validate(employee.getContact(), errors, "contact");
+        personValidator.validate(employee, errors);
     }
 
     public void validateCreateData(Person employee, Errors errors) {
-        validator.validate(employee, errors);
-
-        Contact contact = employee.getContact();
-        validator.validate(contact, errors);
-
         Set<Role> roles = employee.getRoles();
         if (roles == null || roles.size() < 1) {
-            errors.rejectValue("roles", "", "At least one role must be selected");
+            errors.rejectValue("roles", "Required.Roles");
         }
-        checkPersonData(employee, errors);
         contactValidator.validate(employee, errors, "contact");
+        personValidator.validate(employee, errors);
         checkRoleData(employee, errors);
     }
 }

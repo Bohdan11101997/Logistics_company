@@ -47,8 +47,6 @@ public class ContactValidator implements Validator {
         for (Contact d : duplicates) {
             if (!d.getContactId().equals(contact.getContactId()) && d.getEmail().equals(contact.getEmail())) {
                 errors.rejectValue(prefix + "email", "Duplicate.mail");
-            } else if (!d.getContactId().equals(contact.getContactId()) && d.getPhoneNumber().equals(contact.getPhoneNumber())) {
-                errors.rejectValue(prefix + "phoneNumber", "Duplicate.phone");
             }
         }
     }

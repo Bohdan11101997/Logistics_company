@@ -96,3 +96,11 @@ function createMultiSelect(selector, selectAll) {
         });
     });
 }
+
+function createDatePicker(selector) {
+    $(selector).datepicker({
+        todayHighlight: true,
+        autoclose: true,
+        format: "yyyy-mm-dd"
+    });
+}
