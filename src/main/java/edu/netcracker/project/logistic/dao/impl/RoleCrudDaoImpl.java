@@ -138,6 +138,17 @@ public class RoleCrudDaoImpl implements RoleCrudDao, QueryDao, RowMapper<Role> {
         }
     }
 
+
+    public List<Role> findEmployeeRolesForManager() {
+        try {
+            return jdbcTemplate.query(
+                    getEmployeeRolesQueryForManager(),
+                    this
+            );
+        } catch (EmptyResultDataAccessException ex) {
+            return Collections.emptyList();
+        }
+    }
     @Override
     public List<Role> findClientRoles() {
         try {
@@ -187,4 +198,10 @@ public class RoleCrudDaoImpl implements RoleCrudDao, QueryDao, RowMapper<Role> {
     }
 
     private String getClientRolesQuery() { return queryService.getQuery("select.role.client"); }
+
+    private String getEmployeeRolesQueryForManager()
+    {
+
+        return queryService.getQuery("select.role.employee.statistic");
+    }
 }
