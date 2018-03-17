@@ -117,15 +117,9 @@ public class ManagerStatisticsDaoImpl  {
 
     }
 
-    public List<Person> countEmployeesAdmins() {
-        try {
-            return jdbcTemplate.query(
-                    getCountEmployeesAdminsQuery(),
-                    this::extractMany1
-            );
-        } catch (EmptyResultDataAccessException ex) {
-            return Collections.emptyList();
-        }
+    public Integer countEmployeesAdmins() {
+        return jdbcTemplate.queryForObject(
+                getCountEmployeesAdminsQuery(), new  Object[] {}, Integer.class);
     }
 
     public List<Person> countEmployeesCouriers() {

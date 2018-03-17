@@ -72,7 +72,7 @@ public class ManagerController {
     @GetMapping("/statistics/common")
     public String viewCommonStatistics(Model model){
         model.addAttribute("countEmployees", managerStatisticsDao.countEmployees());
-//        model.addAttribute("countEmployeesAdmins",managerStatisticsDao.countEmployeesAdmins() );
+        model.addAttribute("countEmployeesAdmins",managerStatisticsDao.countEmployeesAdmins() );
 //        model.addAttribute("countEmployeesCouriers",managerStatisticsDao.countEmployeesCouriers() );
 //        model.addAttribute("countEmployeesCouriersDriving",managerStatisticsDao.countEmployeesCouriersDriving() );
 //        model.addAttribute("countEmployeesCouriersWalking",managerStatisticsDao.countEmployeesCouriersWalking() );
