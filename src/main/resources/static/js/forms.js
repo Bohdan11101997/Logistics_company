@@ -69,36 +69,9 @@ function createMultiSelect(selector, selectAll) {
     });
 }
 
-function onSearchDateClick(searchDate) {
-    clearErrorStyles(searchDate);
-    var type = searchDate.id === 'from-date' ? 'from' : 'to';
-    if (type === 'from') {
-        var fromDate = new Date(searchDate.value);
-        var to = document.getElementById('to-date');
-        var toDate = new Date(to.value);
-        if (fromDate > toDate) {
-            searchDate.setCustomValidity('From date must be earlier than To')
-        } else {
-            searchDate.setCustomValidity('');
-            to.setCustomValidity('');
-        }
-    } else {
-        var toDate = new Date(searchDate.value);
-        var from = document.getElementById('from-date');
-        var fromDate = new Date(from.value);
-        if (fromDate > toDate) {
-            searchDate.setCustomValidity('From date must be earlier than To')
-        } else {
-            searchDate.setCustomValidity('');
-            from.setCustomValidity('');
-        }
-    }
-}
-
 function createDatePicker(selector, onChangeDate) {
     $(selector).datepicker({
         todayHighlight: true,
-        autoclose: true,
         format: "yyyy-mm-dd"
     }).on('changeDate', onChangeDate);
 }
