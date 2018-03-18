@@ -7,11 +7,9 @@ import edu.netcracker.project.logistic.maps_wrapper.StaticMap;
 import edu.netcracker.project.logistic.model.Order;
 import edu.netcracker.project.logistic.model.OrderType;
 import edu.netcracker.project.logistic.model.Person;
+import edu.netcracker.project.logistic.processing.RouteProcessor;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
+import java.util.*;
 
 public interface FlowBuilder {
 
@@ -23,22 +21,11 @@ public interface FlowBuilder {
 
     void setMaxDrivableDistance(double maxDrivableDistance);
 
-    //TODO: assert is second parameter needed
-    boolean add(Person courier, CourierType type);
+    boolean add(RouteProcessor.OrderEntry order);
 
-    Person removeCourier(long courier_id);
+    int add(RouteProcessor.OrderEntry[] orders);
 
-    Person getCourier(long courier_id);
-
-    boolean add(Order order);
-
-    int add(Order[] orders);
-
-    int add(Collection<Order> orders);
-
-    Order removeOrder(long order_id);
-
-    Order getOrder(long order_id);
+    int add(Collection<RouteProcessor.OrderEntry> orders);
 
     FlowBuilder optimize(boolean value);
 
@@ -48,26 +35,22 @@ public interface FlowBuilder {
 
     FlowBuilder setUseMapRequests(boolean useMapRequests);
 
-    List<Order> getUnused();
+    List<RouteProcessor.OrderEntry> getUnused();
 
-    List<Order> getOrders();
+    List<RouteProcessor.OrderEntry> getOrders();
 
-    List<Order> getOrders(OrderType type);
+    List<RouteProcessor.OrderEntry> getOrders(OrderType type);
 
-    List<Person> getCouriers();
+    List<RouteProcessor.CourierEntry> getCouriers();
 
-    Queue<Person> getCouriers(CourierType type);
+    Queue<RouteProcessor.CourierEntry> getWalkingCouriers();
 
-    Map<String,TravelMode> getTravelModeMap();
-
-    void clear();
+    Queue<RouteProcessor.CourierEntry> getDrivingCouriers();
 
     //calculatings
-    List<Order> calculatePath();
+    List<RouteProcessor.OrderEntry> calculatePath();
 
-    List<Order> confirmCourier();
-
-    List<Order> getOrdersSequence();
+    List<RouteProcessor.OrderEntry> getOrdersSequence();
 
     List<LatLng> getPath();
 
@@ -79,7 +62,7 @@ public interface FlowBuilder {
     //in seconds
     long getDuration();
 
-    boolean process();
+    boolean process(RouteProcessor.OrderEntry pivot, RouteProcessor.CourierEntry courierEntry);
 
     String getError();
 
@@ -128,6 +111,35 @@ public interface FlowBuilder {
             return Double.MAX_VALUE;
     }
 
+    static double updateOrderDistanceIfVip(RouteProcessor.OrderEntry o, double distance) {
+        if (o.getPriority().equalsIgnoreCase("VIP")) {
+            distance = (Double.MIN_VALUE + distance);
+        }
+        return distance;
+    }
+
+    static Comparator<RouteProcessor.OrderEntry> makeOrderComparator(LatLng center, boolean useMap, TravelMode travelMode) {
+        return (RouteProcessor.OrderEntry o1, RouteProcessor.OrderEntry o2) -> {
+            LatLng l1 = o1.getOrder().getReceiverAddress().getLocation();
+            LatLng l2 = o2.getOrder().getReceiverAddress().getLocation();
+            Double dist1 = FlowBuilder.distance(l1, center, useMap, travelMode);
+            Double dist2 = FlowBuilder.distance(l2, center, useMap, travelMode);
+            dist1 = updateOrderDistanceIfVip(o1, dist1);
+            dist2 = updateOrderDistanceIfVip(o2, dist2);
+            return Double.compare(dist1, dist2);
+        };
+    }
+
+    static Comparator<RouteProcessor.CourierEntry> makeCourierComparator(LatLng center, boolean useMap, TravelMode travelMode) {
+        return (RouteProcessor.CourierEntry ce1, RouteProcessor.CourierEntry ce2) -> {
+            LatLng l1 = ce1.getLastLocation();
+            LatLng l2 = ce2.getLastLocation();
+            Double dist1 = FlowBuilder.distance(l1, center, useMap, travelMode);
+            Double dist2 = FlowBuilder.distance(l2, center, useMap, travelMode);
+            return Double.compare(dist1, dist2);
+        };
+    }
+
 
     /*
     * //TODO: give a better name
@@ -137,9 +149,4 @@ public interface FlowBuilder {
     *    PathAndDestinations
     *}
     */
-
-    enum CourierType {
-        Walker,
-        Driver
-    }
 }

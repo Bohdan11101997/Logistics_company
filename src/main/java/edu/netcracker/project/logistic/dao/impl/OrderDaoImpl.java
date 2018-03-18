@@ -195,6 +195,19 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
         }
     }
 
+
+    @Override
+    public List<Order> findConfirmed(){
+        try {
+            return jdbcTemplate.query(
+                    getFindConfirmedQuery(),
+                    this
+            );
+        } catch (EmptyResultDataAccessException ex) {
+            return Collections.emptyList();
+        }
+    }
+
     @Override
     public List<Order> findNotProcessed() {
         try {
@@ -213,7 +226,6 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
     }
 
     public List<Order> search(SearchFormOrder searchFormOrder, Long id) {
-
 
         String firstName = searchFormOrder.getFirstName();
         firstName = firstName == null ? "%%" : prepareSearchString(firstName);
@@ -266,6 +278,15 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
         );
     }
 
+    @Override
+    public List<Order> findConfirmedByEmployeeId(Long employeeId){
+        return jdbcTemplate.query(
+                getFindByEmployeeIdConfirmedQuery(),
+                new Object[]{employeeId},
+                this
+        );
+    }
+
     public List<Order> HistoryCompleteOrderSender(Long aLong) {
         try {
             return jdbcTemplate.query(
@@ -278,14 +299,18 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
         }
     }
 
-     private  String getOrderByUser(){
-
+    private  String getOrderByUser(){
         return queryService.getQuery("select.order.by.user");
      }
 
     private String getFindByEmployeeIdNotProcessedQuery() {
         return queryService.getQuery("select.order.not_processed.by.employee_id");
     }
+
+    private String getFindByEmployeeIdConfirmedQuery() {
+        return queryService.getQuery("select.order.confirmed.by.employee_id");
+    }
+
     private String getFindOneQuery() {
         return queryService.getQuery("select.order");
     }
@@ -302,9 +327,7 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
         return queryService.getQuery("delete.order");
     }
 
-    private String getSearchQuery()
-    {
-
+    private String getSearchQuery() {
         return queryService.getQuery("select.order.search");
     }
 
@@ -312,7 +335,8 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
         return queryService.getQuery("select.order.not_processed");
     }
 
-    private String getConfirmedQuery() {
+    private String getFindConfirmedQuery() {
         return queryService.getQuery("select.order.confirmed");
     }
+
 }

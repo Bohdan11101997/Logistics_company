@@ -9,8 +9,10 @@ import edu.netcracker.project.logistic.flow.FlowBuilder;
 import edu.netcracker.project.logistic.maps_wrapper.StaticMap;
 import edu.netcracker.project.logistic.maps_wrapper.GoogleApiRequest;
 import edu.netcracker.project.logistic.model.*;
+import edu.netcracker.project.logistic.processing.RouteProcessor;
 import edu.netcracker.project.logistic.service.RoleService;
 
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
@@ -24,9 +26,8 @@ public class RadiusSelector extends FlowBuilderImpl {
      * protected Office office;
      * protected LatLng center;
      * */
-    private CourierType courierToPick;
     private TravelMode travelMode;
-    private Person courier;
+    private RouteProcessor.CourierEntry courier;
 
     private double searchRadius;
     private static final double radiusModifier = 1.5;
@@ -36,138 +37,114 @@ public class RadiusSelector extends FlowBuilderImpl {
     private double currentAproxDistance = 0/*meters*/;
     private BigDecimal currentWeight = new BigDecimal(0.0)/*kg*/;
 
-    private PriorityQueue<Order> candidates;
+    private List<RouteProcessor.OrderEntry> candidates;
 
-    private List<Order> returnOrders;
-    private List<Order> resultSequence;
+    private List<RouteProcessor.OrderEntry> returnOrders;
+    private List<RouteProcessor.OrderEntry> resultSequence;
     private DirectionsResult directionsResult;
     private StaticMap staticMap;
 
     private List<LatLng> path;
 
-    public RadiusSelector(RoleService roleService, OrderTypeDao orderTypeDao, CourierDataDao courierDataDao, Office office) {
-        super(roleService, orderTypeDao, courierDataDao, office);
+    public RadiusSelector(Queue<RouteProcessor.OrderEntry> walkOrders,
+                          Queue<RouteProcessor.OrderEntry> driveOrders,
+                          Queue<RouteProcessor.CourierEntry> walkCouriers,
+                          Queue<RouteProcessor.CourierEntry> driveCouriers,
+                          @NotNull Office office) {
+        super(walkOrders, driveOrders, walkCouriers, driveCouriers, office);
         resultSequence = new LinkedList<>();
-        center = office.getAddress().getLocation();
-        courierToPick = CourierType.Driver;
         returnOrders = new LinkedList<>();
         travelMode = TravelMode.DRIVING;
     }
 
-    public void newPath() {
-        Order pivot = null;
-        returnOrders = new ArrayList<>();
-        resultSequence = new ArrayList<>();
-        //returnOrders.addAll(resultSequence);
-        searchRadius = 99999.999999;
-        do {
-            if (pivot != null)
-                returnOrders.add(pivot);
-            pivot = pickNextOrder();
-        } while (!canBePicked(pivot));
+    public void newPath(@NotNull RouteProcessor.OrderEntry pivot) {
+        resultSequence.add(pivot);
+        center = pivot.getOrder().getReceiverAddress().getLocation();
+        searchRadius = FlowBuilder.distance(office.getAddress().getLocation(), center, isUseMapRequests(), travelMode);
+        candidates = new LinkedList<>();
 
+        switch (travelMode) {
+            case DRIVING:
+                candidates.addAll(walkOrders);
+                travelMode = TravelMode.WALKING;
+                break;
+            default:
+                travelMode = TravelMode.DRIVING;
+                candidates.addAll(driveOrders);
+                candidates.addAll(walkOrders);
+                break;
+        }
+
+        staticMap = null;
+        searchRadius = FlowBuilder.distance(office.getAddress().getLocation(), center, isUseMapRequests(), travelMode);
+        currentAproxDistance = searchRadius;
+        currentWeight = pivot.getOrder().getWeight();
         duration = 0;
         distance = 0;
-        if (pivot != null) {
-            resultSequence.add(pivot);
-            center = pivot.getReceiverAddress().getLocation();
-            searchRadius = FlowBuilder.distance(office.getAddress().getLocation(), center, isUseMapRequests(), travelMode);
-            candidates = new PriorityQueue<>(11, makeOrderComparator(this, center, false, null));
-
-            switch (courierToPick) {
-                case Driver:
-                    travelMode = TravelMode.DRIVING;
-                    candidates.addAll(driveOrders);
-                    candidates.addAll(walkOrders);
-                    break;
-                case Walker:
-                    candidates.addAll(walkOrders);
-                    travelMode = TravelMode.WALKING;
-                    break;
-            }
-
-            staticMap = null;
-            searchRadius = FlowBuilder.distance(office.getAddress().getLocation(), center, isUseMapRequests(), travelMode);
-            currentAproxDistance = searchRadius;
-            currentWeight = pivot.getWeight();
-        }
     }
 
-    private Person nextCourier() {
-        return nextCourier(0);
-    }
-
-    private Person nextCourier(int level) {
-        if (level >= 2)
-            return null;
-        switch (courierToPick) {
-            case Walker:
-                if (walkCouriers.isEmpty()) {
-                    courierToPick = CourierType.Driver;
-                    travelMode = TravelMode.DRIVING;
-                    return nextCourier(level + 1);
-                }
-                return walkCouriers.poll();
-            case Driver:
-                if (driveCouriers.isEmpty()) {
-                    courierToPick = CourierType.Walker;
-                    travelMode = TravelMode.WALKING;
-                    return nextCourier(level + 1);
-                }
-                return driveCouriers.poll();
-        }
-        return null;
-    }
-
-    private void updateTimeAndDistance(Order next) {
-        currentAproxDistance += FlowBuilder.distance(center, next.getReceiverAddress().getLocation(), isUseMapRequests(), travelMode);
-        //if(!next.getSenderAddress().equals(office.getAddress()))
-        //    currentAproxDistance += FlowBuilder.distance(center, next.getReceiverAddress().getLocation(), isUseMapRequests(),travelMode);
+    private void updateTimeAndDistance(RouteProcessor.OrderEntry next) {
+        currentAproxDistance += FlowBuilder.distance(center, next.getOrder().getReceiverAddress().getLocation(), isUseMapRequests(), travelMode);
     }
 
     private static boolean nearlyEqual(double a, double b, double tollerance) {
         return Math.abs(a - b) < tollerance;
     }
 
-    private Order pickNextOrder() {
-        Order next = null;
-        switch (courierToPick) {
-            case Driver:
+    private RouteProcessor.OrderEntry pickNextOrder() {
+        RouteProcessor.OrderEntry next;
+        switch (travelMode) {
+            default:
                 next = driveOrders.poll();
                 if (next != null)
                     break;
-            case Walker:
+            case WALKING:
                 next = walkOrders.poll();
                 break;
         }
 
-        try {
-            if (nearlyEqual(next.getSenderAddress().getLocation().lat, office.getAddress().getLocation().lat, 0.001) &&
-                    nearlyEqual(next.getSenderAddress().getLocation().lng, office.getAddress().getLocation().lng, 0.001)) {
-                if (resultSequence.size() > 0 && resultSequence.size() < 7) {
-                    Order sender = new Order(next);
-                    sender.setReceiverAddress(next.getSenderAddress());
-                    sender.setSenderAddress(office.getAddress());
-                    if (canBePicked(sender) && canBePicked(next)) {
-                        resultSequence.add(next);
-                        resultSequence.add(sender);
-                    } else
-                        returnOrders.add(next);
-                } else
-                    returnOrders.add(next);
-
-            } else {
-                if (canBePicked(next)) {
+        if (nearlyEqual(next.getOrder().getSenderAddress().getLocation().lat,
+                office.getAddress().getLocation().lat, 0.001) &&
+                nearlyEqual(next.getOrder().getSenderAddress().getLocation().lng,
+                        office.getAddress().getLocation().lng, 0.001)) {
+            //client_to_client
+            if (resultSequence.size() < maxOrderCount-1/*is here 2 places*/) {
+                RouteProcessor.OrderEntry sender = new RouteProcessor.OrderEntry(next);
+                sender.getOrder().setReceiverAddress(next.getOrder().getSenderAddress());
+                sender.getOrder().setSenderAddress(office.getAddress());
+                sender.setOrderFromClient(true);
+                if (canBePicked(sender.getOrder())) {
+                    //success
                     resultSequence.add(next);
-                    updateTimeAndDistance(next);
-                } else
+                    resultSequence.add(sender);
+                    currentWeight.add(sender.getOrder().getWeight());
+                    currentAproxDistance += FlowBuilder.distance(
+                            office.getAddress().getLocation(),
+                            next.getOrder().getReceiverAddress().getLocation(),
+                            false,
+                            null);
+                    currentAproxDistance += FlowBuilder.distance(
+                            next.getOrder().getSenderAddress().getLocation(),
+                            next.getOrder().getReceiverAddress().getLocation(),
+                            false,
+                            null);
+                } else //fail at canBePicked
                     returnOrders.add(next);
-            }
-            return next;
-        } catch (NullPointerException e) {
-            returnOrders.add(next);
-            return next;
+            } else //fail at order count
+                returnOrders.add(next);
+        } else {//usual case
+            if (canBePicked(next.getOrder())) {
+                resultSequence.add(next);
+                currentWeight.add(next.getOrder().getWeight());
+                currentAproxDistance += FlowBuilder.distance(
+                        office.getAddress().getLocation(),
+                        next.getOrder().getReceiverAddress().getLocation(),
+                        false,
+                        null);
+            } else //fail at canBePicked
+                returnOrders.add(next);
         }
+        return next; //always return back
     }
 
     private boolean canBePicked(Order o) {
@@ -185,7 +162,7 @@ public class RadiusSelector extends FlowBuilderImpl {
             double approxSpeed;
             switch (travelMode) {
                 case WALKING:
-                    maxDistance = getMaxWalkableDistance();
+                    maxDistance = isUseMapRequests() ? getMaxWalkableDistance() : metersToEarthDegrees(getMaxWalkableDistance());
                     approxSpeed = 5/*km/hour*/;
 
                     //time check
@@ -195,7 +172,7 @@ public class RadiusSelector extends FlowBuilderImpl {
 
                 case DRIVING:
                 default:
-                    maxDistance = getMaxDrivableDistance();
+                    maxDistance = isUseMapRequests() ? getMaxDrivableDistance() : metersToEarthDegrees(getMaxDrivableDistance());
                     approxSpeed = 40/*km/hour*/;
 
                     //time check
@@ -217,44 +194,28 @@ public class RadiusSelector extends FlowBuilderImpl {
         return true;
     }
 
-    public void setOrderComparator(Comparator<Order> c) {
-        List<Order> tmp = new ArrayList<>(candidates.size() + 1);
-        tmp.addAll(candidates);
-        candidates = new PriorityQueue<>((tmp.size() + 1), c);
-    }
-
     public RadiusSelector setMaxRadiusStep(int step) {
         this.MAX_RADIUS_STEPS = step;
         return this;
     }
 
     @Override
-    public List<Order> getUnused() {
+    public List<RouteProcessor.OrderEntry> getUnused() {
         return returnOrders;
     }
 
     @Override
-    public List<Order> getOrders() {
-        List<Order> return_value = super.getOrders();
+    public List<RouteProcessor.OrderEntry> getOrders() {
+        List<RouteProcessor.OrderEntry> return_value = super.getOrders();
         return_value.addAll(returnOrders);
         return return_value;
     }
 
     @Override
-    public List<Order> calculatePath() {
+    public List<RouteProcessor.OrderEntry> calculatePath() {
         LatLng[] waypoints = new LatLng[resultSequence.size()];
         for (int i = 0; i < waypoints.length; i++)
-            waypoints[i] = resultSequence.get(i).getReceiverAddress().getLocation();
-
-        switch (courierToPick) {
-            case Walker:
-                travelMode = TravelMode.WALKING;
-                break;
-            default:
-            case Driver:
-                travelMode = TravelMode.DRIVING;
-                break;
-        }
+            waypoints[i] = resultSequence.get(i).getOrder().getReceiverAddress().getLocation();
 
         try {
             directionsResult = GoogleApiRequest.DirectionsApi()
@@ -294,7 +255,7 @@ public class RadiusSelector extends FlowBuilderImpl {
         staticMap.marker(new StaticMap.Marker.Style.Builder().label('#').color(0x0ff0000).build(),
                 new StaticMap.GeoPoint(office.getAddress().getLocation().lat, office.getAddress().getLocation().lng));
 
-        List<Order> return_value = new ArrayList<>(waypoints.length);
+        List<RouteProcessor.OrderEntry> return_value = new ArrayList<>(waypoints.length);
         for (int i : directionsResult.routes[0].waypointOrder)
             return_value.add(resultSequence.get(i));
 
@@ -302,9 +263,9 @@ public class RadiusSelector extends FlowBuilderImpl {
         //client markers
         {
             int index = 0;
-            for (Order o : resultSequence) {
+            for (RouteProcessor.OrderEntry o : resultSequence) {
                 int color = 0xffffff;
-                switch (decide(o)) {
+                switch (o.getTravelMode()) {
                     case WALKING:
                         color = 0x33ff33;
                         break;
@@ -312,47 +273,25 @@ public class RadiusSelector extends FlowBuilderImpl {
                         color = 0x3333ff;
                         break;
                 }
-                if (isVip(o)) {
+                if (o.getPriority().equalsIgnoreCase("VIP")) {
                     color = color & 0x00ffff + 0xff0000;
                 }
                 staticMap.marker(
                         new StaticMap.Marker.Style.Builder().label((char) ((index++) % 10 + '0')).color(color).build(),
                         new StaticMap.GeoPoint(
-                                o.getReceiverAddress().getLocation().lat, o.getReceiverAddress().getLocation().lng)
+                                o.getOrder().getReceiverAddress().getLocation().lat,
+                                o.getOrder().getReceiverAddress().getLocation().lng)
                 );
             }
-            //TODO: set via interface
+            //default value
             staticMap.size(640, 640)
                     .scale(2);
         }
-
         return resultSequence;
     }
 
     @Override
-    public List<Order> confirmCourier() {
-        try {
-            for (Order o : resultSequence) {
-                CourierData cd = courierDataDao.findOne(courier).orElse(null);
-                while (cd == null) {
-                    if (getCouriers().size() == 0)
-                        throw new IllegalStateException("No couriers data's in the base");
-                    courier = nextCourier();
-                    cd = courierDataDao.findOne(courier).get();
-                }
-                o.setCourier(courier);
-                cd.setCourierStatus(CourierStatus.ON_WAY);
-
-            }
-        } catch (IllegalStateException e) {
-            System.err.println("IllegalStateException + " + e.getMessage());
-        }
-        //TODO: update database
-        return resultSequence;
-    }
-
-    @Override
-    public List<Order> getOrdersSequence() {
+    public List<RouteProcessor.OrderEntry> getOrdersSequence() {
         return resultSequence;
     }
 
@@ -389,20 +328,12 @@ public class RadiusSelector extends FlowBuilderImpl {
     }
 
     @Override
-    public boolean process() {
-        for (int i = 0; i < MAX_RADIUS_STEPS && candidates == null; i++) {
-            searchRadius *= radiusModifier;
-            newPath();
-        }
-
-        if (candidates == null) {
-            errorMessage = "Candidats queue wasn`t created.";
-            return false;
-        }
+    public boolean process(RouteProcessor.OrderEntry pivot, RouteProcessor.CourierEntry courierEntry) {
+        newPath(pivot);
 
         for (int i = 0; i < MAX_RADIUS_STEPS && candidates.size() == 0; i++) {
             searchRadius *= radiusModifier;
-            newPath();
+            newPath(pivot);
         }
 
         if (candidates.size() == 0 && resultSequence.size() == 0) {
@@ -410,25 +341,29 @@ public class RadiusSelector extends FlowBuilderImpl {
             return false;
         }
 
-        courier = nextCourier();
+        courier = courierEntry;
         if (courier == null) {
             errorMessage = "There are no couriers.";
             return false;
         }
 
+        travelMode = courier.getCourierData().getTravelMode();
+
         for (int i = 0; i < MAX_RADIUS_STEPS; i++) {
             searchRadius *= radiusModifier;
-            while (null != pickNextOrder()) ;
+            //main loop
+            while (null != pickNextOrder());
         }
 
         resultSequence = calculatePath();
-        confirmCourier();
 
         if (candidates != null) {
             if (candidates.size() > 0)
                 this.add(candidates);
             candidates = null;
         }
+
+        this.add(returnOrders);
         return true;
     }
 }

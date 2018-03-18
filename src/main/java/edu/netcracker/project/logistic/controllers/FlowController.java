@@ -1,5 +1,5 @@
 package edu.netcracker.project.logistic.controllers;
-
+/*
 import com.google.maps.model.LatLng;
 import com.google.maps.model.TravelMode;
 import edu.netcracker.project.logistic.dao.CourierDataDao;
@@ -8,6 +8,7 @@ import edu.netcracker.project.logistic.dao.OrderTypeDao;
 import edu.netcracker.project.logistic.flow.FlowBuilder;
 import edu.netcracker.project.logistic.flow.impl.RadiusSelector;
 import edu.netcracker.project.logistic.model.*;
+import edu.netcracker.project.logistic.processing.RouteProcessor;
 import edu.netcracker.project.logistic.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.PriorityBlockingQueue;
 
 @Controller
 @RequestMapping(value = "/flow")
@@ -74,9 +76,6 @@ public class FlowController {
                     local.add(o);
             }
 
-            FlowBuilder fb = new RadiusSelector(roleService, orderTypeDao, courierDataDao, office)
-                    .optimize(true)
-                    .setUseMapRequests(true);
             fb.add(local);
             for(Person p : couriers) {
                 CourierData cd = courierDataDao.findOne(p).get();
@@ -121,19 +120,24 @@ public class FlowController {
         if (orderGenDrives == null)
             orderGenDrives = new OrderGenerator(office).setTravelMode(TravelMode.DRIVING);
 
-        FlowBuilder fb = new RadiusSelector(roleService, orderTypeDao, courierDataDao, office)
+        PriorityBlockingQueue<RouteProcessor.OrderEntry> walkOrders = new PriorityBlockingQueue<>(11, FlowBuilder.makeOrderComparator(office.getAddress().getLocation(), useMap, TravelMode.WALKING));
+        PriorityBlockingQueue<RouteProcessor.OrderEntry> driveOrders = new PriorityBlockingQueue<>(11, FlowBuilder.makeOrderComparator(office.getAddress().getLocation(), useMap, TravelMode.DRIVING));
+        PriorityBlockingQueue<RouteProcessor.CourierEntry> walkCouriers = new PriorityBlockingQueue<>(11, FlowBuilder.makeCourierComparator(office.getAddress().getLocation(), useMap, TravelMode.WALKING));
+        PriorityBlockingQueue<RouteProcessor.CourierEntry> driveCouriers = new PriorityBlockingQueue<>(11, FlowBuilder.makeCourierComparator(office.getAddress().getLocation(), useMap, TravelMode.DRIVING));
+
+        FlowBuilder fb = new RadiusSelector(walkOrders, driveOrders, walkCouriers, driveCouriers, office)
                 .optimize(true)
-                .setUseMapRequests(false);
+                .setUseMapRequests(true);
         fb.add(orderGenWalks.generate(10));
         fb.add(orderGenDrives.generate(10));
 
         Set<Role> couriers = new HashSet<>();
         couriers.add(new Role((long) (7), "ROLE_COURIER", null));
 
-        fb.add(new Person("Courier#1", "loggedin", LocalDateTime.now(), new Contact(), couriers), FlowBuilder.CourierType.Walker);
-        fb.add(new Person("Courier#2", "loggedin", LocalDateTime.now(), new Contact(), couriers), FlowBuilder.CourierType.Driver);
-        fb.add(new Person("Courier#3", "loggedin", LocalDateTime.now(), new Contact(), couriers), FlowBuilder.CourierType.Walker);
-        fb.add(new Person("Courier#4", "loggedin", LocalDateTime.now(), new Contact(), couriers), FlowBuilder.CourierType.Driver);
+        fb.add(new Person("Courier#1", "loggedin", LocalDateTime.now(), new Contact(), couriers));
+        fb.add(new Person("Courier#2", "loggedin", LocalDateTime.now(), new Contact(), couriers));
+        fb.add(new Person("Courier#3", "loggedin", LocalDateTime.now(), new Contact(), couriers));
+        fb.add(new Person("Courier#4", "loggedin", LocalDateTime.now(), new Contact(), couriers));
 
         logger.info("Begin flow building");
         while (!fb.isFinished()) {
@@ -292,3 +296,4 @@ public class FlowController {
         }
     }
 }
+*/
