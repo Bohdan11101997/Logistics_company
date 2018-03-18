@@ -6,9 +6,10 @@
     <th:block th:replace="fragments/header :: header-bootstrap-config-IE" />
 
     <link rel="stylesheet" th:href="@{/css/left_menu.css}" type="text/css" href="../static/css/left_menu.css" />
+    <link rel="stylesheet" th:href="@{/css/table.css}" type="text/css" href="../static/css/table.css" />
 
 </head>
-<body>
+<body class="body-color">
 
     <div class="row">
 
@@ -62,8 +63,14 @@
                                 <td th:text="${office.address}"></td>
                                 <td th:text="${office.name}"></td>
                                 <td>
-                                    <a class="material-icons button delete" th:href="${'/admin/office/delete/' + office.officeId}">delete</a>
-                                    <a class="material-icons button delete" th:href="${'/admin/office/update/' + office.officeId}">edit</a>
+                                    <form th:action="@{'/admin/office/update/' + ${office.officeId}}" th:method="GET">
+                                        <button class="btn btn-link edit">edit</button>
+                                    </form>
+                                </td>
+                                <td>
+                                    <form th:action="@{'/admin/office/delete/' + ${office.officeId}}" th:method="GET">
+                                        <button class="btn btn-link delete">delete</button>
+                                    </form>
                                 </td>
                             </tr>
                             </tbody>

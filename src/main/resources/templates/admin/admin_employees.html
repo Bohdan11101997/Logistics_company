@@ -4,6 +4,8 @@
     <th:block th:replace="fragments/header :: header-bootstrap-config" />
     <th:block th:replace="fragments/header :: header-bootstrap-config-IE" />
     <link rel="stylesheet" th:href="@{/css/left_menu.css}" type="text/css" href="../../static/css/left_menu.css" />
+    <link rel="stylesheet" th:href="@{/css/table.css}" type="text/css" href="../static/css/table.css" />
+
     <script th:src="@{/js/forms.js}" src="../../static/js/forms.js"></script>
     <style>
         @media (min-width: 768px)  {
@@ -27,7 +29,7 @@
         }
     </style>
 </head>
-<body>
+<body class="body-color">
 
     <div class="row">
 
@@ -113,10 +115,9 @@
                                 <td th:text="${emp.contact.email}">mail@gmail.com</td>
                                 <td th:text="${emp.contact.phoneNumber}">+380777777777</td>
                                 <td>
-
-                                    <a href="#"
-                                       th:href="@{'/admin/crud/employee/' + ${emp.id}}"
-                                    >Edit</a>
+                                    <form th:action="@{'/admin/crud/employee/' + ${emp.id}}" th:method="GET">
+                                        <button class="btn btn-link edit">edit</button>
+                                    </form>
                                 </td>
                             </tr>
                             </tbody>

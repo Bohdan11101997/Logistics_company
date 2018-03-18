@@ -7,10 +7,11 @@
 
     <link rel="stylesheet" th:href="@{/css/left_menu.css}" type="text/css" href="../static/css/left_menu.css" />
     <link rel="stylesheet" th:href="@{/css/paginator.css}" type="text/css" href="../static/css/paginator.css" />
+    <link rel="stylesheet" th:href="@{/css/table.css}" type="text/css" href="../static/css/table.css" />
 
 
 </head>
-<body>
+<body class="body-color">
 
 <div class="row">
 
@@ -48,12 +49,12 @@
                                 <td th:text="${advertisement.type.name}"></td>
                                 <td>
                                     <form th:action="@{'/admin/crud/advertisement/update/' + ${advertisement.id}}" th:method="GET">
-                                        <button class="btn btn-link">edit</button>
+                                        <button class="btn btn-link edit">edit</button>
                                     </form>
                                 </td>
                                 <td>
                                     <form th:action="@{'/admin/crud/advertisement/delete/' + ${advertisement.id}}"  th:method="POST">
-                                        <button class="btn btn-link">delete</button>
+                                        <button class="btn btn-link delete">delete</button>
                                     </form>
                                 </td>
                             </tr>
