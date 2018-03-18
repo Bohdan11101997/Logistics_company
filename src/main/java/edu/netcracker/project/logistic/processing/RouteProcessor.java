@@ -282,12 +282,13 @@ public class RouteProcessor {
                     worker = driveWorkerQueue.take();
                     oe = driveOrdersQueue.take();
                 }
-                if(flowBuilder.process(oe, worker)){
-                    logger.error(flowBuilder.getError());
 
+                if(!flowBuilder.process(oe, worker)){
+                    logger.error(flowBuilder.getError());
                 }
 
                 if(assignOrders(flowBuilder.getOrdersSequence(), worker)){
+                    //TODO: any work here
                     notificationService.send(personDao.findOne(worker.employeeId).get().getUserName(),
                             new Notification("route","New orders added"));
                 }
