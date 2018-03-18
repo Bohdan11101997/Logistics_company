@@ -28,30 +28,20 @@ public class CourierController {
         this.orderDao = orderDao;
     }
 
-    @GetMapping("/orders/actual")
-    public String viewTasksList(Model model, Principal principal) {
+    @GetMapping("/route")
+    public String deliveryRoute(Model model, Principal principal) {
         Optional<Person> courier = personService.findOne(principal.getName());
         if (!courier.isPresent()) {
             return "error/500";
         }
         model.addAttribute("orders",
                 orderDao.findNotProcessedByEmployeeId(courier.get().getId()));
-        return "courier/courier_orders_actual";
+        return "courier/courier_route";
     }
 
-    @PostMapping("orders/actual")
-    public String saveCompletedTasks() {
-        return "redirect:/courier/orders/actual";
-    }
-
-    @GetMapping("/orders/history")
-    public String viewTaskHistory() {
+    @GetMapping("/orders")
+    public String viewOrderHistory() {
         return "courier/courier_orders_history";
-    }
-
-    @GetMapping("/orders/map")
-    public String viewTasksMap() {
-        return "courier/courier_orders_map";
     }
 
     @PostMapping("/orders/{id}/delivered")
