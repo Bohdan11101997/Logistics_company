@@ -9,7 +9,7 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
     <!-- Bootstrap -->
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" />
     <link rel="stylesheet" th:href="@{/css/left_menu.css}" type="text/css" href="../static/css/left_menu.css" />
 
 
@@ -35,8 +35,7 @@
                     </div>
 
                     <div class="side-menu-container">
-                        <ul class="nav navbar-nav">
-
+                        <ul id="side-menu-items" class="nav navbar-nav">
 
                             <li><a th:href="@{/logout}" th:method="post" href="#"><span class="glyphicon glyphicon-off"></span>Log out</a></li>
 
