@@ -29,7 +29,7 @@ DROP SCHEMA IF EXISTS "logistic_company" CASCADE;
 CREATE SCHEMA "logistic_company";
 
 CREATE TYPE logistic_company.WEEK_DAY AS ENUM ('MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY');
-CREATE TYPE logistic_company.COURIER_STATUS AS ENUM ('on_way','free');
+CREATE TYPE logistic_company.COURIER_STATUS AS ENUM ('ON_WAY','FREE');
 CREATE SEQUENCE "logistic_company"."main_seq_id"
   INCREMENT 1
   MINVALUE 1
@@ -54,7 +54,8 @@ CREATE TABLE "logistic_company"."courier_data"
   "person_id"             INT4,
   "courier_status"        COURIER_STATUS,
   "courier_last_location" VARCHAR(45) COLLATE "default" NOT NULL,
-  "courier_travel_mode"   VARCHAR(45) COLLATE "default" NOT NULL
+  "courier_travel_mode"   VARCHAR(45) COLLATE "default" NOT NULL,
+  "route"                 JSONB
 );
 
 CREATE TABLE "logistic_company"."person" (
@@ -226,6 +227,8 @@ ALTER TABLE logistic_company.work_day
   ADD PRIMARY KEY (employee_id, week_day);
 ALTER TABLE logistic_company.day_off
   ADD PRIMARY KEY (day_off_id);
+ALTER TABLE logistic_company.courier_data
+  ADD PRIMARY KEY (person_id);
 
 
 ALTER TABLE "logistic_company"."courier_data"
@@ -348,4 +351,3 @@ CREATE TRIGGER advertisement_delete_old_rows_trigger
   AFTER INSERT
   ON advertisement
 EXECUTE PROCEDURE advertisement_delete_old_rows();
-SELECT * FROM contact WHERE  contact.first_name='Stanislav'
