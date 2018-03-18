@@ -2,6 +2,7 @@ package edu.netcracker.project.logistic.model;
 
 import com.google.maps.model.TravelMode;
 
+import java.util.List;
 import java.util.Objects;
 
 public class CourierData {
@@ -9,15 +10,17 @@ public class CourierData {
     private CourierStatus courierStatus;
     private String lastLocation;
     private TravelMode travelMode;
+    private List<RoutePoint> route;
 
     public CourierData() {
     }
 
-    public CourierData(Person id, CourierStatus courier_status, String lastLocation, TravelMode travelMode) {
+    public CourierData(Person id, CourierStatus courier_status, String lastLocation, TravelMode travelMode, List<RoutePoint> route) {
         this.id = id;
         this.courierStatus = courier_status;
         this.lastLocation = lastLocation;
         this.travelMode = travelMode;
+        this.route = route;
     }
 
     public Person getId() {
@@ -50,6 +53,14 @@ public class CourierData {
 
     public void setTravelMode(TravelMode travelMode) {
         this.travelMode = travelMode;
+    }
+
+    public List<RoutePoint> getRoute() {
+        return route;
+    }
+
+    public void setRoute(List<RoutePoint> route) {
+        this.route = route;
     }
 
     @Override

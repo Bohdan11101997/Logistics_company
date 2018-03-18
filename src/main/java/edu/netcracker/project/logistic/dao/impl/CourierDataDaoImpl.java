@@ -1,10 +1,10 @@
 package edu.netcracker.project.logistic.dao.impl;
 
-import com.google.maps.model.LatLng;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.maps.model.TravelMode;
 import edu.netcracker.project.logistic.dao.CourierDataDao;
 import edu.netcracker.project.logistic.dao.PersonCrudDao;
-import edu.netcracker.project.logistic.dao.QueryDao;
 import edu.netcracker.project.logistic.model.*;
 import edu.netcracker.project.logistic.service.QueryService;
 import org.slf4j.LoggerFactory;
@@ -15,24 +15,28 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.awt.image.ImagingOpException;
+import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public class CourierDataDaoImpl implements CourierDataDao, RowMapper<CourierData> {
-
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(CourierDataDaoImpl.class);
 
+    private ObjectMapper objectMapper;
     private JdbcTemplate jdbcTemplate;
     private QueryService queryService;
     private PersonCrudDao personCrudDao;
 
     @Autowired
-    public CourierDataDaoImpl(QueryService queryService, JdbcTemplate jdbcTemplate, PersonCrudDao personCrudDao) {
+    public CourierDataDaoImpl(ObjectMapper objectMapper, QueryService queryService,
+                              JdbcTemplate jdbcTemplate, PersonCrudDao personCrudDao) {
+        this.objectMapper = objectMapper;
         this.queryService = queryService;
         this.jdbcTemplate = jdbcTemplate;
         this.personCrudDao = personCrudDao;
@@ -52,6 +56,16 @@ public class CourierDataDaoImpl implements CourierDataDao, RowMapper<CourierData
         courierData.setLastLocation(rs.getString("courier_last_location"));
         courierData.setTravelMode(TravelMode.valueOf(rs.getString("courier_travel_mode").toUpperCase()));
 
+        List<RoutePoint> route;
+        try {
+            route = objectMapper.readValue(
+                    rs.getString("route"),
+                    objectMapper.getTypeFactory().constructCollectionType(List.class, RoutePoint.class)
+            );
+        } catch (IOException ex) {
+            route = null;
+        }
+        courierData.setRoute(route);
         return courierData;
     }
 
@@ -77,7 +91,14 @@ public class CourierDataDaoImpl implements CourierDataDao, RowMapper<CourierData
                 ps.setObject(1, courierData.getId().getId());
                 ps.setObject(2, courierData.getCourierStatus().name());
                 ps.setObject(3, courierData.getLastLocation());
-                ps.setObject(3, courierData.getTravelMode().name());
+                ps.setObject(4, courierData.getTravelMode().name());
+                String routeJson;
+                try {
+                    routeJson = objectMapper.writeValueAsString(courierData.getRoute());
+                } catch (JsonProcessingException ex) {
+                    routeJson = null;
+                }
+                ps.setObject(5, routeJson);
             });
         } else {
             GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
@@ -87,7 +108,15 @@ public class CourierDataDaoImpl implements CourierDataDao, RowMapper<CourierData
                 ps.setObject(1, courierData.getId().getId());
                 ps.setObject(2, courierData.getCourierStatus().name());
                 ps.setObject(3, courierData.getLastLocation());
-                ps.setObject(3, courierData.getTravelMode().name());
+                ps.setObject(4, courierData.getTravelMode().name());
+                String routeJson;
+                try {
+                    routeJson = objectMapper.writeValueAsString(courierData.getRoute());
+                } catch (JsonProcessingException ex) {
+                    routeJson = null;
+                }
+                ps.setObject(5, routeJson);
+
                 return ps;
             }, keyHolder);
         }

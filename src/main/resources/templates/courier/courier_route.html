@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="fragments/header :: header-bootstrap-config" />
+    <th:block th:replace="fragments/header :: header-bootstrap-config-IE" />
+    <link rel="stylesheet" th:href="@{/css/left_menu.css}" type="text/css" href="../../static/css/left_menu.css" />
+
+    <style>
+        #navigator {
+            margin-bottom: 15px;
+        }
+
+        #orders {
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="row">
+
+    <div th:replace="fragments/left_menu :: left-menu-header">
+    </div>
+
+    <!-- Main Content -->
+    <div class="container-fluid">
+        <div class="side-body">
+            <div class="row">
+                <h1 style="text-align:center"> Route </h1>
+                <div class="row">
+                    <div class="col-md-6 col-xs-12" id="orders">
+                        <div class="row" id="navigator">
+                            <div class="col-md-1 col-md-offset-1 col-xs-2">
+                                <a href="#">&lt;&lt;</a>
+                            </div>
+                            <div class="col-md-8 col-xs-8">
+                                <p class="text-center">Order 2/6</p>
+                            </div>
+                            <div class="col-md-1 col-md-offset-1 col-xs-2">
+                                <a href="#">&gt;&gt;</a>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label class="control-label">Address</label>
+                            <div class="form-control">Ioanna Pavla St.,4/6</div>
+                        </div>
+                        <div>
+                            <div class="form-group col-md-6 col-sm-12">
+                                <label class="control-label">Contact</label>
+                                <div class="form-control">John Doe</div>
+                            </div>
+                            <div class="form-group col-md-6 col-sm-12">
+                                <label class="control-label">Phone</label>
+                                <div class="form-control">(+380)901234567</div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="form-group col-md-6 col-sm-12">
+                                <label class="control-label">Order ID</label>
+                                <div class="form-control">1</div>
+                            </div>
+                            <div class="form-group col-md-6 col-sm-12">
+                                <label class="control-label">Order Type</label>
+                                <div class="form-control">Documents</div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="pull-left">
+                                <button class="btn btn-lg btn-success">Confirm</button>
+                            </div>
+                            <div class="pull-right">
+                                <button class="btn btn-lg btn-danger">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-xs-12" id="map">
+                        <img src="./staticmap.png" width="100%" height="100%"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block th:replace="fragments/footer :: footer"/>
+<th:block th:replace="fragments/left_menu :: left-menu-footer" />
+
+<script type="text/javascript">
+    document.getElementById('courier_tasks_map').className='active';
+</script>
+
+</body>
+</html>
