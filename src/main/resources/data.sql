@@ -3,7 +3,7 @@ INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALU
 INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (2, 'Stanislav', 'Popov', '555-535-55', 'stanis1.stanis1@ukr.net');
 INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (3, 'Ned', 'Stark', '222-223-22', 'Ned.Stark@ukr.net');
 INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (4, 'Jaime', 'Lannister', '3313-33-33', 'Jaime.Lannister@ukr.net');
-INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (5, 'Tyrion', 'Lannister', '4414-44-44', 'Tyrion.Lannister@ukr.net');
+INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (5, 'stanis1', 'stanis1', '4414-44-44', 'its_an_omen@ukr.net');
 INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (6, 'Tywin', 'Lannister', '5553-55-55', 'Tywin.Lannister@ukr.net');
 INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (7, 'Khal', 'Drogo', '666-66-661', 'Khal.Drogo@example.com');
 INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (8, 'Daenerys', 'Targaryen', '6636-66-636', 'Daenerys.Targaryen@example.com');

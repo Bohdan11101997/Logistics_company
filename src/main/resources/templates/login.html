@@ -74,6 +74,7 @@
                 <div class="row">
                     <div class="col-xs-10 col-xs-offset-1 col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2">
 
+                        <div class="form-group">
                         <div th:if="${param.error}">
                             <div class="alert alert-danger">
                                 Invalid username or password.
@@ -82,27 +83,28 @@
                         <div th:if="${param.logout}">
                             <div class="alert alert-info">
                                 You have been logged out.
-                        </div>
+                            </div>
                         </div>
                         <div th:if="${param.delete}">
                             <div class="alert alert-danger">
                                 Your profile has been deleted successfully.
-                        </div>
+                            </div>
                         </div>
                         <div th:if="${infoMessage != null}" >
                             <div class="alert alert-info">
                                 <p th:text="#{${infoMessage}}"></p>
                             </div>
                         </div>
+                        </div>
 
                         <div class="form-group">
-                            <label class="control-label" for="username">Username:</label>
+                            <label class="control-label" for="username">Username</label>
                             <input type="text" class="form-control input-lg" id="username" name="username"
                                    required="required"/>
                         </div>
 
                         <div class="form-group">
-                            <label class="control-label" for="password">Password:</label>
+                            <label class="control-label" for="password">Password</label>
                             <input type="password" class="form-control input-lg" name="password" id="password"
                                    required="required"/>
                         </div>
