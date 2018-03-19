@@ -70,11 +70,11 @@ public class CourierDataDaoImpl implements CourierDataDao, RowMapper<CourierData
     }
 
     @Override
-    public Optional<CourierData> findOne(Person id){
+    public Optional<CourierData> findOne(Long employee_id){
         try {
             CourierData courierData = jdbcTemplate.queryForObject(
                     getFindOneQuery(),
-                    new Object[]{id.getId()},
+                    new Object[]{employee_id},
                     this
             );
             return Optional.of(courierData);
