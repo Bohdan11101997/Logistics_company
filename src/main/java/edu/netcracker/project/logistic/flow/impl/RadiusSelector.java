@@ -328,6 +328,11 @@ public class RadiusSelector extends FlowBuilderImpl {
     }
 
     @Override
+    public DirectionsResult getDirectionsResult(){
+        return  directionsResult;
+    }
+
+    @Override
     public long getDistance() {
         if (distance == 0) {
             calculatePath();

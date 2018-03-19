@@ -241,6 +241,9 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
     public abstract StaticMap getStaticMap();
 
     @Override
+    public abstract DirectionsResult getDirectionsResult();
+
+    @Override
     public abstract long getDistance();
 
     @Override

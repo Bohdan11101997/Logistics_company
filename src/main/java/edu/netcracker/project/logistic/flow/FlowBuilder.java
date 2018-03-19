@@ -61,6 +61,8 @@ public interface FlowBuilder {
 
     StaticMap getStaticMap();
 
+    DirectionsResult getDirectionsResult();
+
     //in meters
     long getDistance();
 
@@ -145,9 +147,7 @@ public interface FlowBuilder {
         };
     }
 
-
     /*
-    * //TODO: give a better name
     *enum FlowResultType {
     *   PathOnly,
     *    DestinationsOnly,
