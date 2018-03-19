@@ -227,6 +227,7 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
         return driveCouriers;
     }
 
+    /*
     @Override
     public abstract List<RouteProcessor.OrderEntry> calculatePath();
 
@@ -247,7 +248,7 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
 
     @Override
     public abstract boolean process(RouteProcessor.OrderEntry pivot, RouteProcessor.CourierEntry courierEntry);
-
+*/
     @Override
     public boolean isFinished() {
         if (walkOrders.size() == 0 && driveOrders.size() == 0)

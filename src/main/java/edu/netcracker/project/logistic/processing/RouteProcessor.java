@@ -321,13 +321,18 @@ public class RouteProcessor {
 
                 if(!flowBuilder.process(oe, worker)){
                     logger.error(flowBuilder.getError());
+                    //manual rollback successfully picked orders
+                    for(OrderEntry orderEntry : flowBuilder.getOrdersSequence())
+                        if(!orderEntry.isOrderFromClient())//do not multiply fake orders
+                            addOrder(orderEntry);
                 }
-
-                if(assignOrders(flowBuilder.getOrdersSequence(), worker)){
+                else if(assignOrders(flowBuilder.getOrdersSequence(), worker)){
                     worker.courierData.getRoute().setMapUrl(flowBuilder.getStaticMap().toString());
                     courierDataDao.save(worker.courierData);
                     notificationService.send(personDao.findOne(worker.employeeId).get().getUserName(),
-                            new Notification("route","New orders added"));
+                            new Notification("route","New orders added\n"+
+                                    "estimated time "+flowBuilder.getDuration()+"\n"+
+                                    "estimated distance " + flowBuilder.getDistance()));
                     logger.info("Courier #{} get #{} orders", worker.employeeId, flowBuilder.getOrdersSequence().size());
                 }
             }
