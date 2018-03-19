@@ -348,4 +348,3 @@ CREATE TRIGGER advertisement_delete_old_rows_trigger
   AFTER INSERT
   ON advertisement
 EXECUTE PROCEDURE advertisement_delete_old_rows();
-SELECT * FROM contact WHERE  contact.first_name='Stanislav'

@@ -27,6 +27,9 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
     private RowMapper<OrderType> orderTypeRowMapper;
 
     @Autowired
+    private OrderStatusDaoImpl orderStatusDao;
+
+    @Autowired
     public OrderDaoImpl(QueryService queryService, JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate, RowMapper<Contact> contactMapper, RowMapper<Address> addressRowMapper, RowMapper<OrderStatus> orderStatusRowMapper, RowMapper<OrderType> orderTypeRowMapper) {
         this.queryService = queryService;
         this.jdbcTemplate = jdbcTemplate;
@@ -213,8 +216,6 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
     }
 
     public List<Order> search(SearchFormOrder searchFormOrder, Long id) {
-
-
         String firstName = searchFormOrder.getFirstName();
         firstName = firstName == null ? "%%" : prepareSearchString(firstName);
 
@@ -234,12 +235,21 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
         } else {
             to = to.with(LocalTime.MAX);
         }
-        Map<String, Object> paramMap = new HashMap<>(7);
+
+
+        List<Long> destination_type = searchFormOrder.getDestination_typeIds();
+        if(destination_type.isEmpty())
+        {
+
+            destination_type.add(1L);
+
+        }
+        Map<String, Object> paramMap = new HashMap<>(9);
         paramMap.put("first_name_contact", firstName);
         paramMap.put("last_name_contact", lastName);
         paramMap.put("start_date", from);
         paramMap.put("end_date", to);
-        paramMap.put("destination_type", searchFormOrder.getDestination_typeIds());
+        paramMap.put("destination_type",destination_type);
         paramMap.put("order_status", searchFormOrder.getOrder_statusIds());
         paramMap.put("sender_contact_id", id);
         paramMap.put("receiver_contact_id", id);
