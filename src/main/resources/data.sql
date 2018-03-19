@@ -79,6 +79,8 @@ INSERT INTO work_day (employee_id, week_day, start_time, end_time)
 VALUES (5, trim(to_char(CURRENT_DATE, 'DAY')) :: WEEK_DAY, '06:00', '23:00');
 INSERT INTO work_day (employee_id, week_day, start_time, end_time)
 VALUES (6, trim(to_char(CURRENT_DATE, 'DAY')) :: WEEK_DAY, '00:00', '23:59');
+INSERT INTO work_day (employee_id, week_day, start_time, end_time)
+VALUES (7, trim(to_char(CURRENT_DATE, 'DAY')) :: WEEK_DAY, '00:00', '23:59');
 
 INSERT INTO address (address_id, address_name) VALUES (1, 'Zodchykh St, 34А, Kyiv');
 INSERT INTO address (address_id, address_name) VALUES (2, 'Lesya Kurbasa Ave, 18, Kyiv');

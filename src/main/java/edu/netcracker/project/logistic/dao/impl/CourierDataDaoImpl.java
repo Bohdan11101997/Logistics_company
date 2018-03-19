@@ -62,7 +62,7 @@ public class CourierDataDaoImpl implements CourierDataDao, RowMapper<CourierData
                     rs.getString("route"),
                     Route.class
             );
-        } catch (IOException ex) {
+        } catch (IOException | NullPointerException ex) {
             route = null;
         }
         courierData.setRoute(route);

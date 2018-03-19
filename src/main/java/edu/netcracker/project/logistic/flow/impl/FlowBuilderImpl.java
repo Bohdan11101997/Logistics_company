@@ -63,6 +63,18 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
         driveCouriers = new PriorityBlockingQueue<>(11, FlowBuilder.makeCourierComparator(office.getAddress().getLocation(), useMap, TravelMode.DRIVING));
     }
 
+
+    @Override
+    public void setOffice(Office office){
+        this.office = office;
+        reset(office,isUseMapRequests());
+    }
+
+    @Override
+    public Office getOffice(){
+        return office;
+    }
+
     @Override
     public double getMaxWalkableDistance() {
         return maxWalkableDistance;

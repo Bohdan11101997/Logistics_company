@@ -2,10 +2,7 @@ package edu.netcracker.project.logistic.processing;
 
 import com.google.maps.model.LatLng;
 import com.google.maps.model.TravelMode;
-import edu.netcracker.project.logistic.dao.CourierDataDao;
-import edu.netcracker.project.logistic.dao.OrderDao;
-import edu.netcracker.project.logistic.dao.PersonCrudDao;
-import edu.netcracker.project.logistic.dao.WorkDayDao;
+import edu.netcracker.project.logistic.dao.*;
 import edu.netcracker.project.logistic.flow.FlowBuilder;
 import edu.netcracker.project.logistic.flow.impl.RadiusSelector;
 import edu.netcracker.project.logistic.model.*;
@@ -141,7 +138,7 @@ public class RouteProcessor {
 
     private static final Duration WORK_DAY_END_NEARING_INTERVAL = Duration.ofMinutes(10);
 
-    private static final Logger logger = LoggerFactory.getLogger(TaskProcessor.class);
+    private static final Logger logger = LoggerFactory.getLogger(RouteProcessor.class);
 
     private BlockingQueue<RouteProcessor.CourierEntry> walkWorkerQueue;
     private BlockingQueue<RouteProcessor.CourierEntry> driveWorkerQueue;
@@ -149,6 +146,8 @@ public class RouteProcessor {
     private BlockingQueue<RouteProcessor.OrderEntry> driveOrdersQueue;
 
     private OrderDao orderDao;
+    private OrderStatusDao orderStatusDao;
+    private OfficeDao officeDao;
     private PersonCrudDao personDao;
     private WorkDayDao workDayDao;
     private CourierDataDao courierDataDao;
@@ -157,21 +156,25 @@ public class RouteProcessor {
 
     public RouteProcessor(OrderDao orderDao,
                           PersonCrudDao personDao,
+                          OrderStatusDao orderStatusDao,
+                          OfficeDao officeDao,
                           WorkDayDao workDayDao,
                           CourierDataDao courierDataDao,
                           NotificationService notificationService) {
         this.orderDao = orderDao;
+        this.orderStatusDao = orderStatusDao;
+        this.officeDao = officeDao;
         this.personDao = personDao;
         this.workDayDao = workDayDao;
         this.courierDataDao = courierDataDao;
         this.notificationService = notificationService;
+    }
 
-        //TODO: set normal center
-        LatLng center = new LatLng(50.420506, 30.529369);
+    private void prepareQueues(LatLng center) {
         this.walkOrdersQueue = new PriorityBlockingQueue<>(
                 11,
                 FlowBuilder.makeOrderComparator(center,false, TravelMode.WALKING)
-                );
+        );
         this.driveOrdersQueue = new PriorityBlockingQueue<>(
                 11,
                 FlowBuilder.makeOrderComparator(center,false, TravelMode.DRIVING)
@@ -185,9 +188,11 @@ public class RouteProcessor {
                 11,
                 FlowBuilder.makeCourierComparator(center,false, TravelMode.DRIVING)
         );
-    }
 
-    private void prepareQueues() {
+        List<Person> potentialCouriers = personDao.findAllEmployees();
+        for(Person data : potentialCouriers ){
+            addCourier(data.getId());
+        }
         List<Order> confirmedOrders = orderDao.findConfirmed();
         for (Order data : confirmedOrders) {
             createOrder(data);
@@ -204,9 +209,9 @@ public class RouteProcessor {
     }
 
     @Transactional
-    public boolean assignOrder(RouteProcessor.OrderEntry orderEntry, RouteProcessor.CourierEntry employeeEntry) throws InterruptedException {
+    public boolean assignOrder(RouteProcessor.OrderEntry orderEntry, RouteProcessor.CourierEntry courierEntry) throws InterruptedException {
         Order order = orderEntry.order;
-        Long employeeId = employeeEntry.employeeId;
+        Long employeeId = courierEntry.employeeId;
 
         // Check if employee is still courier
         Optional<Person> employeeRecord = personDao.findOne(employeeId);
@@ -232,48 +237,76 @@ public class RouteProcessor {
         LocalDateTime now = LocalDateTime.now();
         LocalDate todayDate = now.toLocalDate();
         // Check if stored schedule is still actual
-        if (!todayDate.equals(employeeEntry.workDayDate)) {
+        if (!todayDate.equals(courierEntry.workDayDate)) {
             Optional<WorkDay> opt = workDayDao.findScheduleForDate(todayDate, employeeId);
             if (!opt.isPresent()) {
                 logger.error("Employee is not working on this day ({})", todayDate);
                 addOrder(orderEntry);
                 return false;
             }
-            employeeEntry.workDay = opt.get();
-            employeeEntry.workDayDate = todayDate;
+            courierEntry.workDay = opt.get();
+            courierEntry.workDayDate = todayDate;
         }
         // Check if work day is nearing end
-        if (now.toLocalTime().isBefore(employeeEntry.workDay.getStartTime()) ||
+        if (now.toLocalTime().isBefore(courierEntry.workDay.getStartTime()) ||
                 now.toLocalTime().plus(WORK_DAY_END_NEARING_INTERVAL)
-                        .isAfter(employeeEntry.workDay.getEndTime())) {
+                        .isAfter(courierEntry.workDay.getEndTime())) {
            addOrder(orderEntry);
             return false;
         }
 
-        /*
-        taskDao.save(task);
-        notificationService.send(employee.getUserName(), new Notification("task", "Created new task"));
-        */
         order.setCourier(employee);
-        logger.info("Assigned order #{} to employee #{}", order.getId(), employeeId);
-        //TODO: dao save order and save what?
-        walkWorkerQueue.put(employeeEntry);
+        order.setOrderStatusTime(LocalDateTime.now());
+        Optional<OrderStatus> optOrderStatus = orderStatusDao.findByName("DELIVERING");
+        if(!optOrderStatus.isPresent()){
+            logger.error("Order status not found in DB ({})","DELIVERING");
+            order.setOrderStatus(new OrderStatus((long)-1,"DELIVERING"));
+        }
+        else {
+            order.setOrderStatus(optOrderStatus.get());
+        }
+        logger.info("Assigned order #{} to courier #{}", order.getId(), employeeId);
+
+        List<RoutePoint> routePoints = courierEntry.getCourierData().getRoute().getWayPoints();
+        if(routePoints == null) {
+            LatLng point = orderEntry.getOrder().getReceiverAddress().getLocation();
+            routePoints.add(new RoutePoint(
+                    String.format("%.8f",point.lat),
+                    String.format("%.8f",point.lng),
+                    order));
+        }
+        if(!orderEntry.isOrderFromClient()) {
+            //there are no office-sender order in chain office-sender-client
+            orderDao.save(order);
+        }
         return true;
     }
 
     @Async
     public void taskLoop() throws InterruptedException {
-        Office office = new Office();
-        office.setOfficeId((long) (404));
-        office.setName("NetCrackerOffice");
-        office.setAddress(new Address((long) (404),
-                new LatLng(50.420506, 30.529369)));//our NetCrackerOffice
-        flowBuilder = new RadiusSelector(walkOrdersQueue, driveOrdersQueue, walkWorkerQueue, driveWorkerQueue, office);
+        RouteProcessor.CourierEntry worker = null;
+        RouteProcessor.OrderEntry oe = null;
+        Office office;
         try {
-            prepareQueues();
+            List<Office> offices = officeDao.allOffices();
+            if(offices == null || offices.size() == 0){
+                logger.error("There are no offices created");
+                prepareQueues(new LatLng(0,0));
+            } else {//use first founded office
+                prepareQueues(offices.get(0).getAddress().getLocation());
+            }
+            if(driveOrdersQueue.isEmpty()){
+                worker = walkWorkerQueue.take();
+                oe = walkOrdersQueue.poll();
+            }
+            if(worker == null || oe == null) {
+                worker = driveWorkerQueue.take();
+                oe = driveOrdersQueue.take();
+            }
+            office = oe.getOrder().getOffice();
+            flowBuilder = new RadiusSelector(walkOrdersQueue, driveOrdersQueue, walkWorkerQueue, driveWorkerQueue, office);
             while (true) {
-                RouteProcessor.CourierEntry worker = null;
-                RouteProcessor.OrderEntry oe = null;
+
                 if(driveOrdersQueue.isEmpty()){
                     worker = walkWorkerQueue.take();
                     oe = walkOrdersQueue.poll();
@@ -283,14 +316,19 @@ public class RouteProcessor {
                     oe = driveOrdersQueue.take();
                 }
 
+                office = oe.getOrder().getOffice();
+                flowBuilder.setOffice(office);
+
                 if(!flowBuilder.process(oe, worker)){
                     logger.error(flowBuilder.getError());
                 }
 
                 if(assignOrders(flowBuilder.getOrdersSequence(), worker)){
-                    //TODO: any work here
+                    worker.courierData.getRoute().setMapUrl(flowBuilder.getStaticMap().toString());
+                    courierDataDao.save(worker.courierData);
                     notificationService.send(personDao.findOne(worker.employeeId).get().getUserName(),
                             new Notification("route","New orders added"));
+                    logger.info("Courier #{} get #{} orders", worker.employeeId, flowBuilder.getOrdersSequence().size());
                 }
             }
         } catch (InterruptedException ex) {
@@ -357,16 +395,21 @@ public class RouteProcessor {
 
         Optional<WorkDay> opt = workDayDao.findScheduleForDate(workDayDate, employeeId);
         if (!opt.isPresent()) {
-            logger.error("Employee is not working on this day ({})", workDayDate);
+            logger.warn("Employee is not working on this day ({})", workDayDate);
             return;
         }
         WorkDay workDay = opt.get();
         Optional<CourierData> optCd = courierDataDao.findOne(employeeId);
         if (!optCd.isPresent()) {
-            logger.error("Employee is not courier on this day ({})", workDayDate);
+            logger.info("Employee is not courier on this day ({})", workDayDate);
             return;
         }
         CourierData courierData = optCd.get();
+        if(!courierData.getCourierStatus().equals(CourierStatus.FREE)){
+            logger.warn("Courier is still busy ({})", courierData.getCourierStatus());
+            return;
+        }
+
         RouteProcessor.CourierEntry entry = new RouteProcessor.CourierEntry(workDayDate, workDay, courierData, employeeId);
 
         switch (courierData.getTravelMode()) {
@@ -432,11 +475,11 @@ public class RouteProcessor {
     public void removeOrder(Long orderId){
         walkOrdersQueue.removeIf(orderEntry -> {
             orderEntry.order.setCourier(null);
-            return orderEntry.order.getId() == orderId;
+            return orderEntry.order.getId().equals(orderId);
         });
         driveOrdersQueue.removeIf(orderEntry -> {
             orderEntry.order.setCourier(null);
-            return orderEntry.order.getId() == orderId;
+            return orderEntry.order.getId().equals(orderId);
         });
     }
 }

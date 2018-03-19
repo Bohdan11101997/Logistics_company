@@ -34,6 +34,7 @@ public class RadiusSelector extends FlowBuilderImpl {
     private static final int maxOrderCount = 8;
     private int MAX_RADIUS_STEPS = 5;
 
+    private int count_c2c_orders;
     private double currentAproxDistance = 0/*meters*/;
     private BigDecimal currentWeight = new BigDecimal(0.0)/*kg*/;
 
@@ -52,9 +53,9 @@ public class RadiusSelector extends FlowBuilderImpl {
                           Queue<RouteProcessor.CourierEntry> driveCouriers,
                           @NotNull Office office) {
         super(walkOrders, driveOrders, walkCouriers, driveCouriers, office);
-        resultSequence = new LinkedList<>();
-        returnOrders = new LinkedList<>();
-        travelMode = TravelMode.DRIVING;
+        this.resultSequence = new LinkedList<>();
+        this.returnOrders = new LinkedList<>();
+        this.travelMode = TravelMode.DRIVING;
     }
 
     public void newPath(@NotNull RouteProcessor.OrderEntry pivot) {
@@ -62,6 +63,7 @@ public class RadiusSelector extends FlowBuilderImpl {
         center = pivot.getOrder().getReceiverAddress().getLocation();
         searchRadius = FlowBuilder.distance(office.getAddress().getLocation(), center, isUseMapRequests(), travelMode);
         candidates = new LinkedList<>();
+        count_c2c_orders = 0;
 
         switch (travelMode) {
             case DRIVING:
@@ -102,46 +104,40 @@ public class RadiusSelector extends FlowBuilderImpl {
                 next = walkOrders.poll();
                 break;
         }
-
-        if (nearlyEqual(next.getOrder().getSenderAddress().getLocation().lat,
+        /*if (nearlyEqual(next.getOrder().getSenderAddress().getLocation().lat,
                 office.getAddress().getLocation().lat, 0.001) &&
                 nearlyEqual(next.getOrder().getSenderAddress().getLocation().lng,
-                        office.getAddress().getLocation().lng, 0.001)) {
+                        office.getAddress().getLocation().lng, 0.001)) {*/
+        if(next.getOrder().getOffice() == null) {
             //client_to_client
-            if (resultSequence.size() < maxOrderCount-1/*is here 2 places*/) {
+            if (resultSequence.size() < maxOrderCount-1/*is here 2 places*/ && count_c2c_orders < 1) {
                 RouteProcessor.OrderEntry sender = new RouteProcessor.OrderEntry(next);
                 sender.getOrder().setReceiverAddress(next.getOrder().getSenderAddress());
-                sender.getOrder().setSenderAddress(office.getAddress());
+                sender.getOrder().setSenderAddress(null);
                 sender.setOrderFromClient(true);
                 if (canBePicked(sender.getOrder())) {
                     //success
                     resultSequence.add(next);
                     resultSequence.add(sender);
                     currentWeight.add(sender.getOrder().getWeight());
-                    currentAproxDistance += FlowBuilder.distance(
-                            office.getAddress().getLocation(),
-                            next.getOrder().getReceiverAddress().getLocation(),
-                            false,
-                            null);
-                    currentAproxDistance += FlowBuilder.distance(
+                    updateTimeAndDistance(sender);
+                    updateTimeAndDistance(next);
+                    /*currentAproxDistance += FlowBuilder.distance(
                             next.getOrder().getSenderAddress().getLocation(),
                             next.getOrder().getReceiverAddress().getLocation(),
                             false,
-                            null);
+                            null);*/
+                    count_c2c_orders++;
                 } else //fail at canBePicked
                     returnOrders.add(next);
             } else //fail at order count
                 returnOrders.add(next);
         } else {//usual case
-            if (canBePicked(next.getOrder())) {
+            if (canBePicked(next.getOrder()) && (next.getOrder().getOffice() == office )) {
                 resultSequence.add(next);
-                currentWeight.add(next.getOrder().getWeight());
-                currentAproxDistance += FlowBuilder.distance(
-                        office.getAddress().getLocation(),
-                        next.getOrder().getReceiverAddress().getLocation(),
-                        false,
-                        null);
-            } else //fail at canBePicked
+                currentWeight = currentWeight.add(next.getOrder().getWeight());
+                updateTimeAndDistance(next);
+            } else //fail at canBePicked or order is at other office
                 returnOrders.add(next);
         }
         return next; //always return back
@@ -213,6 +209,8 @@ public class RadiusSelector extends FlowBuilderImpl {
 
     @Override
     public List<RouteProcessor.OrderEntry> calculatePath() {
+        duration = 0;
+        distance = 0;
         LatLng[] waypoints = new LatLng[resultSequence.size()];
         for (int i = 0; i < waypoints.length; i++)
             waypoints[i] = resultSequence.get(i).getOrder().getReceiverAddress().getLocation();
@@ -233,11 +231,36 @@ public class RadiusSelector extends FlowBuilderImpl {
             errorMessage = "StaticMapsError";
             return resultSequence;  //early out
         }
+
+        //warehouse marker
+        staticMap.marker(new StaticMap.Marker.Style.Builder().label('#').color(0x0ff0000).build(),
+                new StaticMap.GeoPoint(office.getAddress().getLocation().lat, office.getAddress().getLocation().lng));
+
         if (directionsResult.geocodedWaypoints[0].geocoderStatus != GeocodedWaypointStatus.OK) {
             System.err.println("DirectionsApi returned ZERO_RESULTS");
+            //sender will always be before receiver
         } else {
-            duration = 0;
-            distance = 0;
+            boolean needToReverse = false;
+            List<RouteProcessor.OrderEntry> return_value = new ArrayList<>(waypoints.length);
+            for (int i : directionsResult.routes[0].waypointOrder) {
+                return_value.add(resultSequence.get(i));
+                if(count_c2c_orders == 1 && resultSequence.get(i).isOrderFromClient()){
+                    //found office-sender
+                    for(RouteProcessor.OrderEntry oe: resultSequence){
+                        if(oe.getOrder().getOffice() == null){
+                            //found sender-receiver Before! office-sender
+                            needToReverse = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            if(needToReverse){
+                Collections.reverse(path);
+                Collections.reverse(return_value);
+            }
+
+
             path = directionsResult.routes[0].overviewPolyline.decodePath();
             staticMap = GoogleApiRequest.StaticMap()
                     .center(new StaticMap.GeoPoint(center.lat, center.lng))
@@ -249,17 +272,10 @@ public class RadiusSelector extends FlowBuilderImpl {
                 duration += l.duration.inSeconds;
                 distance += l.distance.inMeters;
             }
+
+            resultSequence = return_value;
         }
 
-        //warehouse marker
-        staticMap.marker(new StaticMap.Marker.Style.Builder().label('#').color(0x0ff0000).build(),
-                new StaticMap.GeoPoint(office.getAddress().getLocation().lat, office.getAddress().getLocation().lng));
-
-        List<RouteProcessor.OrderEntry> return_value = new ArrayList<>(waypoints.length);
-        for (int i : directionsResult.routes[0].waypointOrder)
-            return_value.add(resultSequence.get(i));
-
-        resultSequence = return_value;
         //client markers
         {
             int index = 0;
