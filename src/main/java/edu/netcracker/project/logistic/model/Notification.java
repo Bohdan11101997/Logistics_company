@@ -2,9 +2,9 @@ package edu.netcracker.project.logistic.model;
 
 public class Notification {
     private String type;
-    private String content;
+    private Object content;
 
-    public Notification(String type, String content) {
+    public Notification(String type, Object content) {
         this.type = type;
         this.content = content;
     }
@@ -17,11 +17,11 @@ public class Notification {
         this.type = type;
     }
 
-    public String getContent() {
+    public Object getContent() {
         return content;
     }
 
-    public void setContent(String content) {
+    public void setContent(Object content) {
         this.content = content;
     }
 }
