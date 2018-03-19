@@ -306,7 +306,7 @@ public class RouteProcessor {
         }
     }
 
-    public void addOrder(Order order) throws InterruptedException {
+    public void addOrder(Order order) {
         boolean vip = false;
 
         Optional<Person> sender = personDao.findOne(order.getSenderContact().getContactId());
@@ -330,13 +330,18 @@ public class RouteProcessor {
         }
 
         OrderEntry orderEntry = new RouteProcessor.OrderEntry(order, vip ? "VIP" : "NORMAL", false);
-        switch (orderEntry.travelMode){ //put back
-            case WALKING:
-                walkOrdersQueue.put(orderEntry);
-                break;
-            default:
-                driveOrdersQueue.put(orderEntry);
-                break;
+
+        try {
+            switch (orderEntry.travelMode) { //put back
+                case WALKING:
+                    walkOrdersQueue.put(orderEntry);
+                    break;
+                default:
+                    driveOrdersQueue.put(orderEntry);
+                    break;
+            }
+        } catch (InterruptedException ex) {
+            logger.error("Interrupted on adding order to queue");
         }
     }
 
