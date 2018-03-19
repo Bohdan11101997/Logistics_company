@@ -15,7 +15,7 @@
 </head>
 <body class="body-color">
 
-    <div class="row">
+<div class="row">
 
     <div th:replace="fragments/left_menu :: left-menu-header">
     </div>
@@ -24,220 +24,212 @@
     <div class="container-fluid">
         <div class="side-body">
             <div class="row">
-
                 <div class="col-lg-10 col-md-10 col-md-offset-1 col-lg-offset-1">
 
                     <h1>Employee</h1>
 
-
-
                     <div class="well">
-
                         <h3 class="caption" th:if="${newEmployee}">New</h3>
                         <h3 class="caption" th:if="${!newEmployee}">Update</h3>
 
-
-                    <form class="form-horizontal" th:method = "post" th:action = "@{/admin/crud/employee/}"
-                        th:if="${newEmployee}" th:object="${employee}">
                         <!-- Form for creating employee -->
+                        <form class="form-horizontal" th:method = "post" th:action = "@{/admin/crud/employee/}"
+                            th:if="${newEmployee}" th:object="${employee}">
+                            <div class="row">
+                                <div class="col-lg-8 col-lg-offset-2">
 
-                        <div class="row">
-                            <div class="col-lg-8 col-lg-offset-2">
+                                    <div class="form-group required">
+                                        <label for="first_name" class="control-label">First Name</label>
+                                        <input type="text" class="form-control" id="first_name" required="required" placeholder=""
+                                               th:field="*{contact.firstName}"/>
+                                    </div>
 
-                        <div class="form-group required">
-                            <label for="first_name" class="control-label">First Name</label>
-                            <input type="text" class="form-control" id="first_name" required="required" placeholder=""
-                                   th:field="*{contact.firstName}"/>
-                        </div>
+                                    <div class="form-group required">
+                                        <label for="last_name" class="control-label">Last Name</label>
+                                        <input type="text" class="form-control" id="last_name" required="required" placeholder=""
+                                               th:field="*{contact.lastName}"/>
+                                    </div>
 
-                        <div class="form-group required">
-                            <label for="last_name" class="control-label">Last Name</label>
-                            <input type="text" class="form-control" id="last_name" required="required" placeholder=""
-                                   th:field="*{contact.lastName}"/>
-                        </div>
+                                    <div class="form-group required"
+                                         th:classappend="${#fields.hasErrors('userName')}? 'has-error'">
+                                        <label for="username" class="control-label">Username</label>
+                                        <input type="text" class="form-control" id="username" placeholder=""
+                                               required="required" minlength="6" maxlength="30"
+                                               oninput="clearErrorStyles(this)"
+                                               th:field="*{userName}"/>
+                                        <div class="has-error help-block"
+                                             th:if="${#fields.hasErrors('userName')}">
+                                            Sorry, but this username is already taken.
+                                        </div>
+                                    </div>
 
-                        <div class="form-group required"
-                             th:classappend="${#fields.hasErrors('userName')}? 'has-error'">
-                            <label for="username" class="control-label">Username</label>
-                            <input type="text" class="form-control" id="username" placeholder=""
-                                   required="required" minlength="6" maxlength="30"
-                                   oninput="clearErrorStyles(this)"
-                                   th:field="*{userName}"/>
-                            <div class="has-error help-block"
-                                 th:if="${#fields.hasErrors('userName')}">
-                                Sorry, but this username is already taken.
+                                    <div class="form-group required"
+                                         th:classappend="${#fields.hasErrors('contact.email')}? 'has-error'">
+                                        <label for="email" class="control-label">E-mail</label>
+                                        <input type="email" class="form-control" id="email" placeholder=""
+                                               required="required" minlength="6" maxlength="254"
+                                               oninput="clearErrorStyles(this)"
+                                               th:field="*{contact.email}"/>
+                                        <div class="has-error help-block"
+                                             th:if="${#fields.hasErrors('contact.email')}">
+                                            Sorry, but this email is already taken.
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group required"
+                                         th:classappend="${#fields.hasErrors('contact.phoneNumber')}? 'has-error'">
+                                        <label for="phone" class="control-label">Phone</label>
+                                        <input type="text" class="form-control" id="phone" placeholder=""
+                                               required="required" minlength="7" maxlength="15"
+                                               oninput="clearErrorStyles(this)"
+                                               th:field="*{contact.phoneNumber}"/>
+                                        <div class="has-error help-block"
+                                             th:if="${#fields.hasErrors('contact.phoneNumber')}"
+                                             th:errors="*{contact.phoneNumber}">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group required"
+                                        th:classappend="${#fields.hasErrors('roles')}? 'has-error'">
+                                        <label for="role" class="control-label">Roles</label>
+                                        <br />
+                                        <select id="role" multiple="multiple"
+                                                th:field="*{roles}">
+                                            <option th:each="role: ${availableRoles}"
+                                                    th:value="${role.roleId}"
+                                                    th:text="${{role}}">Role</option>
+                                        </select>
+                                        <div class="has-error help-block"
+                                             th:if="${#fields.hasErrors('roles')}"
+                                             th:each="err: ${#fields.errors('roles')}"
+                                             th:text="${err}">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <button class="btn btn-success">Save</button>
+                                    </div>
+
+                                </div>
                             </div>
-                        </div>
-
-                        <div class="form-group required"
-                             th:classappend="${#fields.hasErrors('contact.email')}? 'has-error'">
-                            <label for="email" class="control-label">E-mail</label>
-                            <input type="email" class="form-control" id="email" placeholder=""
-                                   required="required" minlength="6" maxlength="254"
-                                   oninput="clearErrorStyles(this)"
-                                   th:field="*{contact.email}"/>
-                            <div class="has-error help-block"
-                                 th:if="${#fields.hasErrors('contact.email')}">
-                                Sorry, but this email is already taken.
-                            </div>
-                        </div>
-
-                        <div class="form-group required"
-                             th:classappend="${#fields.hasErrors('contact.phoneNumber')}? 'has-error'">
-                            <label for="phone" class="control-label">Phone</label>
-                            <input type="text" class="form-control" id="phone" placeholder=""
-                                   required="required" minlength="7" maxlength="15"
-                                   oninput="clearErrorStyles(this)"
-                                   th:field="*{contact.phoneNumber}"/>
-                            <div class="has-error help-block"
-                                 th:if="${#fields.hasErrors('contact.phoneNumber')}"
-                                 th:errors="*{contact.phoneNumber}">
-                            </div>
-                        </div>
-
-                        <div class="form-group required"
-                            th:classappend="${#fields.hasErrors('roles')}? 'has-error'">
-                            <label for="role" class="control-label">Roles</label>
-                            <br />
-                            <select id="role" multiple="multiple"
-                                    th:field="*{roles}">
-                                <option th:each="role: ${availableRoles}"
-                                        th:value="${role.roleId}"
-                                        th:text="${{role}}">Role</option>
-                            </select>
-                            <div class="has-error help-block"
-                                 th:if="${#fields.hasErrors('roles')}"
-                                 th:each="err: ${#fields.errors('roles')}"
-                                 th:text="${err}">
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <button class="btn btn-success">Save</button>
-                        </div>
-
-                            </div>
-                        </div>
-                    </form>
-
-                    <form class="form-horizontal" method = "post"
-                          th:if="${!newEmployee}"
-                          th:action = "@{'/admin/crud/employee/' + ${id}}"
-                          th:object="${employee}">
-
-                        <div class="row">
-                            <div class="col-lg-8 col-lg-offset-2">
+                        </form>
 
                         <!-- Form for updating employee -->
-                        <div class="form-group required">
-                            <label for="first_name" class="control-label">First Name</label>
-                            <input type="text" class="form-control" id="first_name" placeholder=""
-                                   required="required" minlength="1" maxlength="45"
-                                   th:field="*{contact.firstName}"/>
-                        </div>
+                        <form class="form-horizontal" method = "post"
+                              th:if="${!newEmployee}"
+                              th:action = "@{'/admin/crud/employee/' + ${id}}"
+                              th:object="${employee}">
+                            <div class="row">
+                                <div class="col-lg-8 col-lg-offset-2">
 
-                        <div class="form-group required">
-                            <label for="last_name" class="control-label">Last Name</label>
-                            <input type="text" class="form-control" id="last_name" placeholder=""
-                                   required="required" minlength="1" maxlength="45"
-                                th:field="*{contact.lastName}"/>
-                        </div>
+                                    <div class="form-group required">
+                                        <label for="first_name" class="control-label">First Name</label>
+                                        <input type="text" class="form-control" id="first_name" placeholder=""
+                                               required="required" minlength="1" maxlength="45"
+                                               th:field="*{contact.firstName}"/>
+                                    </div>
 
-                        <div class="form-group required">
-                            <label for="username" class="control-label">Username</label>
-                            <input type="text" class="form-control" id="username" placeholder="" readonly="readonly"
-                                   required="required" minlength="6" maxlength="30"
-                                   oninput="clearErrorStyles(this)"
-                                   th:value="*{userName}"/>
-                        </div>
+                                    <div class="form-group required">
+                                        <label for="last_name" class="control-label">Last Name</label>
+                                        <input type="text" class="form-control" id="last_name" placeholder=""
+                                               required="required" minlength="1" maxlength="45"
+                                            th:field="*{contact.lastName}"/>
+                                    </div>
 
-                        <div class="form-group">
-                            <label for="registration_date" class="control-label">Registration Date</label>
-                            <input type="text" class="form-control" id="registration_date" placeholder="" readonly="readonly"
-                                th:value="*{{registrationDate}}"/>
-                        </div>
+                                    <div class="form-group required">
+                                        <label for="username" class="control-label">Username</label>
+                                        <input type="text" class="form-control" id="username" placeholder="" readonly="readonly"
+                                               required="required" minlength="6" maxlength="30"
+                                               oninput="clearErrorStyles(this)"
+                                               th:value="*{userName}"/>
+                                    </div>
 
-                        <div class="form-group required"
-                             th:classappend="${#fields.hasErrors('contact.email')}? 'has-error'">
-                            <label for="email" class="control-label">E-mail</label>
-                            <input type="email" class="form-control" id="email" placeholder=""
-                                   required="required" minlength="6" maxlength="254"
-                                   oninput="clearErrorStyles(this)"
-                                   th:field="*{contact.email}"/>
-                            <div class="has-error help-block"
-                                 th:if="${#fields.hasErrors('contact.email')}">
-                                Sorry, but this email is already taken.
+                                    <div class="form-group">
+                                        <label for="registration_date" class="control-label">Registration Date</label>
+                                        <input type="text" class="form-control" id="registration_date" placeholder="" readonly="readonly"
+                                            th:value="*{{registrationDate}}"/>
+                                    </div>
+
+                                    <div class="form-group required"
+                                         th:classappend="${#fields.hasErrors('contact.email')}? 'has-error'">
+                                        <label for="email" class="control-label">E-mail</label>
+                                        <input type="email" class="form-control" id="email" placeholder=""
+                                               required="required" minlength="6" maxlength="254"
+                                               oninput="clearErrorStyles(this)"
+                                               th:field="*{contact.email}"/>
+                                        <div class="has-error help-block"
+                                             th:if="${#fields.hasErrors('contact.email')}">
+                                            Sorry, but this email is already taken.
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group required"
+                                         th:classappend="${#fields.hasErrors('contact.phoneNumber')}? 'has-error'">
+                                        <label for="phone" class="control-label">Phone</label>
+                                        <input type="text" class="form-control" id="phone" placeholder=""
+                                               required="required" minlength="7" maxlength="15"
+                                               oninput="clearErrorStyles(this)"
+                                               th:field="*{contact.phoneNumber}"/>
+                                        <div class="has-error help-block"
+                                             th:if="${#fields.hasErrors('contact.phoneNumber')}">
+                                            Sorry, but this phone number is already taken.
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group required"
+                                         th:classappend="${#fields.hasErrors('roles')}? 'has-error'">
+                                        <label for="role" class="control-label">Roles</label>
+                                        <br />
+                                        <select id="role" multiple="multiple"
+                                                th:field="*{roles}">
+                                            <option th:each="role: ${availableRoles}"
+                                                    th:value="${role.roleId}"
+                                                    th:text="${{role}}">Role</option>
+                                        </select>
+                                        <div class="has-error help-block"
+                                             th:if="${#fields.hasErrors('roles')}"
+                                             th:each="err: ${#fields.errors('roles')}"
+                                             th:text="${err}">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <button class="btn btn-success">Update</button>
+                                        <button class="btn btn-danger" th:formaction="@{'/admin/crud/employee/' + ${id} + '/delete'}">Delete</button>
+                                    </div>
+
+                                </div>
                             </div>
-                        </div>
+                        </form>
 
-                        <div class="form-group required"
-                             th:classappend="${#fields.hasErrors('contact.phoneNumber')}? 'has-error'">
-                            <label for="phone" class="control-label">Phone</label>
-                            <input type="text" class="form-control" id="phone" placeholder=""
-                                   required="required" minlength="7" maxlength="15"
-                                   oninput="clearErrorStyles(this)"
-                                   th:field="*{contact.phoneNumber}"/>
-                            <div class="has-error help-block"
-                                 th:if="${#fields.hasErrors('contact.phoneNumber')}">
-                                Sorry, but this phone number is already taken.
-                            </div>
-                        </div>
-
-                        <div class="form-group required"
-                             th:classappend="${#fields.hasErrors('roles')}? 'has-error'">
-                            <label for="role" class="control-label">Roles</label>
-                            <br />
-                            <select id="role" multiple="multiple"
-                                    th:field="*{roles}">
-                                <option th:each="role: ${availableRoles}"
-                                        th:value="${role.roleId}"
-                                        th:text="${{role}}">Role</option>
-                            </select>
-                            <div class="has-error help-block"
-                                 th:if="${#fields.hasErrors('roles')}"
-                                 th:each="err: ${#fields.errors('roles')}"
-                                 th:text="${err}">
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <button class="btn btn-success">Update</button>
-                            <button class="btn btn-danger" th:formaction="@{'/admin/crud/employee/' + ${id} + '/delete'}">Delete</button>
-                        </div>
-
-                            </div>
-                        </div>
-
-                    </form>
+                    </div>
                 </div>
-
             </div>
         </div>
     </div>
-    </div>
-    </div>
+</div>
 
-    <th:block th:replace="fragments/footer :: footer"/>
-
-
-    <th:block th:replace="fragments/left_menu :: left-menu-footer" />
+<th:block th:replace="fragments/footer :: footer"/>
 
 
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css" type="text/css"/>
+<th:block th:replace="fragments/left_menu :: left-menu-footer" />
 
-    <script>
-        createMultiSelect("#role");
-    </script>
-    <script type="text/javascript" th:if="${newEmployee}">
-        document.getElementById('crud_employee').className='active';
-    </script>
-    <script>
-        function phonenumber(inputtxt)
-        {
-            var phoneno = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
-            return(inputtxt.value.match(phoneno));
-        }
-    </script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css" type="text/css"/>
+
+<script>
+    createMultiSelect("#role");
+</script>
+<script type="text/javascript" th:if="${newEmployee}">
+    document.getElementById('crud_employee').className='active';
+</script>
+<script>
+    function phonenumber(inputtxt)
+    {
+        var phoneno = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
+        return(inputtxt.value.match(phoneno));
+    }
+</script>
 </body>
 </html>

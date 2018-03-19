@@ -3,7 +3,9 @@
 <head>
     <th:block th:replace="fragments/header :: header-bootstrap-config" />
     <th:block th:replace="fragments/header :: header-bootstrap-config-IE" />
+
     <link rel="stylesheet" th:href="@{/css/left_menu.css}" type="text/css" href="../../static/css/left_menu.css" />
+    <link rel="stylesheet" th:href="@{/css/main_content.css}" type="text/css" href="../static/css/main_content.css" />
     <link rel="stylesheet" th:href="@{/css/table.css}" type="text/css" href="../static/css/table.css" />
 
 </head>
@@ -18,9 +20,9 @@
     <div class="container-fluid">
         <div class="side-body">
             <div class="row">
-                <h1 style="text-align:center"> Actual orders </h1>
-
                 <div class="col-lg-10 col-md-10 col-md-offset-1 col-lg-offset-1">
+
+                    <h1>Actual Orders</h1>
 
                     <div class="table-responsive">
                         <table class="table">
@@ -60,8 +62,8 @@
                             </tbody>
                         </table>
                     </div>
-                </div>
 
+                </div>
             </div>
         </div>
     </div>

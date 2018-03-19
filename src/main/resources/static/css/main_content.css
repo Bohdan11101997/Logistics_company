@@ -10,6 +10,32 @@ h1 {
     text-align: center;
 }
 
+h2 {
+    color: white;
+}
+
+h3{
+    color: white;
+}
+
+h5{
+    color: white;
+}
+
 .body-color {
     background-color: var(--main-color);
+}
+
+.body-color label{
+    color: white;
+}
+
+.panel.panel-default .panel-heading{
+    background-color: var(--second-color);
+    color: white;
+}
+
+.panel.panel-default .panel-body{
+    background-color: var(--main-color);
+    color: white;
 }

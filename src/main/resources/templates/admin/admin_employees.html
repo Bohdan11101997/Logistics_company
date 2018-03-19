@@ -39,16 +39,15 @@
     <div class="container-fluid">
         <div class="side-body">
             <div class="row">
-
-                <h1>Employees</h1>
-
                 <div class="col-lg-10 col-md-10 col-md-offset-1 col-lg-offset-1">
-                    <div class="well">
 
+                    <h1>Employees</h1>
+
+                    <div class="well">
                         <h3 class="caption">Search Criteria</h3>
+
                         <form method="post" class="form-horizontal"
                               th:object="${searchForm}">
-
                             <div class="row">
                                 <div class="col-lg-8 col-lg-offset-2">
 
@@ -132,21 +131,22 @@
                             </tbody>
                         </table>
                     </div>
+
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-    <th:block th:replace="fragments/footer :: footer"/>
-    <th:block th:replace="fragments/left_menu :: left-menu-footer" />
+<th:block th:replace="fragments/footer :: footer"/>
+<th:block th:replace="fragments/left_menu :: left-menu-footer" />
 
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css" type="text/css"/>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css" type="text/css"/>
 
-    <script type="text/javascript">
-        document.getElementById('employees').className='active';
-        createMultiSelect("#role", true);
-    </script>
+<script type="text/javascript">
+    document.getElementById('employees').className='active';
+    createMultiSelect("#role", true);
+</script>
 </body>
 </html>

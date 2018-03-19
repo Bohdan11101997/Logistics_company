@@ -13,7 +13,7 @@
 </head>
 <body class="body-color">
 
-    <div class="row">
+<div class="row">
 
     <div th:replace="fragments/left_menu :: left-menu-header">
     </div>
@@ -22,62 +22,56 @@
     <div class="container-fluid">
         <div class="side-body">
             <div class="row">
-
-                <h1>Office</h1>
-
                 <div class="col-lg-10 col-md-10 col-md-offset-1 col-lg-offset-1">
 
-                    <div class="well">
+                    <h1>Office</h1>
 
+                    <div class="well">
                         <h3 class="caption">New</h3>
 
-                    <form class="form-horizontal" th:object="${office}" th:action="@{/admin/crud/office}" method = "post">
+                        <form class="form-horizontal" th:object="${office}" th:action="@{/admin/crud/office}" method = "post">
+                            <div class="row">
+                                <div class="col-lg-8 col-lg-offset-2">
 
-                        <div class="row">
-                            <div class="col-lg-8 col-lg-offset-2">
+                                    <div class="form-group required">
+                                        <label for="address" class="control-label">Address</label>
+                                        <input type="text" class="form-control" id="address" required="required" placeholder=""   th:field="*{address}"/>
+                                    </div>
 
-                        <div class="form-group required">
-                            <label for="address" class="control-label">Address</label>
-                            <input type="text" class="form-control" id="address" required="required" placeholder=""   th:field="*{address}"/>
-                        </div>
+                                    <!-- If we create -->
+                                    <div class="form-group required">
+                                        <label for="department_number" class="control-label">Department Number</label>
+                                        <input type="text" class="form-control" id="department_number" required="required" placeholder=""  th:field="*{name}" />
+                                    </div>
 
-                        <!-- If we create -->
-                        <div class="form-group required">
-                            <label for="department_number" class="control-label">Department Number</label>
-                            <input type="text" class="form-control" id="department_number" required="required" placeholder=""  th:field="*{name}" />
-                        </div>
+                                    <!--&lt;!&ndash; If we update &ndash;&gt;-->
+                                    <!--<div class="form-group">-->
+                                        <!--<label for="department_number_read" class="control-label">Department Number</label>-->
+                                        <!--<input type="text" class="form-control" id="department_number_read" placeholder="" readonly="readonly"   th:field="*{name}"/>-->
+                                    <!--</div>-->
 
-                        <!--&lt;!&ndash; If we update &ndash;&gt;-->
-                        <!--<div class="form-group">-->
-                            <!--<label for="department_number_read" class="control-label">Department Number</label>-->
-                            <!--<input type="text" class="form-control" id="department_number_read" placeholder="" readonly="readonly"   th:field="*{name}"/>-->
-                        <!--</div>-->
+                                    <div class="form-group">
+                                        <button class="btn btn-success">Save</button>
+                                    </div>
 
-                        <div class="form-group">
-                            <button class="btn btn-success">Save</button>
-                        </div>
-
+                                </div>
                             </div>
-                        </div>
-                    </form>
+                        </form>
 
                     </div>
-
                 </div>
-
             </div>
-
         </div>
     </div>
-    </div>
+</div>
 
-    <th:block th:replace="fragments/footer :: footer"/>
+<th:block th:replace="fragments/footer :: footer"/>
 
 
-    <th:block th:replace="fragments/left_menu :: left-menu-footer" />
-    <script type="text/javascript">
-        document.getElementById('crud_office').className='active';
-    </script>
+<th:block th:replace="fragments/left_menu :: left-menu-footer" />
+<script type="text/javascript">
+    document.getElementById('crud_office').className='active';
+</script>
 
 </body>
 </html>

@@ -5,14 +5,15 @@
     <th:block th:replace="fragments/header :: header-bootstrap-config" />
     <th:block th:replace="fragments/header :: header-bootstrap-config-IE" />
 
-    <link rel="stylesheet" th:href="@{/css/left_menu.css}" type="text/css" href="../static/css/left_menu.css" />
-    <link rel="stylesheet" th:href="@{/css/paginator.css}" type="text/css" href="../static/css/paginator.css" />
-    <link rel="stylesheet" th:href="@{/css/table.css}" type="text/css" href="../static/css/table.css" />
+    <link rel="stylesheet" th:href="@{/css/left_menu.css}" type="text/css" href="../../static/css/left_menu.css" />
+    <link rel="stylesheet" th:href="@{/css/main_content.css}" type="text/css" href="../static/css/main_content.css" />
+    <link rel="stylesheet" th:href="@{/css/well.css}" type="text/css" href="../static/css/well.css" />
+    <link rel="stylesheet" th:href="@{/css/table.css}" type="text/css" href="../static/css/table.css" />    <link rel="stylesheet" th:href="@{/css/paginator.css}" type="text/css" href="../static/css/paginator.css" />
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css" />
 
 </head>
-<body>
+<body class="body-color">
 
 <div class="row">
 
@@ -23,73 +24,83 @@
     <div class="container-fluid">
         <div class="side-body">
             <div class="row">
-
-                <h1 style="text-align:center"> Order statistics </h1>
-
                 <div class="col-lg-10 col-md-10 col-md-offset-1 col-lg-offset-1">
 
+                    <h1>Order Statistics</h1>
+
                     <div class="well">
-                        <h3 align="center">Search Filters</h3>
+                        <h3 class="caption">Search Criteria</h3>
+
                         <form method="post" class="form-horizontal">
 
-                            <div class="form-group">
-                                <label for="select-interval">Choose range</label>
-                                <select class="form-control" id="select-interval" onchange="showChosenRangeInputs()">
-                                    <option value="year">Year</option>
-                                    <option value="month">Month</option>
-                                    <option value="interval">Interval</option>
-                                    <option value="all">All time</option>
-                                </select>
-                            </div>
+                            <div class="row">
+                                <div class="col-lg-8 col-lg-offset-2">
 
-                            <div style="display: block" class="form-group" id="select-year-block">
-                                <label for="select-year">Choose year</label>
-                                <select class="form-control" id="select-year">
-                                    <option>2017</option>
-                                    <option>2018</option>
-                                    <option>2019</option>
-                                </select>
-                            </div>
+                                    <div class="form-group">
+                                        <label for="select-interval" class="control-label">Choose range</label>
+                                        <select class="form-control" id="select-interval" onchange="showChosenRangeInputs()">
+                                            <option value="year">Year</option>
+                                            <option value="month">Month</option>
+                                            <option value="interval">Interval</option>
+                                            <option value="all">All time</option>
+                                        </select>
+                                    </div>
 
-                            <div style="display: none" class="form-group" id="select-month-block">
-                                <label for="select-month">Choose month</label>
-                                <select class="form-control" id="select-month">
-                                    <option>january</option>
-                                    <option>february</option>
-                                    <option>december</option>
-                                </select>
-                            </div>
+                                    <div style="display: block" class="form-group" id="select-year-block">
+                                        <label for="select-year" class="control-label">Choose year</label>
+                                        <select class="form-control" id="select-year">
+                                            <option>2017</option>
+                                            <option>2018</option>
+                                            <option>2019</option>
+                                        </select>
+                                    </div>
 
-                            <div style="display: none" class="form-group required" id="select-interval-block">
-                                <label class="control-label">Date Interval</label>
-                                <div class="form-inline">
-                                    <input type="date" class="form-control" id="from-date" title="From"/>
-                                    <input type="date" class="form-control" id="to-date" title="To"/>
+                                    <div style="display: none" class="form-group" id="select-month-block">
+                                        <label for="select-month" class="control-label">Choose month</label>
+                                        <select class="form-control" id="select-month">
+                                            <option>january</option>
+                                            <option>february</option>
+                                            <option>december</option>
+                                        </select>
+                                    </div>
+
+                                    <div style="display: none" class="form-group required" id="select-interval-block">
+                                        <label class="control-label">Date Interval</label>
+                                        <div class="form-inline">
+                                            <input type="date" class="form-control" id="from-date" title="From"/>
+                                            <input type="date" class="form-control" id="to-date" title="To"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="select-order-type" class="control-label">Order Type</label>
+                                        <select class="form-control" id="select-order-type">
+                                            <option>All</option>
+                                            <option>Documents</option>
+                                            <option>Package</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="select-order-status"  class="control-label">Order Status</label>
+                                        <select id="select-order-status" class="selectpicker" multiple="multiple" data-width="100%" title="You can select some">
+                                            <option>Confirmed</option>
+                                            <option>Delivered</option>
+                                            <option>Cancelled</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <button class="btn btn-primary">
+                                            <a href="#" class="glyphicon glyphicon-search"></a>
+                                            Search
+                                        </button>
+                                    </div>
+
                                 </div>
                             </div>
-
-                            <div class="form-group">
-                                <label for="select-order-type">Order Type</label>
-                                <select class="form-control" id="select-order-type">
-                                    <option>All</option>
-                                    <option>Documents</option>
-                                    <option>Package</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="select-order-status" class="control-label">Order status</label>
-                                <select id="select-order-status" class="selectpicker" multiple="multiple" title="You can select some">
-                                    <option>Confirmed</option>
-                                    <option>Delivered</option>
-                                    <option>Cancelled</option>
-                                </select>
-                            </div>
-
-                            <button class="btn btn-primary">
-                                Search
-                            </button>
                         </form>
+
                     </div>
 
                     <!-- For year. Maybe there will be diagram -->

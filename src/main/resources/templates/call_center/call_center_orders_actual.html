@@ -3,7 +3,9 @@
 <head>
     <th:block th:replace="fragments/header :: header-bootstrap-config" />
     <th:block th:replace="fragments/header :: header-bootstrap-config-IE" />
+
     <link rel="stylesheet" th:href="@{/css/left_menu.css}" type="text/css" href="../../static/css/left_menu.css" />
+    <link rel="stylesheet" th:href="@{/css/main_content.css}" type="text/css" href="../static/css/main_content.css" />
     <link rel="stylesheet" th:href="@{/css/table.css}" type="text/css" href="../static/css/table.css" />
 
     <style>
@@ -23,53 +25,56 @@
     <div class="container-fluid">
         <div class="side-body">
             <div class="row">
-                <h1 style="text-align:center"> Actual orders </h1>
+                <div class="col-lg-10 col-md-10 col-md-offset-1 col-lg-offset-1">
 
-                <div id="order-table">
-                    <div class="alert alert-info" id="update-alert" role="alert" style="display: none">
-                        Order list got changed. Please refresh the page to see updates.
+                    <h1>Actual Orders</h1>
+
+                    <div id="order-table">
+                        <div class="alert alert-info" id="update-alert" role="alert" style="display: none">
+                            Order list got changed. Please refresh the page to see updates.
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Sender Name</th>
+                                    <th>Sender Address</th>
+                                    <th>Sender Phone</th>
+                                    <th>Receiver Name</th>
+                                    <th>Receiver Address</th>
+                                    <th>Receiver Phone</th>
+                                    <th>Order Status</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="order: ${orders}">
+                                    <td th:text="${order.id}">#</td>
+                                    <td th:text="${order.senderContact.firstName}">Sender Name</td>
+                                    <td th:text="${order.senderAddress.name}">Sender Address</td>
+                                    <td th:text="${order.senderContact.phoneNumber}">Sender Phone</td>
+                                    <td th:text="${order.receiverContact.firstName}">Receiver Name</td>
+                                    <td th:text="${order.receiverAddress.name}">Receiver Address</td>
+                                    <td th:text="${order.receiverContact.phoneNumber}">Receiver Phone</td>
+                                    <td th:text="${order.orderStatus.name}">Order Status</td>
+                                    <td>
+                                        <form method="POST" th:action="@{'/call-center/orders/' + ${order.id} + '/confirm'}">
+                                            <button class="btn btn-link">Confirm</button>
+                                        </form>
+                                    </td>
+                                    <td>
+                                        <form method="POST" th:action="@{'/call-center/orders/' + ${order.id} + '/reject'}">
+                                            <button class="btn btn-link">Reject</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
 
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Sender Name</th>
-                                <th>Sender Address</th>
-                                <th>Sender Phone</th>
-                                <th>Receiver Name</th>
-                                <th>Receiver Address</th>
-                                <th>Receiver Phone</th>
-                                <th>Order Status</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr th:each="order: ${orders}">
-                                <td th:text="${order.id}">#</td>
-                                <td th:text="${order.senderContact.firstName}">Sender Name</td>
-                                <td th:text="${order.senderAddress.name}">Sender Address</td>
-                                <td th:text="${order.senderContact.phoneNumber}">Sender Phone</td>
-                                <td th:text="${order.receiverContact.firstName}">Receiver Name</td>
-                                <td th:text="${order.receiverAddress.name}">Receiver Address</td>
-                                <td th:text="${order.receiverContact.phoneNumber}">Receiver Phone</td>
-                                <td th:text="${order.orderStatus.name}">Order Status</td>
-                                <td>
-                                    <form method="POST" th:action="@{'/call-center/orders/' + ${order.id} + '/confirm'}">
-                                        <button class="btn btn-link">Confirm</button>
-                                    </form>
-                                </td>
-                                <td>
-                                    <form method="POST" th:action="@{'/call-center/orders/' + ${order.id} + '/reject'}">
-                                        <button class="btn btn-link">Reject</button>
-                                    </form>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
                 </div>
-
             </div>
         </div>
     </div>

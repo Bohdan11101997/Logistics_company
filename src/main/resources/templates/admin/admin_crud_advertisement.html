@@ -36,7 +36,6 @@
                     </div>
 
                     <div class="well">
-
                         <div th:if="${update}">
                             <h3 class="caption">Update</h3>
                         </div>
@@ -111,12 +110,12 @@
     </div>
 </div>
 
-    <th:block th:replace="fragments/footer :: footer"/>
-    <th:block th:replace="fragments/left_menu :: left-menu-footer" />
+<th:block th:replace="fragments/footer :: footer"/>
+<th:block th:replace="fragments/left_menu :: left-menu-footer" />
 
-    <script type="text/javascript">
-        document.getElementById('crud_advertisement').className='active';
-    </script>
+<script type="text/javascript">
+    document.getElementById('crud_advertisement').className='active';
+</script>
 
 </body>
 </html>

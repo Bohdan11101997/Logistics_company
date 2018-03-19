@@ -6,9 +6,10 @@
     <th:block th:replace="fragments/header :: header-bootstrap-config-IE" />
 
     <link rel="stylesheet" th:href="@{/css/left_menu.css}" type="text/css" href="../static/css/left_menu.css" />
+    <link rel="stylesheet" th:href="@{/css/main_content.css}" type="text/css" href="../static/css/main_content.css" />
 
 </head>
-<body>
+<body class="body-color">
 
 <div class="row">
 
@@ -19,10 +20,9 @@
     <div class="container-fluid">
         <div class="side-body">
             <div class="row">
-
-                <h1 style="text-align:center"> Common statistics </h1>
-
                 <div class="col-lg-10 col-md-10 col-md-offset-1 col-lg-offset-1">
+
+                    <h1>Common Statistics</h1>
 
                     <h2>Employees:</h2><label>100</label>
                     <h5>Admins:</h5><label>20</label>
@@ -42,8 +42,8 @@
                     <h2>Orders:</h2><label>1000</label>
                     <h5>From office:</h5><label>600</label>
                     <h5>Hand to hand:</h5><label>400</label>
-                </div>
 
+                </div>
             </div>
         </div>
     </div>
