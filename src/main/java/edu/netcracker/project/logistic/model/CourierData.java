@@ -10,12 +10,12 @@ public class CourierData {
     private CourierStatus courierStatus;
     private String lastLocation;
     private TravelMode travelMode;
-    private List<RoutePoint> route;
+    private Route route;
 
     public CourierData() {
     }
 
-    public CourierData(Person id, CourierStatus courier_status, String lastLocation, TravelMode travelMode, List<RoutePoint> route) {
+    public CourierData(Person id, CourierStatus courier_status, String lastLocation, TravelMode travelMode, Route route) {
         this.id = id;
         this.courierStatus = courier_status;
         this.lastLocation = lastLocation;
@@ -55,11 +55,11 @@ public class CourierData {
         this.travelMode = travelMode;
     }
 
-    public List<RoutePoint> getRoute() {
+    public Route getRoute() {
         return route;
     }
 
-    public void setRoute(List<RoutePoint> route) {
+    public void setRoute(Route route) {
         this.route = route;
     }
 

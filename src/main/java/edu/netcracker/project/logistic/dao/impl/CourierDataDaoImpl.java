@@ -56,11 +56,11 @@ public class CourierDataDaoImpl implements CourierDataDao, RowMapper<CourierData
         courierData.setLastLocation(rs.getString("courier_last_location"));
         courierData.setTravelMode(TravelMode.valueOf(rs.getString("courier_travel_mode").toUpperCase()));
 
-        List<RoutePoint> route;
+        Route route;
         try {
             route = objectMapper.readValue(
                     rs.getString("route"),
-                    objectMapper.getTypeFactory().constructCollectionType(List.class, RoutePoint.class)
+                    Route.class
             );
         } catch (IOException ex) {
             route = null;
