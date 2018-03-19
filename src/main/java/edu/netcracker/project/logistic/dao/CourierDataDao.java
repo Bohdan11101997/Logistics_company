@@ -8,5 +8,6 @@ import java.util.Optional;
 
 public interface CourierDataDao extends QueryDao {
     Optional<CourierData> findOne(Long id);
+    Optional<CourierData> findOne(String username);
     CourierData save(CourierData courierData);
 }

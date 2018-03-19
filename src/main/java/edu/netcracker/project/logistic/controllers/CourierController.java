@@ -43,32 +43,4 @@ public class CourierController {
     public String viewOrderHistory() {
         return "courier/courier_orders_history";
     }
-
-    @PostMapping("/orders/{id}/delivered")
-    public String confirmDeliveredOrder(@PathVariable Long id, Principal principal) {
-        Optional<Person> employee = personService.findOne(principal.getName());
-        if (!employee.isPresent()) {
-            return "error/500";
-        }
-        try {
-            orderService.confirmDelivered(employee.get().getId(), id);
-        } catch (IllegalArgumentException ex) {
-            return "error/400";
-        }
-        return "call_center/call_center_orders_actual";
-    }
-
-    @PostMapping("/orders/{id}/failed")
-    public String confirmFailedOrder(@PathVariable Long id, Principal principal) {
-        Optional<Person> employee = personService.findOne(principal.getName());
-        if (!employee.isPresent()) {
-            return "error/500";
-        }
-        try {
-            orderService.confirmFailed(employee.get().getId(), id);
-        } catch (IllegalArgumentException ex) {
-            return "error/400";
-        }
-        return "call_center/call_center_orders_actual";
-    }
 }

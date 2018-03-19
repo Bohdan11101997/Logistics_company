@@ -15,13 +15,11 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.awt.image.ImagingOpException;
 import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -51,7 +49,7 @@ public class CourierDataDaoImpl implements CourierDataDao, RowMapper<CourierData
         if (!person.isPresent()) {
             return null;
         }
-        courierData.setId(person.get());
+        courierData.setCourier(person.get());
         courierData.setCourierStatus(CourierStatus.valueOf(rs.getString("courier_status").toUpperCase()));
         courierData.setLastLocation(rs.getString("courier_last_location"));
         courierData.setTravelMode(TravelMode.valueOf(rs.getString("courier_travel_mode").toUpperCase()));
@@ -84,11 +82,25 @@ public class CourierDataDaoImpl implements CourierDataDao, RowMapper<CourierData
     }
 
     @Override
+    public Optional<CourierData> findOne(String userName) {
+        try {
+            CourierData courierData = jdbcTemplate.queryForObject(
+                    getFindByUserNameQuery(),
+                    new Object[]{userName},
+                    this
+            );
+            return Optional.of(courierData);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
     public CourierData save(CourierData courierData) {
-        boolean hasPrimaryKey = courierData.getId() != null;
+        boolean hasPrimaryKey = courierData.getCourier() != null;
         if (hasPrimaryKey) {
             jdbcTemplate.update(getUpsertQuery(), ps -> {
-                ps.setObject(1, courierData.getId().getId());
+                ps.setObject(1, courierData.getCourier().getId());
                 ps.setObject(2, courierData.getCourierStatus().name());
                 ps.setObject(3, courierData.getLastLocation());
                 ps.setObject(4, courierData.getTravelMode().name());
@@ -105,7 +117,7 @@ public class CourierDataDaoImpl implements CourierDataDao, RowMapper<CourierData
             jdbcTemplate.update(psc -> {
                 String query = getInsertQuery();
                 PreparedStatement ps = psc.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-                ps.setObject(1, courierData.getId().getId());
+                ps.setObject(1, courierData.getCourier().getId());
                 ps.setObject(2, courierData.getCourierStatus().name());
                 ps.setObject(3, courierData.getLastLocation());
                 ps.setObject(4, courierData.getTravelMode().name());
@@ -144,4 +156,5 @@ public class CourierDataDaoImpl implements CourierDataDao, RowMapper<CourierData
         return queryService.getQuery("select.courier_data.by_id");
     }
 
+    private String getFindByUserNameQuery() { return queryService.getQuery("select.courier_data.by.username"); }
 }

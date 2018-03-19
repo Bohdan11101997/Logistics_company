@@ -27,7 +27,7 @@ public class NotificationController {
     @MessageMapping("/echo")
     @SendToUser("/topic/echo")
     public Notification sendEchoNotification() {
-        Notification notification = new Notification("echo", "");
-        return notification;
+        Notification echoNotification = new Notification("echo", "");
+        return echoNotification;
     }
 }

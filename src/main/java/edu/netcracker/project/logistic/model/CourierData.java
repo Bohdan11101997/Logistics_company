@@ -2,11 +2,10 @@ package edu.netcracker.project.logistic.model;
 
 import com.google.maps.model.TravelMode;
 
-import java.util.List;
 import java.util.Objects;
 
 public class CourierData {
-    private Person id;
+    private Person courier;
     private CourierStatus courierStatus;
     private String lastLocation;
     private TravelMode travelMode;
@@ -15,20 +14,20 @@ public class CourierData {
     public CourierData() {
     }
 
-    public CourierData(Person id, CourierStatus courier_status, String lastLocation, TravelMode travelMode, Route route) {
-        this.id = id;
+    public CourierData(Person courier, CourierStatus courier_status, String lastLocation, TravelMode travelMode, Route route) {
+        this.courier = courier;
         this.courierStatus = courier_status;
         this.lastLocation = lastLocation;
         this.travelMode = travelMode;
         this.route = route;
     }
 
-    public Person getId() {
-        return id;
+    public Person getCourier() {
+        return courier;
     }
 
-    public void setId(Person id) {
-        this.id = id;
+    public void setCourier(Person courier) {
+        this.courier = courier;
     }
 
     public CourierStatus getCourierStatus() {
@@ -68,7 +67,7 @@ public class CourierData {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CourierData that = (CourierData) o;
-        return Objects.equals(id, that.id) &&
+        return Objects.equals(courier, that.courier) &&
                 courierStatus == that.courierStatus &&
                 Objects.equals(lastLocation, that.lastLocation) &&
                 Objects.equals(travelMode, that.travelMode);
@@ -76,6 +75,6 @@ public class CourierData {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, courierStatus, lastLocation, travelMode);
+        return Objects.hash(courier, courierStatus, lastLocation, travelMode);
     }
 }
