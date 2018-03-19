@@ -3,7 +3,10 @@
 <head>
     <th:block th:replace="fragments/header :: header-bootstrap-config" />
     <th:block th:replace="fragments/header :: header-bootstrap-config-IE" />
+
     <link rel="stylesheet" th:href="@{/css/left_menu.css}" type="text/css" href="../../static/css/left_menu.css" />
+    <link rel="stylesheet" th:href="@{/css/main_content.css}" type="text/css" href="../static/css/main_content.css" />
+    <link rel="stylesheet" th:href="@{/css/well.css}" type="text/css" href="../static/css/well.css" />
     <link rel="stylesheet" th:href="@{/css/table.css}" type="text/css" href="../static/css/table.css" />
 
     <script th:src="@{/js/forms.js}" src="../../static/js/forms.js"></script>
@@ -18,10 +21,6 @@
             #from-date {
                 margin-bottom: 5px;
             }
-        }
-
-        .glyphicon-search {
-            color: white;
         }
 
         .form-horizontal {
@@ -40,56 +39,66 @@
     <div class="container-fluid">
         <div class="side-body">
             <div class="row">
-                <h1 style="text-align:center"> Employees </h1>
+
+                <h1>Employees</h1>
 
                 <div class="col-lg-10 col-md-10 col-md-offset-1 col-lg-offset-1">
                     <div class="well">
-                        <h3 align="center">Search Filters</h3>
+
+                        <h3 class="caption">Search Criteria</h3>
                         <form method="post" class="form-horizontal"
                               th:object="${searchForm}">
 
-                            <div class="form-group">
-                                <label for="first-name" class="control-label">First Name</label>
-                                <input type="text" class="form-control" id="first-name"
-                                    th:field="*{firstName}" />
-                            </div>
+                            <div class="row">
+                                <div class="col-lg-8 col-lg-offset-2">
 
-                            <div class="form-group">
-                                <label for="last-name" class="control-label">Last Name</label>
-                                <input type="text" class="form-control" id="last-name"
-                                    th:field="*{lastName}"/>
-                            </div>
+                                    <div class="form-group">
+                                        <label for="first-name" class="control-label">First Name</label>
+                                        <input type="text" class="form-control" id="first-name"
+                                            th:field="*{firstName}" />
+                                    </div>
 
-                            <div class="form-group">
-                                <label for="role" class="control-label">Role</label>
-                                <br />
-                                <select id="role" multiple="multiple"
-                                        th:field="*{roleIds}">
-                                    <option th:each="role: ${availableRoles}"
-                                            th:value="${role.roleId}"
-                                            th:text="${{role}}">Role</option>
-                                </select>
-                            </div>
+                                    <div class="form-group">
+                                        <label for="last-name" class="control-label">Last Name</label>
+                                        <input type="text" class="form-control" id="last-name"
+                                            th:field="*{lastName}"/>
+                                    </div>
 
-                            <div class="form-group"
-                                th:classappend="${#fields.hasErrors('from')}? 'has-error'">
-                                <label class="control-label">Registration date interval</label>
-                                <div class="form-inline">
-                                    <input type="date" class="form-control" id="from-date" title="From"
-                                        th:field="*{{from}}" oninput="onSearchDateClick(this)"/>
-                                    <input type="date" class="form-control" id="to-date" title="To"
-                                        th:field="*{{to}}" oninput="onSearchDateClick(this)"/>
+                                    <div class="form-group">
+                                        <label for="role" class="control-label">Role</label>
+                                        <br />
+                                        <select id="role" multiple="multiple"
+                                                th:field="*{roleIds}">
+                                            <option th:each="role: ${availableRoles}"
+                                                    th:value="${role.roleId}"
+                                                    th:text="${{role}}">Role</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group"
+                                        th:classappend="${#fields.hasErrors('from')}? 'has-error'">
+                                        <label class="control-label">Registration Date Interval</label>
+                                        <div class="form-inline">
+                                            <input type="date" class="form-control" id="from-date" title="From"
+                                                th:field="*{{from}}" oninput="onSearchDateClick(this)"/>
+                                            <input type="date" class="form-control" id="to-date" title="To"
+                                                th:field="*{{to}}" oninput="onSearchDateClick(this)"/>
+                                        </div>
+                                        <div class="has-error help-block"
+                                             th:if="${#fields.hasErrors('from')}"
+                                             th:errors="*{from}">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <button class="btn btn-primary">
+                                            <a href="#" class="glyphicon glyphicon-search"></a>
+                                            Search
+                                        </button>
+                                    </div>
+
                                 </div>
-                                <div class="has-error help-block"
-                                     th:if="${#fields.hasErrors('from')}"
-                                     th:errors="*{from}">
-                                </div>
                             </div>
-
-                            <button class="btn btn-primary">
-                                <a href="#" class="glyphicon glyphicon-search"></a>
-                                Search
-                            </button>
                         </form>
                     </div>
 
@@ -100,7 +109,7 @@
                                 <th>#</th>
                                 <th>First Name</th>
                                 <th>Last Name</th>
-                                <th>Registration date</th>
+                                <th>Registration Date</th>
                                 <th>E-mail</th>
                                 <th>Phone</th>
                                 <!--<th>Role</th>-->
@@ -116,7 +125,7 @@
                                 <td th:text="${emp.contact.phoneNumber}">+380777777777</td>
                                 <td>
                                     <form th:action="@{'/admin/crud/employee/' + ${emp.id}}" th:method="GET">
-                                        <button class="btn btn-link edit">edit</button>
+                                        <button class="btn btn-link update">update</button>
                                     </form>
                                 </td>
                             </tr>

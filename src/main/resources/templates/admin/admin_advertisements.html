@@ -6,6 +6,7 @@
     <th:block th:replace="fragments/header :: header-bootstrap-config-IE" />
 
     <link rel="stylesheet" th:href="@{/css/left_menu.css}" type="text/css" href="../static/css/left_menu.css" />
+    <link rel="stylesheet" th:href="@{/css/main_content.css}" type="text/css" href="../static/css/main_content.css" />
     <link rel="stylesheet" th:href="@{/css/paginator.css}" type="text/css" href="../static/css/paginator.css" />
     <link rel="stylesheet" th:href="@{/css/table.css}" type="text/css" href="../static/css/table.css" />
 
@@ -23,7 +24,7 @@
         <div class="side-body">
             <div class="row">
 
-                <h1 style="text-align:center"> Advertisements </h1>
+                <h1> Advertisement List </h1>
 
                 <div class="col-lg-10 col-md-10 col-md-offset-1 col-lg-offset-1">
 
@@ -34,8 +35,8 @@
                                 <th>#</th>
                                 <th>Caption</th>
                                 <th>Description</th>
-                                <th>First show date</th>
-                                <th>End show date</th>
+                                <th>First Show Date</th>
+                                <th>End Show Date</th>
                                 <th>Type</th>
                             </tr>
                             </thead>
@@ -49,7 +50,7 @@
                                 <td th:text="${advertisement.type.name}"></td>
                                 <td>
                                     <form th:action="@{'/admin/crud/advertisement/update/' + ${advertisement.id}}" th:method="GET">
-                                        <button class="btn btn-link edit">edit</button>
+                                        <button class="btn btn-link update">update</button>
                                     </form>
                                 </td>
                                 <td>

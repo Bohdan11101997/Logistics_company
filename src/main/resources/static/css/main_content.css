@@ -1,0 +1,15 @@
+:root {
+    --main-color: #5B7DAA;
+    --second-color: #485d8c;
+    --third-color: #363D69;
+    --fourth-color: #fdfeff;
+}
+
+h1 {
+    color: white;
+    text-align: center;
+}
+
+.body-color {
+    background-color: var(--main-color);
+}

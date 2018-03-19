@@ -10,14 +10,6 @@
     --fourth-color: #fdfeff;
 }
 
-h1 {
-    color: var(--fourth-color);
-}
-
-.body-color {
-    background-color: var(--main-color);
-}
-
 .nav.navbar-nav li {
     background-color: var(--second-color);
 }

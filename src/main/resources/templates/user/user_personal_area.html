@@ -6,6 +6,8 @@
     <th:block th:replace="fragments/header :: header-bootstrap-config-IE" />
 
     <link rel="stylesheet" th:href="@{/css/left_menu.css}" type="text/css" href="../static/css/left_menu.css" />
+    <link rel="stylesheet" th:href="@{/css/main_content.css}" type="text/css" href="../static/css/main_content.css" />
+    <link rel="stylesheet" th:href="@{/css/well.css}" type="text/css" href="../static/css/well.css" />
 
 </head>
 <body class="body-color">
@@ -20,18 +22,25 @@
         <div class="side-body">
             <div class="row">
 
-                <h1 style="text-align:center"> Personal Area </h1>
+                <h1>Personal Area</h1>
 
-                <div class="col-lg-10 col-md-6  col-lg-offset-1">
-
-                    <div th:if="${param.save}">
-                        <div class="alert alert-info">
-                            Your profile changes have been saved successfully.
-                        </div>
+                <div th:if="${param.save}">
+                    <div class="alert alert-info">
+                        Your profile changes have been saved successfully.
                     </div>
+                </div>
+
+                <div class="col-lg-10 col-md-10 col-md-offset-1 col-lg-offset-1">
+
+                    <div class="well">
+
+                        <h3 class="caption">Profile info</h3>
 
                     <!-- Form for creating employee -->
-                    <form style="" th:object="${user}" th:action="@{'/user/personal/' + ${user.id}}" th:method="POST">
+                    <form class="form-horizontal" th:object="${user}" th:action="@{'/user/personal/' + ${user.id}}" th:method="POST">
+
+                        <div class="row">
+                            <div class="col-lg-8 col-lg-offset-2">
 
                         <div class="form-group required"
                              th:classappend="${#fields.hasErrors('firstName')}? 'has-error'">
@@ -94,17 +103,21 @@
                             </div>
                         </div>
 
-                        <div style = "margin-top: 3em;" class="form-group">
-                            <button class="btn btn-primary" name="action" value="save">Save changes</button>
-                            <button class="btn btn-danger" name="action" value="delete">Delete profile</button>
+                        <div class="form-group">
+                            <button class="btn btn-success" name="action" value="save">Update</button>
+                            <button class="btn btn-danger" name="action" value="delete">Delete</button>
+                        </div>
+
+                            </div>
                         </div>
                     </form>
 
                 </div>
+                </div>
+            </div>
             </div>
         </div>
     </div>
-</div>
 
 <th:block th:replace="fragments/footer :: footer"/>
 <th:block th:replace="fragments/left_menu :: left-menu-footer" />

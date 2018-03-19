@@ -3,8 +3,13 @@
 <head>
     <th:block th:replace="fragments/header :: header-bootstrap-config" />
     <th:block th:replace="fragments/header :: header-bootstrap-config-IE" />
+
     <link rel="stylesheet" th:href="@{/css/left_menu.css}" type="text/css" href="../../static/css/left_menu.css" />
+    <link rel="stylesheet" th:href="@{/css/main_content.css}" type="text/css" href="../static/css/main_content.css" />
+    <link rel="stylesheet" th:href="@{/css/well.css}" type="text/css" href="../static/css/well.css" />
     <link rel="stylesheet" th:href="@{/css/table.css}" type="text/css" href="../static/css/table.css" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css" />
 
     <script th:src="@{/js/forms.js}" src="../../static/js/forms.js"></script>
     <style>
@@ -18,10 +23,6 @@
             #from-date {
                 margin-bottom: 5px;
             }
-        }
-
-        .glyphicon-search {
-            color: white;
         }
 
         .form-horizontal {
@@ -41,13 +42,18 @@
     <div class="container-fluid">
         <div class="side-body">
             <div class="row">
-                <h1 style="text-align:center"> My Orders </h1>
+
+                <h1>My Orders</h1>
 
                 <div class="col-lg-10 col-md-10 col-md-offset-1 col-lg-offset-1">
-                    <div class="well">
-                        <h3 align="center">Search Filters</h3>
+                <div class="well">
+
+                    <h3 class="caption">Search Criteria</h3>
 
                         <form method="post" class="form-horizontal"   th:object="${searchFormOrder}">
+
+                            <div class="row">
+                                <div class="col-lg-8 col-lg-offset-2">
 
                             <div class="form-group">
                                 <label for="first-name" class="control-label">First Name</label>
@@ -65,7 +71,7 @@
                             <div class="form-group">
                                 <label for="destination_typeIds" class="control-label">Destination type</label>
                                 <br/>
-                                <select id="destination_typeIds" multiple="multiple"
+                                <select id="destination_typeIds" class="selectpicker" multiple="multiple"
                                         th:field="*{destination_typeIds}">
                                     <option th:each="orderType: ${destination_typeOrders}"
                                             th:value="${orderType.id}"
@@ -87,7 +93,7 @@
                             <div class="form-group">
                                 <label for="order_statusIds" class="control-label">Order status</label>
                                 <br/>
-                                <select id="order_statusIds" multiple="multiple"
+                                <select id="order_statusIds" class="selectpicker" multiple="multiple"
                                         th:field="*{order_statusIds}">
                                     <option th:each="orderStatus: ${status_OrdersList}"
                                             th:value="${orderStatus.id}"
@@ -96,9 +102,15 @@
                             </div>
 
 
-                            <button class="btn btn-primary">
-                                <input type="submit" value=" Search"/>
-                            </button>
+                            <div class="form-group">
+                                <button class="btn btn-primary">
+                                    <a href="#" class="glyphicon glyphicon-search"></a>
+                                    Search
+                                </button>
+                            </div>
+
+                                </div>
+                            </div>
                         </form>
                     </div>
 
@@ -142,8 +154,7 @@
 <th:block th:replace="fragments/footer :: footer"/>
 <th:block th:replace="fragments/left_menu :: left-menu-footer" />
 
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css" type="text/css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
 
 <script type="text/javascript">
     document.getElementById('user_my_orders').className='active';
