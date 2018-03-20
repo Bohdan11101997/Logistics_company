@@ -1,17 +1,19 @@
 package edu.netcracker.project.logistic.controllers;
 
 import edu.netcracker.project.logistic.dao.CourierDataDao;
-import edu.netcracker.project.logistic.model.*;
+import edu.netcracker.project.logistic.model.CourierData;
+import edu.netcracker.project.logistic.model.Route;
+import edu.netcracker.project.logistic.model.RoutePoint;
 import edu.netcracker.project.logistic.service.OrderService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.List;
 import java.util.Optional;
 
-@RestController("/courier/route")
+@RestController
+@RequestMapping("/courier/route/orders")
 public class RouteController {
     private CourierDataDao courierDataDao;
     private OrderService orderService;
@@ -32,29 +34,19 @@ public class RouteController {
         return ResponseEntity.ok(route);
     }
 
-    @PostMapping("/orders/confirm")
-    public ResponseEntity confirmDelivery(@RequestBody RoutePoint routePoint, Principal principal) {
+    @PostMapping("{orderId}/confirm")
+    public ResponseEntity confirmDelivery(@PathVariable Long orderId, Principal principal) {
         CourierData data = courierDataDao.findOne(principal.getName())
                 .orElseThrow(IllegalStateException::new);
-        Route route = data.getRoute();
-        List<RoutePoint> points = route.getWayPoints();
-        points.removeIf(p -> p.getOrder().getId().equals(routePoint.getOrder().getId()));
-        if (points.size() == 0) {
-            data.setCourierStatus(CourierStatus.FREE);
-            data.setRoute(null);
-        }
-        data.setLastLocation(String.format("%s,%s", routePoint.getLatitude(), routePoint.getLongitude()));
-        data.setRoute(route);
-        courierDataDao.save(data);
-        orderService.confirmDelivered(data, routePoint.getOrder().getId());
+        orderService.confirmDelivered(data, orderId);
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("orders/fail")
-    public ResponseEntity cancelDelivery(@RequestBody RoutePoint routePoint, Principal principal) {
+    @PostMapping("{orderId}/fail")
+    public ResponseEntity cancelDelivery(@PathVariable Long orderId, Principal principal) {
         CourierData data = courierDataDao.findOne(principal.getName())
                 .orElseThrow(IllegalStateException::new);
-        orderService.confirmFailed(data, routePoint.getOrder().getId());
+        orderService.confirmFailed(data, orderId);
         return ResponseEntity.ok().build();
     }
 

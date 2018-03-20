@@ -312,9 +312,9 @@ AS $$
 DECLARE
   row_count INT;
 BEGIN
-  DELETE FROM person
-  WHERE person.registration_date < NOW() - INTERVAL '24 hour' AND person_id IN (SELECT person_id
-                                                                                FROM person_role
+  DELETE FROM logistic_company.person
+  WHERE logistic_company.person.registration_date < NOW() - INTERVAL '24 hour' AND person_id IN (SELECT person_id
+                                                                                FROM logistic_company.person_role
                                                                                 WHERE role_id IN (SELECT
                                                                                                     logistic_company.role.role_id
                                                                                                   FROM
@@ -332,7 +332,7 @@ $$;
 
 CREATE TRIGGER trigger_delete_old_rows
   AFTER INSERT
-  ON person
+  ON logistic_company.person
 EXECUTE PROCEDURE delete_old_rows();
 
 
@@ -341,7 +341,7 @@ CREATE FUNCTION advertisement_delete_old_rows()
 LANGUAGE plpgsql
 AS $$
 BEGIN
-  DELETE FROM advertisement
+  DELETE FROM logistic_company.advertisement
   WHERE show_end_date < NOW();
   RETURN NEW;
 END;

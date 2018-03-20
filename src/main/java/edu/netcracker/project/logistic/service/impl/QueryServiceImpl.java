@@ -14,7 +14,7 @@ public class QueryServiceImpl implements QueryService {
     Environment environment;
 
     @Override
-    public String getQuery(String query_name) {
-        return environment.getRequiredProperty(query_name);
+    public String getQuery(String queryName) {
+        return environment.getRequiredProperty(queryName);
     }
 }

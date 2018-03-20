@@ -98,7 +98,7 @@ public class OfficeDaoImpl implements OfficeDao, QueryDao {
             return Optional.of(office);
 
         } catch (EmptyResultDataAccessException e) {
-            System.err.println("Empty data");
+            logger.error("Empty data");
         }
 
         return Optional.empty();
