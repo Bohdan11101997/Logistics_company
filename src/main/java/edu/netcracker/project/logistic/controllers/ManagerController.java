@@ -74,7 +74,7 @@ public class ManagerController {
 
     @GetMapping("/statistics/employees")
     public String viewEmployeesStatistics(Model model){
-        List<Person> employees = employeeService.findAll();
+        List<Person> employees = managerStatisticsDao.EmployeesByOfficeOrCall_Center();
     model.addAttribute("employees", employees);
     model.addAttribute("availableRoles", roleCrudDao.findEmployeeRolesForManager());
     model.addAttribute("searchFormStatisticEmployee", new SearchFormStatisticEmployee());
@@ -89,6 +89,7 @@ public class ManagerController {
         model.addAttribute("employees", employees);
         model.addAttribute("availableRoles", roleCrudDao.findEmployeeRolesForManager());
         model.addAttribute("searchFormStatisticEmployee", searchFormStatisticEmployee);
+
         System.out.println(employees);
         return "/manager/manager_statistics_employees";
     }
@@ -122,11 +123,14 @@ public class ManagerController {
         model.addAttribute("fromDate", searchFormOrderStatistic.getFrom());
         model.addAttribute("toDate", searchFormOrderStatistic.getTo());
         model.addAttribute("personList", personList);
+        model.addAttribute("countOrdersBetweenDate",managerStatisticsDao.CountOrdersBetweenDate(searchFormOrderStatistic.getFrom(), searchFormOrderStatistic.getTo()));
         return "manager/manager_statistics_orders";
     }
 
     @GetMapping("/statistics/common")
     public String viewCommonStatistics(Model model){
+        model.addAttribute("countOrdersHandtoHand", managerStatisticsDao.countOrdersHandtoHand());
+        model.addAttribute("countOrdersFromOffice", managerStatisticsDao.countOrdersFromOffice());
         model.addAttribute("countEmployees", managerStatisticsDao.countEmployees());
         model.addAttribute("countEmployeesAdmins",managerStatisticsDao.countEmployeesAdmins() );
         model.addAttribute("countEmployeesCouriers",managerStatisticsDao.countEmployeesCouriers() );

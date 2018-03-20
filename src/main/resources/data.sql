@@ -117,17 +117,18 @@ INSERT INTO "advertisement" (advertisement_id,caption,description,show_first_dat
 
 INSERT INTO reset_password(person_id, reset_token) VALUES (4, '47a95c8c-a5d1-4984-9ce5-904ecd81e637');
 
-INSERT INTO logistic_company."order"(order_id, estimated_delivery_time,  courier_id, receiver_contact_id, receiver_address_id, sender_contact_id, sender_address_id, office_id, order_status_id, order_type_id, weight, width, height, length)
-VALUES (1, '04:05:06', 7, 5, 1,2,2, 1, 6,1, 12,12,12,12);
-INSERT INTO logistic_company."order"(order_id, estimated_delivery_time,  courier_id, receiver_contact_id, receiver_address_id, sender_contact_id, sender_address_id, office_id, order_status_id, order_type_id, weight, width, height, length)
-VALUES (3, '14:05:06', 7, 5, 1,2,2, 1, 6,1, 12,12,12,12);
-INSERT INTO logistic_company."order"(order_id, estimated_delivery_time,  courier_id, receiver_contact_id, receiver_address_id, sender_contact_id, sender_address_id, office_id, order_status_id, order_type_id, weight, width, height, length)
-VALUES (2, '04:05:06', 7, 2, 1,5,2, 1, 6,2, 112,132,1322,12);
-INSERT INTO logistic_company."order"(order_id, estimated_delivery_time,  courier_id, receiver_contact_id, receiver_address_id, sender_contact_id, sender_address_id, office_id, order_status_id, order_type_id, weight, width, height, length)
-VALUES (4, '04:05:06', 7, 7, 1,6,2, 1, 6,1, 12,12,12,12);
-INSERT INTO logistic_company."order"(order_id, estimated_delivery_time,  courier_id, receiver_contact_id, receiver_address_id, sender_contact_id, sender_address_id, office_id, order_status_id, order_type_id, weight, width, height, length)
-VALUES (5, '14:05:06', 7, 8, 1,9,2, 1, 6,1, 12,12,12,12);
-
+INSERT INTO logistic_company."order"(order_id, estimated_delivery_time,  courier_id, receiver_contact_id, receiver_address_id, sender_contact_id, sender_address_id,  order_status_id, order_type_id, weight, width, height, length)
+VALUES (1, '04:05:06', 7, 5, 1,2,2,  6,1, 12,12,12,12);
+INSERT INTO logistic_company."order"(order_id, estimated_delivery_time,  courier_id, receiver_contact_id, receiver_address_id, sender_contact_id, sender_address_id, order_status_id, order_type_id, weight, width, height, length)
+VALUES (3, '14:05:06', 7, 5, 1,2,2,  6,1, 12,12,12,12);
+INSERT INTO logistic_company."order"(order_id, estimated_delivery_time,  courier_id, receiver_contact_id, receiver_address_id, sender_contact_id, sender_address_id, order_status_id, order_type_id, weight, width, height, length)
+VALUES (2, '04:05:06', 7, 2, 1,5,2,  6,2, 112,132,1322,12);
+INSERT INTO logistic_company."order"(order_id, estimated_delivery_time,  courier_id, receiver_contact_id, receiver_address_id, sender_contact_id, sender_address_id,  order_status_id, order_type_id, weight, width, height, length)
+VALUES (4, '04:05:06', 7, 7, 1,6,2,  6,1, 12,12,12,12);
+INSERT INTO logistic_company."order"(order_id, estimated_delivery_time,  courier_id, receiver_contact_id, receiver_address_id, sender_contact_id, sender_address_id, order_status_id, order_type_id, weight, width, height, length)
+VALUES (5, '14:05:06', 7, 8, 1,9,2,  6,1, 12,12,12,12);
+INSERT INTO logistic_company."order"(order_id, estimated_delivery_time,  courier_id, receiver_contact_id, receiver_address_id,  office_id, order_status_id, order_type_id, weight, width, height, length)
+VALUES (6, '14:05:06', 7, 8, 1, 1, 6,1, 12,12,12,12);
 
 INSERT INTO logistic_company."courier_data"(person_id,  courier_status, courier_last_location,  courier_travel_mode)
 VALUES (5 , trim('free'):: logistic_company.courier_status, '', 'DRIVING');

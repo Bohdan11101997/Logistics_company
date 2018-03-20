@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
@@ -29,6 +30,7 @@ public class ManagerStatisticsDaoImpl {
     private PersonRoleDao personRoleDao;
     private RowMapper<Contact> contactMapper;
     private RowMapper<Role> roleMapper;
+    private RowMapper<Person> personRowMapper;
 
 
     @Autowired
@@ -183,6 +185,38 @@ public class ManagerStatisticsDaoImpl {
             }
     }
 
+    public Integer CountOrdersBetweenDate(LocalDateTime from, LocalDateTime to)
+    {
+        Map<String, Object> paramMap = new HashMap<>(7);
+        paramMap.put("start_date", from);
+        paramMap.put("end_date", to);
+        return  namedParameterJdbcTemplate.queryForObject(getOrderBetweenData(),
+                paramMap, Integer.class);
+    }
+
+
+
+    public List<Person> EmployeesByOfficeOrCall_Center() {
+
+        return jdbcTemplate.query(
+                getQueryEmployeesByOfficeOrCall_Center(),
+             this::extractMany1);
+    }
+
+    public Integer countOrdersHandtoHand() {
+
+        return jdbcTemplate.queryForObject(
+                getCountQueryOrdersHandtoHand(), new Object[]{}, Integer.class);
+
+    }
+
+
+    public Integer countOrdersFromOffice() {
+
+        return jdbcTemplate.queryForObject(
+                getCountQueryOrdersFromOffice(), new Object[]{}, Integer.class);
+
+    }
 
     public Integer countEmployees() {
 
@@ -361,7 +395,6 @@ public class ManagerStatisticsDaoImpl {
 
     private String  getSearchQueryByDateRange()
 
-
     {
 
         return queryService.getQuery("select.count.task.by.employee");
@@ -375,5 +408,28 @@ public class ManagerStatisticsDaoImpl {
         return queryService.getQuery("select.count.task.by.employee");
     }
 
+
+    private String getCountQueryOrdersHandtoHand()
+    {
+
+        return queryService.getQuery("count.order.hand.to.hand");
+    }
+
+    private String getCountQueryOrdersFromOffice()
+    {
+
+        return queryService.getQuery("count.orders.from.office");
+    }
+
+    private String getQueryEmployeesByOfficeOrCall_Center()
+    {
+
+        return queryService.getQuery("select.employee.call_center.couriers");
+    }
+
+    private String getOrderBetweenData()
+    {
+        return queryService.getQuery("count.orders.by.date");
+    }
 
 }
