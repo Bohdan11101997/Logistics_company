@@ -251,7 +251,7 @@ public class RouteProcessor {
         if (now.toLocalTime().isBefore(courierEntry.workDay.getStartTime()) ||
                 now.toLocalTime().plus(WORK_DAY_END_NEARING_INTERVAL)
                         .isAfter(courierEntry.workDay.getEndTime())) {
-           addOrder(orderEntry);
+            addOrder(orderEntry);
             return false;
         }
 
