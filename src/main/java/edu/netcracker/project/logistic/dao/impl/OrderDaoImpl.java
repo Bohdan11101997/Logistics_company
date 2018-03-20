@@ -42,7 +42,7 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
     private Contact mapContact(ResultSet rs, String prefix) throws SQLException {
         Contact c = new Contact();
         c.setContactId(rs.getLong(prefix + "contact_id"));
-        if (c.getContactId() == null) {
+        if (rs.wasNull()) {
             return null;
         }
         c.setFirstName(rs.getString(prefix + "first_name"));
@@ -55,7 +55,7 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
     private Address mapAddress(ResultSet rs, String prefix) throws SQLException {
         Address address = new Address();
         address.setId(rs.getLong(prefix + "address_id"));
-        if (address.getId() == null) {
+        if (rs.wasNull()) {
             return null;
         }
         address.setName(rs.getString(prefix + "address_name"));
@@ -65,7 +65,7 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
     private Office mapOffice(ResultSet rs) throws SQLException {
         Office office = new Office();
         office.setOfficeId(rs.getLong("office_id"));
-        if (office.getOfficeId() == null) {
+        if (rs.wasNull()) {
             return null;
         }
         office.setName(rs.getString("office_name"));
@@ -76,7 +76,7 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
     private Person mapPerson(ResultSet rs) throws SQLException {
         Person courier = new Person();
         courier.setId(rs.getLong("courier_id"));
-        if (courier.getId() == null) {
+        if (rs.wasNull()) {
             return null;
         }
         courier.setUserName(rs.getString("courier_user_name"));
@@ -90,7 +90,7 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
     private OrderType mapOrderType(ResultSet rs) throws SQLException {
         OrderType orderType = new OrderType();
         orderType.setId(rs.getLong("order_type_id"));
-        if (orderType.getId() == null) {
+        if (rs.wasNull()) {
             return null;
         }
         orderType.setName(rs.getString("order_type_name"));

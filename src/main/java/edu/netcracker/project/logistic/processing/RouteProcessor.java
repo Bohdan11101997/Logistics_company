@@ -42,25 +42,26 @@ public class RouteProcessor {
                 if (!order.getOrderType().getName().equalsIgnoreCase("Cargo")) {
                     this.travelMode = TravelMode.WALKING;
                 }
-            } catch(Exception e) {}
+            } catch (Exception e) {
+            }
         }
 
-        public OrderEntry(OrderEntry other){
+        public OrderEntry(OrderEntry other) {
             this.order = new Order(other.order);
             this.priority = other.priority;
             this.travelMode = other.travelMode;
             this.orderFromClient = other.orderFromClient;
         }
 
-        public String getPriority(){
+        public String getPriority() {
             return priority;
         }
 
-        public Order getOrder(){
+        public Order getOrder() {
             return order;
         }
 
-        public TravelMode getTravelMode(){
+        public TravelMode getTravelMode() {
             return travelMode;
         }
 
@@ -68,7 +69,7 @@ public class RouteProcessor {
             return orderFromClient;
         }
 
-        public void setOrderFromClient(boolean value){
+        public void setOrderFromClient(boolean value) {
             orderFromClient = value;
         }
 
@@ -104,8 +105,8 @@ public class RouteProcessor {
             this.employeeId = employeeId;
         }
 
-        public LatLng getLastLocation(){
-            if(lastLocation == null){
+        public LatLng getLastLocation() {
+            if (lastLocation == null) {
                 String location[] = courierData.getLastLocation().split("[,]");
                 String latitude = location[0];
                 String longitude = location[1];
@@ -114,11 +115,11 @@ public class RouteProcessor {
             return lastLocation;
         }
 
-        public Long getEmployeeId(){
+        public Long getEmployeeId() {
             return employeeId;
         }
 
-        public CourierData getCourierData(){
+        public CourierData getCourierData() {
             return courierData;
         }
 
@@ -177,22 +178,22 @@ public class RouteProcessor {
         );
         this.driveOrdersQueue = new PriorityBlockingQueue<>(
                 11,
-                FlowBuilder.makeOrderComparator(center,false, TravelMode.DRIVING)
+                FlowBuilder.makeOrderComparator(center, false, TravelMode.DRIVING)
         );
 
         this.walkWorkerQueue = new PriorityBlockingQueue<>(
                 11,
-                FlowBuilder.makeCourierComparator(center,false, TravelMode.WALKING)
+                FlowBuilder.makeCourierComparator(center, false, TravelMode.WALKING)
         );
         this.driveWorkerQueue = new PriorityBlockingQueue<>(
                 11,
-                FlowBuilder.makeCourierComparator(center,false, TravelMode.DRIVING)
+                FlowBuilder.makeCourierComparator(center, false, TravelMode.DRIVING)
         );
 
-        List<Person> potentialCouriers = personDao.findAllEmployees();
-        for(Person data : potentialCouriers ){
-            addCourier(data.getId());
-        }
+//        List<Person> potentialCouriers = personDao.findAllEmployees();
+//        for(Person data : potentialCouriers ){
+//            addCourier(data.getId());
+//        }
         List<Order> confirmedOrders = orderDao.findConfirmed();
         for (Order data : confirmedOrders) {
             createOrder(data);
@@ -201,9 +202,9 @@ public class RouteProcessor {
 
     @Transactional
     public boolean assignOrders(List<RouteProcessor.OrderEntry> orderEntries, RouteProcessor.CourierEntry employeeEntry) throws InterruptedException {
-        for(RouteProcessor.OrderEntry oe : orderEntries) {
-           if(!assignOrder(oe, employeeEntry))
-               return false; //early out
+        for (RouteProcessor.OrderEntry oe : orderEntries) {
+            if (!assignOrder(oe, employeeEntry))
+                return false; //early out
         }
         return true;
     }
@@ -268,7 +269,7 @@ public class RouteProcessor {
         logger.info("Assigned order #{} to courier #{}", order.getId(), employeeId);
 
         List<RoutePoint> routePoints = courierEntry.getCourierData().getRoute().getWayPoints();
-        if(routePoints == null) {
+        if(routePoints != null) {
             LatLng point = orderEntry.getOrder().getReceiverAddress().getLocation();
             routePoints.add(new RoutePoint(
                     String.format("%.8f",point.lat),
@@ -306,12 +307,11 @@ public class RouteProcessor {
             office = oe.getOrder().getOffice();
             flowBuilder = new RadiusSelector(walkOrdersQueue, driveOrdersQueue, walkWorkerQueue, driveWorkerQueue, office);
             while (true) {
-
                 if(driveOrdersQueue.isEmpty()){
                     worker = walkWorkerQueue.take();
                     oe = walkOrdersQueue.poll();
                 }
-                if(worker == null || oe == null) {
+                if (worker == null || oe == null) {
                     worker = driveWorkerQueue.take();
                     oe = driveOrdersQueue.take();
                 }
@@ -344,7 +344,7 @@ public class RouteProcessor {
 
     public void addOrder(Long orderId) throws InterruptedException {
         Optional<Order> order = orderDao.findOne(orderId);
-        if(order.isPresent()){
+        if (order.isPresent()) {
             addOrder(order.get());
         }
     }
@@ -352,7 +352,7 @@ public class RouteProcessor {
     public void addOrder(Order order) {
         boolean vip = false;
 
-        Optional<Person> sender = personDao.findOne(order.getSenderContact().getContactId());
+        Optional<Person> sender = personDao.findByContactId(order.getSenderContact().getContactId());
         if (sender.isPresent()) {
             for (Role r : sender.get().getRoles()) {
                 if (r.getPriority().equals("VIP")) {
@@ -389,7 +389,7 @@ public class RouteProcessor {
     }
 
     public void addOrder(OrderEntry orderEntry) throws InterruptedException {
-        switch (orderEntry.travelMode){ //put back
+        switch (orderEntry.travelMode) { //put back
             case WALKING:
                 walkOrdersQueue.put(orderEntry);
                 break;
@@ -405,7 +405,7 @@ public class RouteProcessor {
 
         Optional<WorkDay> opt = workDayDao.findScheduleForDate(workDayDate, employeeId);
         if (!opt.isPresent()) {
-            logger.warn("Employee is not working on this day ({})", workDayDate);
+            logger.warn("Employee #{} is not working on this day ({})", employeeId, workDayDate);
             return;
         }
         WorkDay workDay = opt.get();
@@ -461,7 +461,7 @@ public class RouteProcessor {
         }
 
         OrderEntry oe = new RouteProcessor.OrderEntry(order, priority, false);
-        switch(oe.travelMode){
+        switch (oe.travelMode) {
             case WALKING:
                 walkOrdersQueue.add(oe);
                 break;
@@ -472,7 +472,7 @@ public class RouteProcessor {
 
     }
 
-    public void removeCourier(Long employeeId){
+    public void removeCourier(Long employeeId) {
         List<Order> uncompletedByEmployee = orderDao.findConfirmedByEmployeeId(employeeId);
         for (Order o : uncompletedByEmployee) {
             o.setCourier(null);
@@ -482,7 +482,7 @@ public class RouteProcessor {
         }
     }
 
-    public void removeOrder(Long orderId){
+    public void removeOrder(Long orderId) {
         walkOrdersQueue.removeIf(orderEntry -> {
             orderEntry.order.setCourier(null);
             return orderEntry.order.getId().equals(orderId);
