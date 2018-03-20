@@ -39,6 +39,23 @@
 
                             <li><a th:href="@{/logout}" th:method="post" href="#"><span class="glyphicon glyphicon-off"></span>Log out</a></li>
 
+                            <li sec:authorize="hasRole('ROLE_USER')" class="dropdown panel panel-default">
+                                <a data-toggle="collapse" href="#dropdown-user">
+                                    <span class="glyphicon glyphicon-user"></span> User <span class="caret"></span>
+                                </a>
+
+                                <div id="dropdown-user" class="panel-collapse collapse">
+                                    <div class="panel-body">
+                                        <ul class="nav navbar-nav">
+                                            <li><a id="user_personal_area" th:href = "@{/user/personal}" href="#">Personal area</a></li>
+                                            <li><a id="user_change_password" th:href="@{/user/password/change}" href="#">Change password</a></li>
+                                            <li><a id="user_my_orders" th:href="@{/user/orders}" href="#">My orders</a></li>
+                                            <li><a id="user_create_new_order" th:href="@{/user/order}" href="#">Create new order</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+
                             <li sec:authorize="hasRole('ROLE_ADMIN')" class="dropdown panel panel-default">
                                 <a data-toggle="collapse" href="#dropdown-admin">
                                     <span class="glyphicon glyphicon-user"></span> Administrator <span class="caret"></span>
@@ -70,23 +87,6 @@
                                             <li><a id="manager_statistics_employees" th:href = "@{/manager/statistics/employees}">Employee statistics</a></li>
                                             <li><a id="manager_statistics_offices" th:href = "@{/manager/statistics/offices}">Office statistics</a></li>
                                             <li><a id="manager_statistics_orders" th:href = "@{/manager/statistics/orders}">Order statistics</a></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </li>
-
-                            <li sec:authorize="hasRole('ROLE_USER')" class="dropdown panel panel-default">
-                                <a data-toggle="collapse" href="#dropdown-user">
-                                    <span class="glyphicon glyphicon-user"></span> User <span class="caret"></span>
-                                </a>
-
-                                <div id="dropdown-user" class="panel-collapse collapse">
-                                    <div class="panel-body">
-                                        <ul class="nav navbar-nav">
-                                            <li><a id="user_personal_area" th:href = "@{/user/personal}" href="#">Personal area</a></li>
-                                            <li><a id="user_change_password" th:href="@{/user/password/change}" href="#">Change password</a></li>
-                                            <li><a id="user_my_orders" th:href="@{/user/orders}" href="#">My orders</a></li>
-                                            <li><a id="user_create_new_order" th:href="@{/user/order}" href="#">Create new order</a></li>
                                         </ul>
                                     </div>
                                 </div>
