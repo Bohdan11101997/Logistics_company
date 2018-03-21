@@ -1,23 +1,26 @@
 package edu.netcracker.project.logistic.controllers;
 
+import edu.netcracker.project.logistic.dao.OrderTypeDao;
 import edu.netcracker.project.logistic.dao.PersonCrudDao;
-import edu.netcracker.project.logistic.dao.impl.ManagerStatisticsDaoImpl;
-import edu.netcracker.project.logistic.dao.impl.PersonCrudDaoImpl;
-import edu.netcracker.project.logistic.dao.impl.RoleCrudDaoImpl;
-import edu.netcracker.project.logistic.model.Person;
-import edu.netcracker.project.logistic.model.Role;
-import edu.netcracker.project.logistic.model.SearchFormStatisticEmployee;
-import edu.netcracker.project.logistic.service.EmployeeService;
-import edu.netcracker.project.logistic.service.RoleService;
+import edu.netcracker.project.logistic.dao.impl.*;
+import edu.netcracker.project.logistic.model.*;
+import edu.netcracker.project.logistic.service.*;
+import edu.netcracker.project.logistic.validation.CurrentPasswordValidator;
+import edu.netcracker.project.logistic.validation.NewOrderValidator;
+import edu.netcracker.project.logistic.validation.UpdateUserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.SmartValidator;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.security.Principal;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/manager")
@@ -38,9 +41,39 @@ public class ManagerController {
     @Autowired
     RoleCrudDaoImpl roleCrudDao;
 
+    private SmartValidator fieldValidator;
+    private UpdateUserValidator updateUserValidator;
+    private CurrentPasswordValidator currentPasswordValidator;
+    private NewOrderValidator newOrderValidator;
+    private UserService userService;
+    private OrderService orderService;
+    private SecurityService securityService;
+    private OrderTypeDao orderTypeDao;
+    private PasswordEncoder passwordEncoder;
+
+
+    @Autowired
+    OrderStatusDaoImpl orderStatusDao;
+
+    @Autowired
+    public ManagerController(SmartValidator fieldValidator, UpdateUserValidator updateUserValidator,
+                          CurrentPasswordValidator currentPasswordValidator, NewOrderValidator newOrderValidator,
+                          UserService userService, SecurityService securityService, OrderTypeDao orderTypeDao,
+                          PasswordEncoder passwordEncoder, OrderService orderService) {
+        this.fieldValidator = fieldValidator;
+        this.updateUserValidator = updateUserValidator;
+        this.currentPasswordValidator = currentPasswordValidator;
+        this.newOrderValidator = newOrderValidator;
+        this.userService = userService;
+        this.securityService = securityService;
+        this.orderTypeDao = orderTypeDao;
+        this.passwordEncoder = passwordEncoder;
+        this.orderService = orderService;
+    }
+
     @GetMapping("/statistics/employees")
     public String viewEmployeesStatistics(Model model){
-        List<Person> employees = employeeService.findAll();
+        List<Person> employees = managerStatisticsDao.EmployeesByOfficeOrCall_Center();
     model.addAttribute("employees", employees);
     model.addAttribute("availableRoles", roleCrudDao.findEmployeeRolesForManager());
     model.addAttribute("searchFormStatisticEmployee", new SearchFormStatisticEmployee());
@@ -54,7 +87,6 @@ public class ManagerController {
         model.addAttribute("employees", employees);
         model.addAttribute("availableRoles", roleCrudDao.findEmployeeRolesForManager());
         model.addAttribute("searchFormStatisticEmployee", searchFormStatisticEmployee);
-        System.out.println(employees);
         return "/manager/manager_statistics_employees";
     }
 
@@ -64,25 +96,51 @@ public class ManagerController {
         return "/manager/manager_statistics_offices";
     }
 
+
     @GetMapping("/statistics/orders")
-    public String viewOrdersStatistics(){
-        return "/manager/manager_statistics_orders";
+    public  String getStatisticOrderByManager(Model model)
+    {
+
+        model.addAttribute("destination_typeOrders", orderTypeDao.findAll());
+        model.addAttribute("status_OrdersList", orderStatusDao.findAll());
+        model.addAttribute("searchFormOrderStatistic", new SearchFormOrderStatistic());
+        return "manager/manager_statistics_orders";
+    }
+
+
+    @PostMapping("/statistics/orders")
+    public  String SearchOrdersByManager(@ModelAttribute("searchFormOrderStatistic") SearchFormOrderStatistic searchFormOrderStatistic, Model model)
+    {
+        List<Person> personList = managerStatisticsDao.searchStatisiticOrders(searchFormOrderStatistic);
+        model.addAttribute("countOrder",managerStatisticsDao.countOrders());
+        model.addAttribute("destination_typeOrders", orderTypeDao.findAll());
+        model.addAttribute("status_OrdersList", orderStatusDao.findAll());
+        model.addAttribute("searchFormOrderStatistic",searchFormOrderStatistic);
+        model.addAttribute("fromDate", searchFormOrderStatistic.getFrom());
+        model.addAttribute("toDate", searchFormOrderStatistic.getTo());
+        model.addAttribute("personList", personList);
+        model.addAttribute("countOrdersBetweenDate",managerStatisticsDao.CountOrdersBetweenDate(searchFormOrderStatistic.getFrom(), searchFormOrderStatistic.getTo()));
+        model.addAttribute("countOrder",managerStatisticsDao.countOrders());
+        return "manager/manager_statistics_orders";
     }
 
     @GetMapping("/statistics/common")
     public String viewCommonStatistics(Model model){
+        model.addAttribute("countOrdersHandtoHand", managerStatisticsDao.countOrdersHandtoHand());
+        model.addAttribute("countOrdersFromOffice", managerStatisticsDao.countOrdersFromOffice());
         model.addAttribute("countEmployees", managerStatisticsDao.countEmployees());
         model.addAttribute("countEmployeesAdmins",managerStatisticsDao.countEmployeesAdmins() );
-//        model.addAttribute("countEmployeesCouriers",managerStatisticsDao.countEmployeesCouriers() );
-//        model.addAttribute("countEmployeesCouriersDriving",managerStatisticsDao.countEmployeesCouriersDriving() );
-//        model.addAttribute("countEmployeesCouriersWalking",managerStatisticsDao.countEmployeesCouriersWalking() );
-//        model.addAttribute("countUsers",managerStatisticsDao.countUsers() );
-//        model.addAttribute("countUsersNormal",managerStatisticsDao.countUsersNormal() );
-//        model.addAttribute("countUsersVip",managerStatisticsDao.countUsersVip() );
-//        model.addAttribute("countEmployeesAgentCallCenter",managerStatisticsDao.countEmployeesAgentCallCenter() );
-//        model.addAttribute("countUnregisteredContacts",managerStatisticsDao.countUnregisteredContacts() );
-//        model.addAttribute("",managerStatisticsDao );
-//        model.addAttribute("",managerStatisticsDao );
+        model.addAttribute("countEmployeesCouriers",managerStatisticsDao.countEmployeesCouriers() );
+        model.addAttribute("countEmployeesCouriersDriving",managerStatisticsDao.countEmployeesCouriersDriving() );
+        model.addAttribute("countEmployeesCouriersWalking",managerStatisticsDao.countEmployeesCouriersWalking() );
+        model.addAttribute("countEmployeesAgentCallCenter",managerStatisticsDao.countEmployeesAgentCallCenter() );
+        model.addAttribute("countEmployeesManagers", managerStatisticsDao.countEmployeesManagers());
+        model.addAttribute("countUsers",managerStatisticsDao.countUsers() );
+        model.addAttribute("countUsersNormal",managerStatisticsDao.countUsersNormal());
+        model.addAttribute("countUsersVip",managerStatisticsDao.countUsersVip() );
+        model.addAttribute("countUnregisteredContacts",managerStatisticsDao.countUnregisteredContacts() );
+        model.addAttribute("countOffice",managerStatisticsDao.countOffices());
+        model.addAttribute("countOrder",managerStatisticsDao.countOrders());
         return "/manager/manager_statistics_common";
     }
 

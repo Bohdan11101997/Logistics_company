@@ -48,15 +48,7 @@ public class Role {
         this.priority = priority;
     }
 
-    @Override
-    public String toString() {
-        return "Role{" +
-                "roleId=" + roleId +
-                ", roleName='" + roleName + '\'' +
-                ", priority='" + priority + '\'' +
-                ", isEmployeeRole=" + isEmployeeRole +
-                '}';
-    }
+
 
     @Override
     public boolean equals(Object o) {
@@ -73,5 +65,10 @@ public class Role {
     public int hashCode() {
 
         return Objects.hash(roleId, roleName, priority, isEmployeeRole);
+    }
+
+    @Override
+    public String toString() {
+        return " " + roleName + " ";
     }
 }

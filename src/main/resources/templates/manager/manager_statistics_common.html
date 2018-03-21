@@ -26,22 +26,19 @@
 
                     <h2>Employees:</h2><label th:text="${countEmployees}"></label>
                     <h5>Admins:</h5><label th:text="${countEmployeesAdmins}"></label>
-                    <h5>Couriers:</h5><label>40</label>
-                    <h5>On car:</h5><label>15</label>
-                    <h5>On foot:</h5><label>25</label>
-                    <h5>Call center agents:</h5><label>30</label>
-                    <h5>Managers:</h5><label>10</label>
-
-                    <h2>Clients:</h2><label>200</label>
-                    <h5>Normal:</h5><label>150</label>
-                    <h5>Vip:</h5><label>50</label>
-                    <h5>Unregistered contacts:</h5><label>500</label>
-
-                    <h2>Offices:</h2><label>20</label>
-
-                    <h2>Orders:</h2><label>1000</label>
-                    <h5>From office:</h5><label>600</label>
-                    <h5>Hand to hand:</h5><label>400</label>
+                    <h5>Couriers:</h5><label th:text="${countEmployeesCouriers}"></label>
+                    <h5>On car:</h5><label th:text="${countEmployeesCouriersDriving}"></label>
+                    <h5>On foot:</h5><label th:text="${countEmployeesCouriersWalking}"></label>
+                    <h5>Call center agents:</h5><label th:text="${countEmployeesAgentCallCenter}"></label>
+                    <h5>Managers:</h5><label th:text="${countEmployeesManagers}"></label>
+                    <h2>Clients:</h2><label th:text="${countUsers}"></label>
+                    <h5>Normal:</h5><label th:text="${countUsersNormal}"></label>
+                    <h5>Vip:</h5><label th:text="${countUsersVip}"></label>
+                    <h5>Unregistered contacts:</h5><label th:text="${countUnregisteredContacts}"></label>
+                    <h2>Offices:</h2><label th:text="${countOffice}"></label>
+                    <h2>Orders:</h2><label th:text="${countOrder}"></label>
+                    <h5>From office:</h5><label th:text="${countOrdersFromOffice}"></label>
+                    <h5>Hand to hand:</h5><label th:text="${countOrdersHandtoHand}"></label>
                 </div>
 
             </div>

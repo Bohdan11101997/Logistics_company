@@ -237,7 +237,6 @@ public class UserController {
     {
         Optional<Person> opt = userService.findOne(principal.getName());
         Person user = opt.get();
-        System.out.println(orderDao.HistoryCompleteOrderSender(user.getId()));
         model.addAttribute("orders", orderDao.HistoryCompleteOrderSender(user.getId()));
         model.addAttribute("destination_typeOrders", orderTypeDao.findAll());
         model.addAttribute("status_OrdersList", orderStatusDao.findAll());

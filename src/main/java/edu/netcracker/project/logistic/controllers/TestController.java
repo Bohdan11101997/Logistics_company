@@ -6,6 +6,7 @@ import edu.netcracker.project.logistic.dao.OfficeDao;
 import edu.netcracker.project.logistic.dao.OrderDao;
 import edu.netcracker.project.logistic.dao.PersonCrudDao;
 import edu.netcracker.project.logistic.dao.impl.AddressDaoImpl;
+import edu.netcracker.project.logistic.dao.impl.ManagerStatisticsDaoImpl;
 import edu.netcracker.project.logistic.dao.impl.OrderDaoImpl;
 import edu.netcracker.project.logistic.dao.impl.PersonCrudDaoImpl;
 import edu.netcracker.project.logistic.model.*;
@@ -40,6 +41,10 @@ public class TestController {
 
     private PersonService personService;
 
+
+    @Autowired
+    ManagerStatisticsDaoImpl managerStatisticsDao;
+
     @Autowired
     AddressService addressService;
 
@@ -67,8 +72,8 @@ public class TestController {
     @RequestMapping(value = "/test")
     public String test(Model model) {
 
-        SearchFormStatisticEmployee searchFormStatisticEmployee = new SearchFormStatisticEmployee();
-        searchFormStatisticEmployee.setFirstName("Tyrion");
+//        SearchFormStatisticEmployee searchFormStatisticEmployee = new SearchFormStatisticEmployee();
+//        searchFormStatisticEmployee.setFirstName("Tyrion");
 
 
 

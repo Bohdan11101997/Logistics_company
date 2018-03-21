@@ -50,5 +50,17 @@ public class Task {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    @Override
+    public String
+    toString() {
+        return "Task{" +
+                "id=" + id +
+                ", employeeId=" + employeeId +
+                ", orderId=" + orderId +
+                ", isCompleted=" + isCompleted +
+                ", description='" + description + '\'' +
+                '}';
+    }
 }
 
