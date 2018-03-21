@@ -35,6 +35,7 @@ public class RoleCrudDaoImpl implements RoleCrudDao, QueryDao, RowMapper<Role> {
         role.setRoleId(rs.getLong("role_id"));
         role.setRoleName(rs.getString("role_name"));
         role.setEmployeeRole(rs.getBoolean("is_employee_role"));
+        role.setPriority(rs.getString("priority"));
         return role;
     }
 
@@ -44,6 +45,7 @@ public class RoleCrudDaoImpl implements RoleCrudDao, QueryDao, RowMapper<Role> {
             Role role = new Role();
             role.setRoleName(resultSet.getString("role_name"));
             role.setEmployeeRole(resultSet.getBoolean("is_employee_role"));
+            role.setPriority(resultSet.getString("priority"));
             return role;
         });
     }
@@ -56,6 +58,7 @@ public class RoleCrudDaoImpl implements RoleCrudDao, QueryDao, RowMapper<Role> {
             jdbcTemplate.update(getUpsertQuery(), ps -> {
                 ps.setObject(1, role.getRoleId());
                 ps.setObject(2, role.getRoleName());
+                ps.setObject(3, role.getPriority());
             });
         } else {
             String query = getInsertQuery();
@@ -64,6 +67,7 @@ public class RoleCrudDaoImpl implements RoleCrudDao, QueryDao, RowMapper<Role> {
             jdbcTemplate.update(psc -> {
                 PreparedStatement ps = psc.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
                 ps.setObject(1, role.getRoleName());
+                ps.setObject(2, role.getPriority());
 
                 return ps;
             }, keyHolder);

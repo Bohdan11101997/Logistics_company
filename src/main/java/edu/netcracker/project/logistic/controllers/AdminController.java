@@ -229,6 +229,10 @@ public class AdminController {
     public String updateEmployee(@PathVariable long id, Model model,
                                  @ModelAttribute("employee") Person employee,
                                  BindingResult result, Principal principal) {
+        Person person = employeeService.findOne(employee.getId())
+                .orElseThrow(IllegalStateException::new);
+        employee.getContact().setContactId(person.getContact().getContactId());
+        employee.setRegistrationDate(person.getRegistrationDate());
         employee.setId(id);
         employeeValidator.validateUpdateData(employee, result);
         Optional<Person> opt = employeeService.findOne(principal.getName());

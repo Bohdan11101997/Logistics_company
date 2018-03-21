@@ -1,10 +1,10 @@
 package edu.netcracker.project.logistic.dao.impl;
 
-import com.google.maps.model.LatLng;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.maps.model.TravelMode;
 import edu.netcracker.project.logistic.dao.CourierDataDao;
 import edu.netcracker.project.logistic.dao.PersonCrudDao;
-import edu.netcracker.project.logistic.dao.QueryDao;
 import edu.netcracker.project.logistic.model.*;
 import edu.netcracker.project.logistic.service.QueryService;
 import org.slf4j.LoggerFactory;
@@ -15,24 +15,26 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Repository
 public class CourierDataDaoImpl implements CourierDataDao, RowMapper<CourierData> {
-
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(CourierDataDaoImpl.class);
 
+    private ObjectMapper objectMapper;
     private JdbcTemplate jdbcTemplate;
     private QueryService queryService;
     private PersonCrudDao personCrudDao;
 
     @Autowired
-    public CourierDataDaoImpl(QueryService queryService, JdbcTemplate jdbcTemplate, PersonCrudDao personCrudDao) {
+    public CourierDataDaoImpl(ObjectMapper objectMapper, QueryService queryService,
+                              JdbcTemplate jdbcTemplate, PersonCrudDao personCrudDao) {
+        this.objectMapper = objectMapper;
         this.queryService = queryService;
         this.jdbcTemplate = jdbcTemplate;
         this.personCrudDao = personCrudDao;
@@ -47,20 +49,44 @@ public class CourierDataDaoImpl implements CourierDataDao, RowMapper<CourierData
         if (!person.isPresent()) {
             return null;
         }
-        courierData.setId(person.get());
+        courierData.setCourier(person.get());
         courierData.setCourierStatus(CourierStatus.valueOf(rs.getString("courier_status").toUpperCase()));
         courierData.setLastLocation(rs.getString("courier_last_location"));
         courierData.setTravelMode(TravelMode.valueOf(rs.getString("courier_travel_mode").toUpperCase()));
 
+        Route route;
+        try {
+            route = objectMapper.readValue(
+                    rs.getString("route"),
+                    Route.class
+            );
+        } catch (IOException | NullPointerException ex) {
+            route = null;
+        }
+        courierData.setRoute(route);
         return courierData;
     }
 
     @Override
-    public Optional<CourierData> findOne(Person id){
+    public Optional<CourierData> findOne(Long employee_id){
         try {
             CourierData courierData = jdbcTemplate.queryForObject(
                     getFindOneQuery(),
-                    new Object[]{id.getId()},
+                    new Object[]{employee_id},
+                    this
+            );
+            return Optional.of(courierData);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Optional<CourierData> findOne(String userName) {
+        try {
+            CourierData courierData = jdbcTemplate.queryForObject(
+                    getFindByUserNameQuery(),
+                    new Object[]{userName},
                     this
             );
             return Optional.of(courierData);
@@ -71,23 +97,38 @@ public class CourierDataDaoImpl implements CourierDataDao, RowMapper<CourierData
 
     @Override
     public CourierData save(CourierData courierData) {
-        boolean hasPrimaryKey = courierData.getId() != null;
+        boolean hasPrimaryKey = courierData.getCourier() != null;
         if (hasPrimaryKey) {
             jdbcTemplate.update(getUpsertQuery(), ps -> {
-                ps.setObject(1, courierData.getId().getId());
+                ps.setObject(1, courierData.getCourier().getId());
                 ps.setObject(2, courierData.getCourierStatus().name());
                 ps.setObject(3, courierData.getLastLocation());
-                ps.setObject(3, courierData.getTravelMode().name());
+                ps.setObject(4, courierData.getTravelMode().name());
+                String routeJson;
+                try {
+                    routeJson = objectMapper.writeValueAsString(courierData.getRoute());
+                } catch (JsonProcessingException ex) {
+                    routeJson = null;
+                }
+                ps.setObject(5, routeJson);
             });
         } else {
             GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
             jdbcTemplate.update(psc -> {
                 String query = getInsertQuery();
                 PreparedStatement ps = psc.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-                ps.setObject(1, courierData.getId().getId());
+                ps.setObject(1, courierData.getCourier().getId());
                 ps.setObject(2, courierData.getCourierStatus().name());
                 ps.setObject(3, courierData.getLastLocation());
-                ps.setObject(3, courierData.getTravelMode().name());
+                ps.setObject(4, courierData.getTravelMode().name());
+                String routeJson;
+                try {
+                    routeJson = objectMapper.writeValueAsString(courierData.getRoute());
+                } catch (JsonProcessingException ex) {
+                    routeJson = null;
+                }
+                ps.setObject(5, routeJson);
+
                 return ps;
             }, keyHolder);
         }
@@ -115,4 +156,5 @@ public class CourierDataDaoImpl implements CourierDataDao, RowMapper<CourierData
         return queryService.getQuery("select.courier_data.by_id");
     }
 
+    private String getFindByUserNameQuery() { return queryService.getQuery("select.courier_data.by.username"); }
 }

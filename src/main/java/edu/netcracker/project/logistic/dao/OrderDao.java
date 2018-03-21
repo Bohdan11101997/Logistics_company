@@ -5,6 +5,8 @@ import edu.netcracker.project.logistic.model.Order;
 import java.util.List;
 
 public interface OrderDao extends  CrudDao<Order, Long> {
+    List<Order> findConfirmed();
+    List<Order> findConfirmedByEmployeeId(Long employeeId);
     List<Order> findNotProcessed();
     List<Order> findNotProcessedByEmployeeId(Long employeeId);
 
