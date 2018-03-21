@@ -23,14 +23,13 @@ import java.util.*;
 @Repository
 public class ManagerStatisticsDaoImpl {
 
-
     private JdbcTemplate jdbcTemplate;
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private QueryService queryService;
     private PersonRoleDao personRoleDao;
     private RowMapper<Contact> contactMapper;
     private RowMapper<Role> roleMapper;
-    private RowMapper<Person> personRowMapper;
+
 
 
     @Autowired

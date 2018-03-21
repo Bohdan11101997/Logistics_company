@@ -50,8 +50,7 @@ public class ManagerController {
     private SecurityService securityService;
     private OrderTypeDao orderTypeDao;
     private PasswordEncoder passwordEncoder;
-    @Autowired
-    private OrderDaoImpl orderDao;
+
 
     @Autowired
     OrderStatusDaoImpl orderStatusDao;
@@ -85,12 +84,9 @@ public class ManagerController {
     @PostMapping("/statistics/employees")
     public String postViewEmployeesStatistics(Model model, @ModelAttribute("searchFormStatisticEmployee") SearchFormStatisticEmployee searchFormStatisticEmployee){
         List<Person> employees = managerStatisticsDao.searchStatisticForManager(searchFormStatisticEmployee);
-        System.out.println(searchFormStatisticEmployee.getSortId());
         model.addAttribute("employees", employees);
         model.addAttribute("availableRoles", roleCrudDao.findEmployeeRolesForManager());
         model.addAttribute("searchFormStatisticEmployee", searchFormStatisticEmployee);
-
-        System.out.println(employees);
         return "/manager/manager_statistics_employees";
     }
 
@@ -116,7 +112,7 @@ public class ManagerController {
     public  String SearchOrdersByManager(@ModelAttribute("searchFormOrderStatistic") SearchFormOrderStatistic searchFormOrderStatistic, Model model)
     {
         List<Person> personList = managerStatisticsDao.searchStatisiticOrders(searchFormOrderStatistic);
-        personList.forEach(System.out::println);
+        model.addAttribute("countOrder",managerStatisticsDao.countOrders());
         model.addAttribute("destination_typeOrders", orderTypeDao.findAll());
         model.addAttribute("status_OrdersList", orderStatusDao.findAll());
         model.addAttribute("searchFormOrderStatistic",searchFormOrderStatistic);
@@ -124,6 +120,7 @@ public class ManagerController {
         model.addAttribute("toDate", searchFormOrderStatistic.getTo());
         model.addAttribute("personList", personList);
         model.addAttribute("countOrdersBetweenDate",managerStatisticsDao.CountOrdersBetweenDate(searchFormOrderStatistic.getFrom(), searchFormOrderStatistic.getTo()));
+        model.addAttribute("countOrder",managerStatisticsDao.countOrders());
         return "manager/manager_statistics_orders";
     }
 
@@ -143,7 +140,7 @@ public class ManagerController {
         model.addAttribute("countUsersVip",managerStatisticsDao.countUsersVip() );
         model.addAttribute("countUnregisteredContacts",managerStatisticsDao.countUnregisteredContacts() );
         model.addAttribute("countOffice",managerStatisticsDao.countOffices());
-        model.addAttribute("countOrder",managerStatisticsDao.countOrders() );
+        model.addAttribute("countOrder",managerStatisticsDao.countOrders());
         return "/manager/manager_statistics_common";
     }
 

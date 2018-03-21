@@ -54,6 +54,7 @@ INSERT INTO person_role (person_id, role_id) VALUES (7, 7);
 INSERT INTO person_role (person_id, role_id) VALUES (8, 7);
 INSERT INTO person_role (person_id, role_id) VALUES (11, 5);
 INSERT INTO person_role (person_id, role_id) VALUES (12, 4);
+INSERT INTO person_role (person_id, role_id) VALUES (2, 4);
 
 INSERT INTO work_day (employee_id, week_day, start_time, end_time)
 VALUES (1, trim(to_char(CURRENT_DATE, 'DAY')) :: week_day, '12:00', '22:00');
@@ -137,3 +138,14 @@ VALUES (7 , trim('free'):: logistic_company.courier_status, '', 'WALKING');
 INSERT INTO logistic_company."courier_data"(person_id,  courier_status, courier_last_location,  courier_travel_mode)
 VALUES (8 , trim('free'):: logistic_company.courier_status, '', 'DRIVING');
 
+INSERT INTO logistic_company.task(employee_id, order_id, is_completed) VALUES (6,1,TRUE );
+INSERT INTO logistic_company.task(employee_id, order_id, is_completed) VALUES (8,3,TRUE );
+INSERT INTO logistic_company.task(employee_id, order_id, is_completed) VALUES (8,3,TRUE );
+INSERT INTO logistic_company.task(employee_id, order_id, is_completed) VALUES (8,3,TRUE );
+INSERT INTO logistic_company.task(employee_id, order_id, is_completed) VALUES (11,3,TRUE );
+INSERT INTO logistic_company.task(employee_id, order_id, is_completed) VALUES (11,1,TRUE );
+INSERT INTO logistic_company.task(employee_id, order_id, is_completed) VALUES (6,3,TRUE );
+INSERT INTO logistic_company.task(employee_id, order_id, is_completed) VALUES (11,2,TRUE );
+INSERT INTO logistic_company.task(employee_id, order_id, is_completed) VALUES (6,5,TRUE );
+INSERT INTO logistic_company.task(employee_id, order_id, is_completed) VALUES (6,5,TRUE );
+INSERT INTO logistic_company.task(employee_id, order_id, is_completed) VALUES (8,3,TRUE );

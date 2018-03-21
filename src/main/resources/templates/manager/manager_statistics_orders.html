@@ -105,6 +105,7 @@
 
 
                     <div class="table-responsive">
+                        <h2 >Date range:</h2> <label  th:text="${{fromDate}}"></label> <label th:text="${{toDate}}"></label>
                         <table class="table">
                             <thead>
                             <tr>
@@ -116,7 +117,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <h2 >Date range:</h2> <label  th:text="${{fromDate}}"></label> <label th:text="${{toDate}}"></label>
+
                             <tr th:each="person, iter : ${personList}">
                                 <td th:text="${iter.index + 1}"></td>
                                 <td th:text="${person.userName}"></td>
@@ -125,14 +126,15 @@
                             </tr>
                             </tbody>
                         </table>
+                        <h5>Count orders</h5>
+                        <label th:text="${countOrdersBetweenDate}"></label>
+                        <h2>Total orders:</h2>
+                        <label th:text="${countOrder}"></label>
                     </div>
                     <!-- For interval -->
 
                     <!-- For all time -->
-                    <h2>All time</h2> <label th:text="${countOrdersBetweenDate}"></label>
-                    <h5>Total days:</h5><label>560</label>
-                    <h5>Types:</h5><label>Documents, Cargo</label>
-                    <h5>Total orders:</h5><label>1234, 5600</label>
+
 
                 </div>
 
