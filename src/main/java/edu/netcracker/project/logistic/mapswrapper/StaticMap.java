@@ -1,4 +1,4 @@
-package edu.netcracker.project.logistic.mapsWrapper;
+package edu.netcracker.project.logistic.mapswrapper;
 
 import com.google.maps.model.LatLng;
 //import org.intellji.annotations.Nullable;

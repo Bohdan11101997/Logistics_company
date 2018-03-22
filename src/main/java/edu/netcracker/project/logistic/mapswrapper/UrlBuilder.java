@@ -1,4 +1,4 @@
-package edu.netcracker.project.logistic.mapsWrapper;
+package edu.netcracker.project.logistic.mapswrapper;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;

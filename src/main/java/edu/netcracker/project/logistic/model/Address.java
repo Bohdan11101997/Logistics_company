@@ -3,7 +3,7 @@ package edu.netcracker.project.logistic.model;
 import com.google.maps.DirectionsApi;
 import com.google.maps.errors.ApiException;
 import com.google.maps.model.*;
-import edu.netcracker.project.logistic.mapsWrapper.GoogleApiRequest;
+import edu.netcracker.project.logistic.mapswrapper.GoogleApiRequest;
 
 import java.io.IOException;
 import java.util.Objects;

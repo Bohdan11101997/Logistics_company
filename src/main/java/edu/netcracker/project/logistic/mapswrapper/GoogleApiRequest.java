@@ -1,4 +1,4 @@
-package edu.netcracker.project.logistic.mapsWrapper;
+package edu.netcracker.project.logistic.mapswrapper;
 
 import com.google.appengine.api.appidentity.AppIdentityServiceFailureException;
 import com.google.maps.*;
