@@ -312,7 +312,7 @@ public class PersonCrudDaoImpl implements PersonCrudDao, QueryDao, RowMapper<Per
 
 
     private String getFindAllQuery() {
-        return queryService.getQuery("count.all.employee");
+        return queryService.getQuery("select.all.person");
     }
 
     private String getFindAllEmployeesQuery() {

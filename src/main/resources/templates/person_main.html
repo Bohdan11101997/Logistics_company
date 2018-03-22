@@ -19,20 +19,84 @@
     <div class="container-fluid">
         <div class="side-body">
             <div class="row">
+                <div class="col-lg-10 col-md-10 col-md-offset-1 col-lg-offset-1">
 
-                <div sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_COURIER')">
-                    <h1>Employee page</h1>
-                    <h1 th:inline="text">Hello, employee!</h1>
+                    <h1>Welcome to our "client-2-client" service!</h1>
+                    <h3 th:text="${'Your username: ' + #authentication.name}"></h3>
+                <div sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_COURIER', 'ROLE_CALL_CENTER', 'ROLE_MANAGER')">
+                    <h3>Your roles in this system:
+                        <span sec:authorize="hasRole('ROLE_ADMIN')">Administrator,</span>
+                        <span sec:authorize="hasRole('ROLE_MANAGER')">Manager, </span>
+                        <span sec:authorize="hasRole('ROLE_COURIER')">Courier, </span>
+                        <span sec:authorize="hasRole('ROLE_CALL_CENTER')">Call center agent, </span>User.</h3>
+                        <p>You can view and manage all of them on your left simultaneously.</p>
                 </div>
+
+                <div sec:authorize="hasRole('ROLE_ADMIN')">
+
+                    <h3>Administrator instructions:</h3>
+
+                    <ul>
+                        <li>Employee list. View, search, update or delete each employee in system. </li>
+                        <li>Create new employee. Fill in all fields, specify roles and push "Save". New employee now in the system, his auto-generated password was sent on his e-mail.</li>
+                        <li>Office list.</li>
+                        <li>Create new office.</li>
+                        <li>Advertisement list.</li>
+                        <li>Create new advertisement.</li>
+                    </ul>
+
+                </div>
+
+                <div sec:authorize="hasRole('ROLE_MANAGER')">
+
+                    <h3>Manager instructions:</h3>
+
+                    <ul>
+                        <li>Common statisitics.</li>
+                        <li>Employee statisitics.</li>
+                        <li>Office statistics.</li>
+                        <li>Order statistics.</li>
+                    </ul>
+
+                </div>
+
+
+                <div sec:authorize="hasRole('ROLE_COURIER')">
+
+                    <h3>Courier instructions:</h3>
+
+                    <ul>
+                        <li>Actual orders.</li>
+                        <li>Order history.</li>
+                        <li>Task map.</li>
+                    </ul>
+
+                </div>
+
+                <div sec:authorize="hasRole('ROLE_CALL_CENTER')">
+
+                    <h3>Call center agent instructions:</h3>
+
+                    <ul>
+                        <li>Actual orders.</li>
+                        <li>Order history.</li>
+                    </ul>
+                </div>
+
                 <div sec:authorize="hasRole('ROLE_USER')">
-                    <h1>User page</h1>
-                    <h1 th:inline="text">Hello, user!</h1>
+
+                    <h3>User instructions:</h3>
+
+                    <ul>
+                        <li>Personal area.</li>
+                        <li>Change password.</li>
+                        <li>My orders.</li>
+                        <li>Create new order.</li>
+                    </ul>
+
                 </div>
 
-                <h3>All your functions are on your left!</h3>
-
-                <button id="btn-echo" class="btn btn-primary">Echo</button>
-
+                </div>
             </div>
         </div>
     </div>

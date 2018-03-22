@@ -3,20 +3,15 @@ package edu.netcracker.project.logistic.flow.impl;
 import com.google.maps.*;
 import com.google.maps.errors.ApiException;
 import com.google.maps.model.*;
-import edu.netcracker.project.logistic.dao.CourierDataDao;
-import edu.netcracker.project.logistic.dao.OrderTypeDao;
 import edu.netcracker.project.logistic.flow.FlowBuilder;
-import edu.netcracker.project.logistic.maps_wrapper.StaticMap;
-import edu.netcracker.project.logistic.maps_wrapper.GoogleApiRequest;
+import edu.netcracker.project.logistic.mapsWrapper.StaticMap;
+import edu.netcracker.project.logistic.mapsWrapper.GoogleApiRequest;
 import edu.netcracker.project.logistic.model.*;
 import edu.netcracker.project.logistic.processing.RouteProcessor;
-import edu.netcracker.project.logistic.service.RoleService;
 
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.*;
 
 public class RadiusSelector extends FlowBuilderImpl {

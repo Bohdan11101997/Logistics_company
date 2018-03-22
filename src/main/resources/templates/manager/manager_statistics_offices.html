@@ -5,12 +5,14 @@
     <th:block th:replace="fragments/header :: header-bootstrap-config" />
     <th:block th:replace="fragments/header :: header-bootstrap-config-IE" />
 
-    <link rel="stylesheet" th:href="@{/css/left_menu.css}" type="text/css" href="../static/css/left_menu.css" />
+    <link rel="stylesheet" th:href="@{/css/left_menu.css}" type="text/css" href="../../static/css/left_menu.css" />
+    <link rel="stylesheet" th:href="@{/css/main_content.css}" type="text/css" href="../static/css/main_content.css" />
+    <link rel="stylesheet" th:href="@{/css/well.css}" type="text/css" href="../static/css/well.css" />
+    <link rel="stylesheet" th:href="@{/css/table.css}" type="text/css" href="../static/css/table.css" />
     <link rel="stylesheet" th:href="@{/css/paginator.css}" type="text/css" href="../static/css/paginator.css" />
 
-
 </head>
-<body>
+<body class="body-color">
 
 <div class="row">
 
@@ -21,37 +23,47 @@
     <div class="container-fluid">
         <div class="side-body">
             <div class="row">
-
-                <h1 style="text-align:center"> Office statistics </h1>
-
                 <div class="col-lg-10 col-md-10 col-md-offset-1 col-lg-offset-1">
 
+                    <h1>Office Statistics</h1>
+
                     <div class="well">
-                        <h3 align="center">Search Filters</h3>
+                        <h3 class="caption">Search Criteria</h3>
+
                         <form method="post" class="form-horizontal">
 
-                            <div class="form-group">
-                                <label for="address" class="control-label">Address</label>
-                                <input type="text" class="form-control" id="address"/>
-                            </div>
+                            <div class="row">
+                                <div class="col-lg-8 col-lg-offset-2">
 
-                            <div class="form-group">
-                                <label for="department-number" class="control-label">Department Number</label>
-                                <input type="text" class="form-control" id="department-number"/>
-                            </div>
+                                    <div class="form-group">
+                                        <label for="address" class="control-label">Address</label>
+                                        <input type="text" class="form-control" id="address"/>
+                                    </div>
 
-                            <div class="form-group">
-                                <label for="sort-offices">Sort by</label>
-                                <select class="form-control" id="sort-offices">
-                                    <option>Department number</option>
-                                    <option>Orders sent</option>
-                                </select>
-                            </div>
+                                    <div class="form-group">
+                                        <label for="department-number" class="control-label">Department Number</label>
+                                        <input type="text" class="form-control" id="department-number"/>
+                                    </div>
 
-                            <button class="btn btn-primary">
-                                Search
-                            </button>
+                                    <div class="form-group">
+                                        <label for="sort-offices" class="control-label">Sort by</label>
+                                        <select class="form-control" id="sort-offices">
+                                            <option>Department Number</option>
+                                            <option>Orders Sent</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <button class="btn btn-primary">
+                                            <a href="#" class="glyphicon glyphicon-search"></a>
+                                            Search
+                                        </button>
+                                    </div>
+
+                                </div>
+                            </div>
                         </form>
+
                     </div>
 
                     <div class="table-responsive">
@@ -78,7 +90,6 @@
                     </div>
 
                 </div>
-
             </div>
         </div>
     </div>

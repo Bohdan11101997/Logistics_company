@@ -1,4 +1,4 @@
-package edu.netcracker.project.logistic.maps_wrapper;
+package edu.netcracker.project.logistic.mapsWrapper;
 
 import com.google.appengine.api.appidentity.AppIdentityServiceFailureException;
 import com.google.maps.*;
@@ -10,22 +10,18 @@ public class GoogleApiRequest {
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(GoogleApiRequest.class);
 
-//    private static final String API_KEY = "AIzaSyBHUNATkvBBtqWEF8roNL_EJEF-IQ1THP0";
-//    private static final String RESERVE_API_KEY = "AIzaSyBHUNATkvBBtqWEF8roNL_EJEF-IQ1THP0";
     private static final String RESERVE_API_KEY=  "AIzaSyCU2xp68iQecwO3kZk1cLZCGavoD1j4lIc" ;
     private static final String API_KEY = "AIzaSyBHUNATkvBBtqWEF8roNL_EJEF-IQ1THP0";
-    private static long request_quote_per_key = 2500;
-    private static long requests_count = 0;
+    private static long requestQuotePerKey = 2500;
+    private static long requestsCount = 0;
 
     private static GeoApiContext context;
-    private static boolean out_of_keys = false;
+    private static boolean outOfKeys = false;
 
     private static GoogleApiRequest own;
 
     private GoogleApiRequest() {
-        new_context(API_KEY);
-        //TODO: rework due to unrecognized OutOfMemoryError
-        //TimerToNextDay();
+        newСontext(API_KEY);
     }
 
     private static void TimerToNextDay() {
@@ -57,37 +53,37 @@ public class GoogleApiRequest {
 
     // @return - @true if new value is valid
     public static boolean setQuotePerDay(long quote_per_key) {
-        request_quote_per_key = quote_per_key > 0 ? quote_per_key : request_quote_per_key;
+        requestQuotePerKey = quote_per_key > 0 ? quote_per_key : requestQuotePerKey;
         return quote_per_key > 0;
     }
 
     public static long getQuote() {
-        return request_quote_per_key;
+        return requestQuotePerKey;
     }
 
     public static long getUsedQuote() {
-        return requests_count;
+        return requestsCount;
     }
 
     private static void reset() {
         logger.info("Resetting key.");
-        new_context(API_KEY);
-        out_of_keys = false;
-        requests_count = 0;
+        newСontext(API_KEY);
+        outOfKeys = false;
+        requestsCount = 0;
     }
 
-    private static boolean roll_keys() {
-        if(requests_count >= getQuote()) {
-            if (out_of_keys)
+    private static boolean rollKeys() {
+        if(requestsCount >= getQuote()) {
+            if (outOfKeys)
                 return false;
             logger.warn("Setting new API_KEY");
-            new_context(RESERVE_API_KEY);
-            out_of_keys = true;
+            newСontext(RESERVE_API_KEY);
+            outOfKeys = true;
         }
         return true;
     }
 
-    private static void new_context(String key) {
+    private static void newСontext(String key) {
         context = new GeoApiContext.Builder()
                 .apiKey(key)
                 .build();
@@ -95,8 +91,8 @@ public class GoogleApiRequest {
 
     public static GeocodingApiRequest GeocodingApi() {
         if (own == null) own = new GoogleApiRequest();
-        requests_count++;
-        if (check_request_limit()) throw new AppIdentityServiceFailureException("Run out of requests limits.");
+        requestsCount++;
+        if (checkRequestLimit()) throw new AppIdentityServiceFailureException("Run out of requests limits.");
 
         logger.info("New Geocoding request.");
 
@@ -105,8 +101,8 @@ public class GoogleApiRequest {
 
     public static DistanceMatrixApiRequest DistanceMatrixApi() {
         if (own == null) own = new GoogleApiRequest();
-        requests_count++;
-        if (check_request_limit()) throw new AppIdentityServiceFailureException("Run out of requests limits.");
+        requestsCount++;
+        if (checkRequestLimit()) throw new AppIdentityServiceFailureException("Run out of requests limits.");
 
         logger.info("New DistanceMatrix request.");
 
@@ -115,8 +111,8 @@ public class GoogleApiRequest {
 
     public static DirectionsApiRequest DirectionsApi() {
         if (own == null) own = new GoogleApiRequest();
-        requests_count++;
-        if (check_request_limit()) throw new AppIdentityServiceFailureException("Run out of requests limits.");
+        requestsCount++;
+        if (checkRequestLimit()) throw new AppIdentityServiceFailureException("Run out of requests limits.");
 
         logger.info("New DirectionsApi request.");
 
@@ -125,19 +121,19 @@ public class GoogleApiRequest {
 
     public static StaticMap StaticMap() {
         if (own == null) own = new GoogleApiRequest();
-        requests_count++;
-        if (check_request_limit()) throw new AppIdentityServiceFailureException("Run out of requests limits.");
+        requestsCount++;
+        if (checkRequestLimit()) throw new AppIdentityServiceFailureException("Run out of requests limits.");
 
         logger.info("New StaticMap request.");
 
-        return new StaticMap().key(out_of_keys ? RESERVE_API_KEY : API_KEY);
+        return new StaticMap().key(outOfKeys ? RESERVE_API_KEY : API_KEY);
     }
 
-    private static boolean check_request_limit() {
-        boolean return_value = requests_count > request_quote_per_key;
+    private static boolean checkRequestLimit() {
+        boolean return_value = requestsCount > requestQuotePerKey;
         if(return_value) {
             logger.error("Google Maps API_KEY quote wasted!");
-            return_value = !roll_keys();
+            return_value = !rollKeys();
         }
         return return_value;
     }

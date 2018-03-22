@@ -1,0 +1,34 @@
+:root {
+    --main-color: #5B7DAA;
+    --second-color: #485d8c;
+    --third-color: #363D69;
+    --fourth-color: #fdfeff;
+}
+
+.well {
+    background-color: var(--third-color);
+}
+
+.well h3.caption{
+    color:white;
+    text-align: center;
+}
+
+.well .form-horizontal .form-group .control-label{
+    color:white;
+}
+
+/*.btn.send {*/
+    /*background-color: var(--main-color);*/
+    /*color: white;*/
+    /*border: var(--main-color);*/
+    /*align:center;*/
+/*}*/
+
+.well .form-group.send-button{
+    text-align: center;
+}
+
+.well .glyphicon-search {
+    color: white;
+}

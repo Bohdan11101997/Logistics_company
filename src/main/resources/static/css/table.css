@@ -1,0 +1,25 @@
+
+:root {
+    --main-color: #5B7DAA;
+    --second-color: #485d8c;
+    --third-color: #363D69;
+    --fourth-color: #fdfeff;
+}
+
+.table-responsive {
+    background-color: var(--second-color);
+    color:white;
+    border: 1px solid white;
+}
+
+.btn.btn-link.update{
+    color:#A1CC55;
+}
+
+.btn.btn-link.more{
+    color:#A1CC55;
+}
+
+.btn.btn-link.delete{
+    color:pink;
+}

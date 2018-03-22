@@ -5,10 +5,12 @@
     <th:block th:replace="fragments/header :: header-bootstrap-config" />
     <th:block th:replace="fragments/header :: header-bootstrap-config-IE" />
 
-    <link rel="stylesheet" th:href="@{/css/left_menu.css}" type="text/css" href="../../static/css/left_menu.css" />
+    <link rel="stylesheet" th:href="@{/css/left_menu.css}" type="text/css" href="../static/css/left_menu.css" />
+    <link rel="stylesheet" th:href="@{/css/main_content.css}" type="text/css" href="../static/css/main_content.css" />
+    <link rel="stylesheet" th:href="@{/css/well.css}" type="text/css" href="../static/css/well.css" />
 
 </head>
-<body>
+<body class="body-color">
 
 <div class="row">
 
@@ -19,10 +21,9 @@
     <div class="container-fluid">
         <div class="side-body">
             <div class="row">
+                <div class="col-lg-10 col-md-10 col-md-offset-1 col-lg-offset-1">
 
-                <h1 style="text-align:center"> Personal Area </h1>
-
-                <div class="col-lg-10 col-md-6  col-lg-offset-1">
+                    <h1>Personal Area</h1>
 
                     <div th:if="${param.save}">
                         <div class="alert alert-info">
@@ -30,76 +31,85 @@
                         </div>
                     </div>
 
-                    <!-- Form for creating employee -->
-                    <form style="" th:object="${user}" th:action="@{'/user/personal/' + ${user.id}}" th:method="POST">
+                    <div class="well">
+                        <h3 class="caption">Profile info</h3>
 
-                        <div class="form-group required"
-                             th:classappend="${#fields.hasErrors('firstName')}? 'has-error'">
-                            <label for="first_name" class="control-label">First Name</label>
-                            <input type="text" class="form-control" id="first_name" placeholder=""
-                                   required="required" minlength="1" maxlength="45"
-                                   th:field="*{firstName}"/>
-                            <div class="has-error help-block"
-                                 th:if="${#fields.hasErrors('firstName')}"
-                                 th:errors="*{firstName}">
+                        <!-- Form for creating employee -->
+                        <form class="form-horizontal" th:object="${user}" th:action="@{'/user/personal/' + ${user.id}}" th:method="POST">
+
+                            <div class="row">
+                                <div class="col-lg-8 col-lg-offset-2">
+
+                                    <div class="form-group required"
+                                         th:classappend="${#fields.hasErrors('firstName')}? 'has-error'">
+                                        <label for="first_name" class="control-label">First Name</label>
+                                        <input type="text" class="form-control" id="first_name" placeholder=""
+                                               required="required" minlength="1" maxlength="45"
+                                               th:field="*{firstName}"/>
+                                        <div class="has-error help-block"
+                                             th:if="${#fields.hasErrors('firstName')}"
+                                             th:errors="*{firstName}">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group required"
+                                         th:classappend="${#fields.hasErrors('lastName')}? 'has-error'">
+                                        <label for="last_name" class="control-label">Last Name</label>
+                                        <input type="text" class="form-control" id="last_name" placeholder=""
+                                               required="required" minlength="1" maxlength="45"
+                                               th:field="*{lastName}"/>
+                                        <div class="has-error help-block"
+                                             th:if="${#fields.hasErrors('lastName')}"
+                                             th:errors="*{lastName}">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group required"
+                                         th:classappend="${#fields.hasErrors('userName')}? 'has-error'">
+                                        <label for="username" class="control-label">Username</label>
+                                        <input type="text" class="form-control" id="username" placeholder=""
+                                               required="required" minlength="6" maxlength="30"
+                                               th:field="*{userName}"/>
+                                        <div class="has-error help-block"
+                                             th:if="${#fields.hasErrors('userName')}"
+                                             th:errors="*{userName}">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group required"
+                                         th:classappend="${#fields.hasErrors('email')}? 'has-error'">
+                                        <label for="email" class="control-label">E-mail</label>
+                                        <input type="email" class="form-control" id="email" placeholder=""
+                                               required="required" minlength="6" maxlength="254"
+                                               th:field="*{email}"/>
+                                        <div class="has-error help-block"
+                                             th:if="${#fields.hasErrors('email')}"
+                                             th:errors="*{email}">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group required"
+                                         th:classappend="${#fields.hasErrors('phoneNumber')}? 'has-error'">
+                                        <label for="phone" class="control-label">Phone</label>
+                                        <input type="text" class="form-control" id="phone" placeholder=""
+                                               required="required" minlength="7" maxlength="15"
+                                               pattern="(\+380)?[\d\s\-()]+"
+                                               th:field="*{phoneNumber}"/>
+                                        <div class="has-error help-block"
+                                             th:if="${#fields.hasErrors('phoneNumber')}"
+                                             th:errors="*{phoneNumber}">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <button class="btn btn-success" name="action" value="save">Update</button>
+                                        <button class="btn btn-danger" name="action" value="delete">Delete</button>
+                                    </div>
+
+                                </div>
                             </div>
-                        </div>
-
-                        <div class="form-group required"
-                             th:classappend="${#fields.hasErrors('lastName')}? 'has-error'">
-                            <label for="last_name" class="control-label">Last Name</label>
-                            <input type="text" class="form-control" id="last_name" placeholder=""
-                                   required="required" minlength="1" maxlength="45"
-                                   th:field="*{lastName}"/>
-                            <div class="has-error help-block"
-                                 th:if="${#fields.hasErrors('lastName')}"
-                                 th:errors="*{lastName}">
-                            </div>
-                        </div>
-
-                        <div class="form-group required"
-                             th:classappend="${#fields.hasErrors('userName')}? 'has-error'">
-                            <label for="username" class="control-label">Username</label>
-                            <input type="text" class="form-control" id="username" placeholder=""
-                                   required="required" minlength="6" maxlength="30"
-                                   th:field="*{userName}"/>
-                            <div class="has-error help-block"
-                                 th:if="${#fields.hasErrors('userName')}"
-                                 th:errors="*{userName}">
-                            </div>
-                        </div>
-
-                        <div class="form-group required"
-                             th:classappend="${#fields.hasErrors('email')}? 'has-error'">
-                            <label for="email" class="control-label">E-mail</label>
-                            <input type="email" class="form-control" id="email" placeholder=""
-                                   required="required" minlength="6" maxlength="254"
-                                   th:field="*{email}"/>
-                            <div class="has-error help-block"
-                                 th:if="${#fields.hasErrors('email')}"
-                                 th:errors="*{email}">
-                            </div>
-                        </div>
-
-                        <div class="form-group required"
-                             th:classappend="${#fields.hasErrors('phoneNumber')}? 'has-error'">
-                            <label for="phone" class="control-label">Phone</label>
-                            <input type="text" class="form-control" id="phone" placeholder=""
-                                   required="required" minlength="7" maxlength="15"
-                                   pattern="(\+380)?[\d\s\-()]+"
-                                   th:field="*{phoneNumber}"/>
-                            <div class="has-error help-block"
-                                 th:if="${#fields.hasErrors('phoneNumber')}"
-                                 th:errors="*{phoneNumber}">
-                            </div>
-                        </div>
-
-                        <div style = "margin-top: 3em;" class="form-group">
-                            <button class="btn btn-primary" name="action" value="save">Save changes</button>
-                            <button class="btn btn-danger" name="action" value="delete">Delete profile</button>
-                        </div>
-                    </form>
-
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
