@@ -4,6 +4,8 @@ import edu.netcracker.project.logistic.dao.QueryDao;
 import edu.netcracker.project.logistic.dao.RoleCrudDao;
 import edu.netcracker.project.logistic.model.Role;
 import edu.netcracker.project.logistic.service.QueryService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -20,6 +22,7 @@ import java.util.Optional;
 
 @Repository
 public class RoleCrudDaoImpl implements RoleCrudDao, QueryDao, RowMapper<Role> {
+    private final Logger logger = LoggerFactory.getLogger(RoleCrudDaoImpl.class);
 
     private JdbcTemplate jdbcTemplate;
     private QueryService queryService;
@@ -97,7 +100,7 @@ public class RoleCrudDaoImpl implements RoleCrudDao, QueryDao, RowMapper<Role> {
             return Optional.of(role);
 
         } catch (EmptyResultDataAccessException e) {
-            System.err.println("Empty data");
+            logger.info("Empty data");
         }
         return Optional.empty();
     }
