@@ -6,6 +6,9 @@
     <th:block th:replace="fragments/header :: header-bootstrap-config-IE" />
 
     <link rel="stylesheet" th:href="@{/css/left_menu.css}" type="text/css" href="../static/css/left_menu.css" />
+    <link rel="stylesheet" th:href="@{/css/main_content.css}" type="text/css" href="../static/css/main_content.css" />
+    <link rel="stylesheet" th:href="@{/css/well.css}" type="text/css" href="../static/css/well.css" />
+    <link rel="stylesheet" th:href="@{/css/table.css}" type="text/css" href="../static/css/table.css" />
     <link rel="stylesheet" th:href="@{/css/paginator.css}" type="text/css" href="../static/css/paginator.css" />
 
     <!-- Latest compiled and minified CSS -->
@@ -13,7 +16,7 @@
 
 
 </head>
-<body>
+<body class="body-color">
 
 <div class="row">
 
@@ -24,26 +27,30 @@
     <div class="container-fluid">
         <div class="side-body">
             <div class="row">
-
-                <h1 style="text-align:center"> Employee statistics </h1>
-
                 <div class="col-lg-10 col-md-10 col-md-offset-1 col-lg-offset-1">
 
+                    <h1>Employee Statistics</h1>
+
                     <div class="well">
-                        <h3 align="center">Search Filters</h3>
+                        <h3 class="caption">Search Criteria</h3>
                         <form method="post" class="form-horizontal" th:object="${searchFormStatisticEmployee}">
+                        <h3 class="caption">Search Criteria</h3>
 
-                            <div class="form-group">
-                            <label for="first-name" class="control-label">First Name</label>
-                            <input type="text" class="form-control" id="first-name"
-                                   th:field="*{firstName}" />
-                        </div>
+                        <form method="post" class="form-horizontal">
+                            <div class="row">
+                                <div class="col-lg-8 col-lg-offset-2">
 
-                            <div class="form-group">
-                                <label for="last-name" class="control-label">Last Name</label>
-                                <input type="text" class="form-control" id="last-name"
-                                       th:field="*{lastName}"/>
-                            </div>
+                                    <div class="form-group">
+                                        <label for="first-name" class="control-label">First Name</label>
+                                        <input type="text" class="form-control" id="first-name"
+                                               th:field="*{firstName}" />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="last-name" class="control-label">Last Name</label>
+                                        <input type="text" class="form-control" id="last-name"
+                                               th:field="*{lastName}"/>
+                                    </div>
 
 
                             <!--<div class="form-group">-->
@@ -66,24 +73,41 @@
                                     </select>
                                 </div>
 
+                            <!--<div class="form-group">-->
+                                <!--<label for="selectEmployee">Select list</label>-->
+                                <!--<select class="form-control" id="selectEmployee" onchange="showCourierMove()">-->
+                                    <!--<option value="couriers" id="couriers">Couriers</option>-->
+                                    <!--<option value="call-center-agents" id="call-center-agents">Call center agents</option>-->
+                                <!--</select>-->
+                            <!--</div>-->
+
                             <!--<div class="form-group" style="display:block" id="radio-courier-move">-->
                                 <!--<label class="radio-inline"><input type="radio" name="optradio" checked="checked" />Car</label>-->
                                 <!--<label class="radio-inline"><input type="radio" name="optradio" />On foot</label>-->
                             <!--</div>-->
 
                             <div class="form-group">
-                                <label for="sortEmployees">Sort by</label>
+                                <label for="sortEmployees" class="control-label">Sort by</label>
                                 <select class="form-control" id="sortEmployees"
                                         th:field="*{sortId}">
-                                    <option th:value="${1}">Registration date</option>
-                                    <option th:value="${2}">Orders handled</option>
+                                    <!--<option>Last Name</option>-->
+                                    <option th:value="${1}">Registration Date</option>
+                                    <option th:value="${2}">Orders Handled</option>
+                                    <!--<option>Usefulness</option>-->
                                 </select>
                             </div>
 
-                            <button class="btn btn-primary">
-                                Search
-                            </button>
+                                    <div class="form-group">
+                                        <button class="btn btn-primary">
+                                            <a href="#" class="glyphicon glyphicon-search"></a>
+                                            Search
+                                        </button>
+                                    </div>
+
+                                </div>
+                            </div>
                         </form>
+
                     </div>
 
                     <div class="table-responsive">
@@ -91,8 +115,8 @@
                             <thead>
                             <tr>
                                 <th>#</th>
-                                <th>First name</th>
-                                <th>Last name</th>
+                                <th>First Name</th>
+                                <th>Last Name</th>
                                 <th>E-mail</th>
                                 <th>Phone</th>
                                 <!--<th>Move</th>-->
@@ -111,10 +135,18 @@
                                 <td th:text="${emp.contact.phoneNumber}">+380777777777</td>
                                 <td th:text="${{emp.registrationDate}}">16-02-2018</td>
                                 <td th:text="${{emp.id}}">16-02-2018</td>
+                                <!--<td>-->
+                                    <!--<form th:action="@{/manager/statistics/employee/1}" th:method="GET">-->
+                                        <!--<button class="btn btn-link more">more</button>-->
+                                    <!--</form>-->
+                                    <!--<a href="#"-->
+                                       <!--th:href="@{'/admin/crud/employee/' + ${emp.id}}"-->
+                                    <!--&gt;Edit</a>-->
+                                <!--</td>-->
                                 <td>
-                                    <a href="#"
-                                       th:href="@{'/admin/crud/employee/' + ${emp.id}}"
-                                    >Edit</a>
+                                    <form th:action="@{'/admin/crud/employee/' + ${emp.id}}" th:method="GET">
+                                        <button class="btn btn-link more">more</button>
+                                    </form>
                                 </td>
                             </tr>
                             </tbody>
@@ -122,7 +154,6 @@
                     </div>
 
                 </div>
-
             </div>
         </div>
     </div>

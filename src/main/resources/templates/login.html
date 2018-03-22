@@ -4,85 +4,126 @@
 
     <th:block th:replace="fragments/header :: header-bootstrap-config"/>
 
-    <link th:href="@{/css/login.css}" href="../static/css/login.css" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/css/login.css}" href="../static/css/login.css" />
+    <link rel="stylesheet" th:href="@{/css/main_content.css}" type="text/css" href="../static/css/main_content.css" />
+    <link rel="stylesheet" th:href="@{/css/well.css}" type="text/css" href="../static/css/well.css" />
 
     <th:block th:replace="fragments/header :: header-bootstrap-config-IE"/>
 
-</head>
-<body>
-<div class="container">
-    <div class="row">
-        <div class="col-xs-10 col-xs-offset-1 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+    <style>
 
-            <h1>Log in</h1>
+        body, html {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+        }
+
+        .body-color .container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        @media(max-width: 766px){
+            .well{
+                width:80%;
+            }
+        }
+
+        @media(min-width:767px) and (max-width: 1280px){
+            .well{
+                width:60%;
+            }
+        }
+
+        @media(min-width: 1281px) and (max-width: 1920px){
+            .well{
+                width:50%;
+            }
+        }
+
+        p{
+            color:white; text-align:center
+        }
+
+        .etc-login-form{
+            margin-top:4em;
+        }
+
+        a{
+            color:#A1CC55
+        }
+
+        a:hover{
+            color:pink
+        }
+
+    </style>
+
+</head>
+<body class="body-color">
+<div class="container">
+
+    <div class="well">
+        <h1>Log In</h1>
 
             <form th:action="@{/login}" method="post" class="form-horizontal">
-                <fieldset>
 
-                    <div th:if="${param.error}">
-                        <div class="alert alert-danger">
-                            Invalid username or password.
-                        </div>
-                    </div>
-                    <div th:if="${param.logout}">
-                        <div class="alert alert-info">
-                            You have been logged out.
-                        </div>
-                    </div>
-                    <div th:if="${param.delete}">
-                        <div class="alert alert-danger">
-                            Your profile has been deleted successfully.
-                        </div>
-                    </div>
-                    <div th:if="${infoMessage != null}" >
-                        <div class="alert alert-info">
-                            <p th:text="#{${infoMessage}}"></p>
-                        </div>
-                    </div>
+                <div class="row">
+                    <div class="col-xs-10 col-xs-offset-1 col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2">
 
-                    <div class="form-group">
-                        <label class="control-label col-sm-2" for="username">Login:</label>
-                        <div class="col-sm-10">
+                        <div class="form-group">
+                        <div th:if="${param.error}">
+                            <div class="alert alert-danger">
+                                Invalid username or password.
+                            </div>
+                        </div>
+                        <div th:if="${param.logout}">
+                            <div class="alert alert-info">
+                                You have been logged out.
+                            </div>
+                        </div>
+                        <div th:if="${param.delete}">
+                            <div class="alert alert-danger">
+                                Your profile has been deleted successfully.
+                            </div>
+                        </div>
+                        <div th:if="${infoMessage != null}" >
+                            <div class="alert alert-info">
+                                <p th:text="#{${infoMessage}}"></p>
+                            </div>
+                        </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label" for="username">Username</label>
                             <input type="text" class="form-control input-lg" id="username" name="username"
                                    required="required"/>
                         </div>
-                    </div>
 
-                    <div class="form-group">
-                        <label class="control-label col-sm-2" for="password">Password:</label>
-                        <div class="col-sm-10">
+                        <div class="form-group">
+                            <label class="control-label" for="password">Password</label>
                             <input type="password" class="form-control input-lg" name="password" id="password"
                                    required="required"/>
                         </div>
-                    </div>
 
-                    <div class="form-group login-group-checkbox">
-                        <div class="row">
-                            <div class="col-sm-2">
-                            </div>
-                            <div class = "col-sm-10">
-                                <input style="margin-left:1em" type="checkbox" id="remember_me" name="remember-me" />
-                                <label for="remember_me">Remember me</label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <div class="col-sm-offset-2 col-sm-10">
+                        <div class="form-group">
                             <button type="submit" class="btn btn-success">Enter</button>
                         </div>
+
                     </div>
-                </fieldset>
+                </div>
             </form>
 
-            <div class="etc-login-form">
-                <p>forgot your password? <a th:href="@{/password/forgot}">click
-                    here</a></p>
-                <p>new user? <a th:href="@{/registration}">create new account</a></p>
-            </div>
-
+        <div class="etc-login-form">
+            <p>forgot your password? <a th:href="@{/password/forgot}">click
+                here</a></p>
+            <p>new user? <a th:href="@{/registration}">create account</a></p>
         </div>
-    </div>
+
+     </div>
 </div>
 
 <div th:replace="fragments/footer :: footer">
