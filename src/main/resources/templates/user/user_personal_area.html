@@ -86,7 +86,7 @@
                             <label for="phone" class="control-label">Phone</label>
                             <input type="text" class="form-control" id="phone" placeholder=""
                                    required="required" minlength="7" maxlength="15"
-                                   pattern="(\+380)?[\d\s-()]+"
+                                   pattern="(\+380)?[\d\s\-()]+"
                                    th:field="*{phoneNumber}"/>
                             <div class="has-error help-block"
                                  th:if="${#fields.hasErrors('phoneNumber')}"

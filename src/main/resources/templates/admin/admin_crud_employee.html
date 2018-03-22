@@ -74,7 +74,7 @@
                              th:classappend="${#fields.hasErrors('contact.phoneNumber')}? 'has-error'">
                             <label for="phone" class="control-label">Phone</label>
                             <input type="text" class="form-control" id="phone" placeholder=""
-                                   pattern="(\+380)?[\d\s-()]+"
+                                   pattern="(\+380)?[\d\s\-()]+"
                                    required="required" minlength="7" maxlength="15"
                                    oninput="clearErrorStyles(this)"
                                    th:field="*{contact.phoneNumber}"/>
@@ -163,7 +163,7 @@
                             <label for="phone" class="control-label">Phone</label>
                             <input type="text" class="form-control" id="phone" placeholder=""
                                    required="required" minlength="7" maxlength="15"
-                                   pattern="(\+380)?[\d\s-()]+"
+                                   pattern="(\+380)?[\d\s\-()]+"
                                    oninput="clearErrorStyles(this)"
                                    th:field="*{contact.phoneNumber}"/>
                             <div class="has-error help-block"
