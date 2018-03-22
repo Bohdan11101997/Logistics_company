@@ -232,10 +232,10 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
     public List<Order> search(SearchFormOrder searchFormOrder, Long id) {
 
         String firstName = searchFormOrder.getFirstName();
-        firstName = firstName == null ? "%%" : prepareSearchString(firstName);
+        firstName = firstName == null ? "%%" : prepareSearchString(firstName.trim());
 
         String lastName = searchFormOrder.getLastName();
-        lastName = lastName == null ? "%%" : prepareSearchString(lastName);
+        lastName = lastName == null ? "%%" : prepareSearchString(lastName.trim());
 
         LocalDateTime from = searchFormOrder.getFrom();
         if (from == null) {

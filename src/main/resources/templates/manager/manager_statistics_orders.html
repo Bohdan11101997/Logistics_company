@@ -110,19 +110,28 @@
                             <thead>
                             <tr>
                                 <th>#</th>
-                                <th>User Name</th>
+                                <th>Receiver contact</th>
+                                <th>Sender contact</th>
+                                <th>Order type</th>
+                                <th>Estimated delivery time</th>
+                                <th>Employee id</th>
+                                <th>Handler employee name</th>
                                 <th>Role</th>
-                                <th>Count</th>
+
 
                             </tr>
                             </thead>
                             <tbody>
 
-                            <tr th:each="person, iter : ${personList}">
+                            <tr th:each="statistic_task, iter : ${personList}">
                                 <td th:text="${iter.index + 1}"></td>
-                                <td th:text="${person.userName}"></td>
-                                <td th:text="${person.roles}"></td>
-                                <td th:text="${person.id}"></td>
+                                <td th:text="${statistic_task.order.receiverContact}"></td>
+                                <td th:text="${statistic_task.order.senderContact}"></td>
+                                <td th:text="${statistic_task.order.orderType}"></td>
+                                <td th:text="${statistic_task.order.deliveryTime}"></td>
+                                <td th:text="${statistic_task.person.id}"></td>
+                                <td th:text="${statistic_task.person.userName}"></td>
+                                <td th:text="${statistic_task.person.roles}"></td>
                             </tr>
                             </tbody>
                         </table>

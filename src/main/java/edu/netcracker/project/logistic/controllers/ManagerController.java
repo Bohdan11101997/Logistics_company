@@ -111,7 +111,7 @@ public class ManagerController {
     @PostMapping("/statistics/orders")
     public  String SearchOrdersByManager(@ModelAttribute("searchFormOrderStatistic") SearchFormOrderStatistic searchFormOrderStatistic, Model model)
     {
-        List<Person> personList = managerStatisticsDao.searchStatisiticOrders(searchFormOrderStatistic);
+        List<Statistic_task> personList = managerStatisticsDao.searchStatisiticOrders(searchFormOrderStatistic);
         model.addAttribute("countOrder",managerStatisticsDao.countOrders());
         model.addAttribute("destination_typeOrders", orderTypeDao.findAll());
         model.addAttribute("status_OrdersList", orderStatusDao.findAll());
