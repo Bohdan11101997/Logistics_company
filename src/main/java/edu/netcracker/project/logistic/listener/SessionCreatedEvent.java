@@ -1,8 +1,8 @@
 package edu.netcracker.project.logistic.listener;
 
 import edu.netcracker.project.logistic.model.Person;
+import edu.netcracker.project.logistic.processing.RouteProcessor;
 import edu.netcracker.project.logistic.processing.TaskProcessor;
-import edu.netcracker.project.logistic.processing.TaskProcessorCourier;
 import edu.netcracker.project.logistic.service.PersonService;
 import org.springframework.context.ApplicationListener;
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
@@ -16,13 +16,13 @@ import org.springframework.stereotype.Component;
 public class SessionCreatedEvent implements ApplicationListener<AuthenticationSuccessEvent> {
     private PersonService personService;
     private TaskProcessor taskProcessor;
-    private TaskProcessorCourier taskProcessorCourier;
+    private RouteProcessor routeProcessor;
 
     public SessionCreatedEvent(PersonService personService, TaskProcessor taskProcessor,
-                               TaskProcessorCourier taskProcessorCourier) {
+                               RouteProcessor routeProcessor) {
         this.personService = personService;
         this.taskProcessor = taskProcessor;
-        this.taskProcessorCourier = taskProcessorCourier;
+        this.routeProcessor = routeProcessor;
     }
 
     @Override
@@ -39,7 +39,7 @@ public class SessionCreatedEvent implements ApplicationListener<AuthenticationSu
                 String username = ((User) auth.getPrincipal()).getUsername();
                 Long employeeId = personService.findOne(username).map(Person::getId)
                         .orElse(null);
-                taskProcessorCourier.addCourier(employeeId);
+                routeProcessor.addCourier(employeeId);
             }
         }
     }

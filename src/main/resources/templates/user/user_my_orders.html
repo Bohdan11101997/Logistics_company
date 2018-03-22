@@ -81,11 +81,16 @@
                                     <div class="form-group"
                                          th:classappend="${#fields.hasErrors('from')}? 'has-error'">
                                         <label class="control-label">Registration Date Interval</label>
-                                        <div class="form-inline">
-                                            <input type="date" class="form-control" id="from-date" title="From"
-                                                   th:field="*{{from}}" oninput="onSearchDateClick(this)"/>
-                                            <input type="date" class="form-control" id="to-date" title="To"
-                                                   th:field="*{{to}}" oninput="onSearchDateClick(this)"/>
+                                        <div class="input-daterange input-group" id="datepicker">
+                                            <input class="form-control" id="from-date" title="From"
+                                                   pattern="[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01])"
+                                                   placeholder="yyyy-mm-dd"
+                                                   th:field="*{{from}}"/>
+                                            <span class="input-group-addon">to</span>
+                                            <input class="form-control" id="to-date" title="To"
+                                                   pattern="[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01])"
+                                                   placeholder="yyyy-mm-dd"
+                                                   th:field="*{{to}}"/>
                                         </div>
                                     </div>
 
@@ -136,7 +141,7 @@
                                 <td th:text="${order.receiverContact}"></td>
                                 <td th:text="${order.receiverAddress}"></td>
                                 <td th:text="${order.office}"></td>
-                                <td th:text="${order.creationTime}"></td>
+                                <td th:text="${{order.creationTime}}"></td>
                                 <td th:text="${order.deliveryTime}"></td>
                                 <td th:text="${order.orderType}"></td>
                                 <td th:text="${order.orderStatus}"></td>
@@ -160,6 +165,7 @@
 <script type="text/javascript">
     document.getElementById('user_my_orders').className='active';
     createMultiSelect("#role", true);
+    createDatePicker(".input-daterange");
 </script>
 
 </body>

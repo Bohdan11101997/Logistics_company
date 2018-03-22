@@ -2,9 +2,11 @@ package edu.netcracker.project.logistic.service.impl;
 
 import edu.netcracker.project.logistic.dao.*;
 import edu.netcracker.project.logistic.model.*;
+import edu.netcracker.project.logistic.processing.RouteProcessor;
 import edu.netcracker.project.logistic.processing.TaskProcessor;
-import edu.netcracker.project.logistic.processing.TaskProcessorCourier;
 import edu.netcracker.project.logistic.service.OrderService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -14,24 +16,28 @@ import java.util.Optional;
 
 @Component
 public class OrderServiceImpl implements OrderService {
+    private final static Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
+
     private AddressDao addressDao;
     private ContactDao contactDao;
     private OrderDao orderDao;
     private OrderStatusDao orderStatusDao;
     private TaskDao taskDao;
     private TaskProcessor taskProcessor;
-    private TaskProcessorCourier taskProcessorCourier;
+    private RouteProcessor routeProcessor;
+    private CourierDataDao courierDataDao;
 
     public OrderServiceImpl(AddressDao addressDao, ContactDao contactDao, OrderDao orderDao,
                             OrderStatusDao orderStatusDao, TaskDao taskDao, TaskProcessor taskProcessor,
-                            TaskProcessorCourier taskProcessorCourier) {
+                            RouteProcessor routeProcessor, CourierDataDao courierDataDao) {
         this.addressDao = addressDao;
         this.contactDao = contactDao;
         this.orderDao = orderDao;
         this.orderStatusDao = orderStatusDao;
         this.taskDao = taskDao;
         this.taskProcessor = taskProcessor;
-        this.taskProcessorCourier = taskProcessorCourier;
+        this.routeProcessor = routeProcessor;
+        this.courierDataDao = courierDataDao;
     }
 
     @Override
@@ -75,7 +81,7 @@ public class OrderServiceImpl implements OrderService {
         orderDao.save(order);
         task.setCompleted(true);
         taskDao.save(task);
-        taskProcessorCourier.createTask(order);
+        routeProcessor.addOrder(order);
     }
 
     @Override
@@ -102,53 +108,85 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void confirmDelivered(Long employeeId, Long orderId) {
+    public void confirmDelivered(CourierData data, Long orderId) {
+        Long employeeId = data.getCourier().getId();
         Optional<Order> opt = orderDao.findOne(orderId);
         if (!opt.isPresent()) {
             throw new IllegalArgumentException("Employee not found");
         }
         Order order = opt.get();
-        Task task = taskDao.findByOrderId(order.getId()).orElseThrow(
-                () -> new IllegalStateException(
-                        String.format("Call centre agent processed order #%d but task not exists", order.getId()))
-        );
-        if (!employeeId.equals(task.getEmployeeId())) {
-            throw new IllegalArgumentException("Can't confirm not assigned order");
+        if (!employeeId.equals(order.getCourier().getId())) {
+            throw new IllegalArgumentException("Can't fail not assigned order");
         }
+        Route route = data.getRoute();
+        List<RoutePoint> points = route.getWayPoints();
+        RoutePoint point = points
+                .stream()
+                .filter(p -> p.getOrder().getId().equals(orderId))
+                .findFirst()
+                .orElseThrow(() -> {
+                    logger.error(
+                            "Attempt to confirm delivery for order #{} which is not in current route for courier #{}",
+                            orderId,
+                            employeeId
+                    );
+                    return new IllegalArgumentException("Route point for order not exists");
+                });
+        if (points.size() == 0) {
+            data.setCourierStatus(CourierStatus.FREE);
+            data.setRoute(null);
+        }
+        data.setLastLocation(String.format("%s,%s", point.getLatitude(), point.getLongitude()));
+        data.setRoute(route);
+        courierDataDao.save(data);
         order.setOrderStatus(orderStatusDao.findByName("DELIVERED")
                 .orElseThrow(
                         () -> new IllegalStateException("Can't find order status 'DELIVERED'")
                 ));
         orderDao.save(order);
-        task.setCompleted(true);
-        taskDao.save(task);
     }
 
     @Override
-    public void confirmFailed(Long employeeId, Long orderId) {
+    public void confirmFailed(CourierData data, Long orderId) {
+        Long employeeId = data.getCourier().getId();
         Optional<Order> opt = orderDao.findOne(orderId);
         if (!opt.isPresent()) {
             throw new IllegalArgumentException("Employee not found");
         }
         Order order = opt.get();
-        Task task = taskDao.findByOrderId(order.getId()).orElseThrow(
-                () -> new IllegalStateException(
-                        String.format("Call centre agent processed order #%d but task not exists", order.getId()))
-        );
-        if (!employeeId.equals(task.getEmployeeId())) {
-            throw new IllegalArgumentException("Can't confirm not assigned order");
+        if (!employeeId.equals(order.getCourier().getId())) {
+            throw new IllegalArgumentException("Can't fail not assigned order");
         }
+
+        Route route = data.getRoute();
+        List<RoutePoint> points = route.getWayPoints();
+        RoutePoint point = points
+                .stream()
+                .filter(p -> p.getOrder().getId().equals(orderId))
+                .findFirst()
+                .orElseThrow(() -> {
+                    logger.error(
+                            "Attempt to fail delivery for order #{} which is not in current route for courier #{}",
+                            orderId,
+                            employeeId
+                    );
+                    return new IllegalArgumentException("Route point for order not exists");
+                });
+        if (points.size() == 0) {
+            data.setCourierStatus(CourierStatus.FREE);
+            data.setRoute(null);
+        }
+        data.setLastLocation(String.format("%s,%s", point.getLatitude(), point.getLongitude()));
+        data.setRoute(route);
+        courierDataDao.save(data);
+
         order.setOrderStatus(orderStatusDao.findByName("PROCESSING")
                 .orElseThrow(
                         () -> new IllegalStateException("Can't find order status 'PROCESSING'")
                 ));
         orderDao.save(order);
-        task.setCompleted(true);
-        taskDao.save(task);
         taskProcessor.createTask(order);
     }
-
-
 
     @Override
     public void draft(Order order) {

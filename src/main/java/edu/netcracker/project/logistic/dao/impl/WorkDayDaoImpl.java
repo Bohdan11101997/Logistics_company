@@ -55,6 +55,7 @@ public class WorkDayDaoImpl implements WorkDayDao, RowMapper<WorkDay> {
         }
     }
 
+
     @Override
     public WorkDay save(WorkDay object) {
         return null;
@@ -73,4 +74,9 @@ public class WorkDayDaoImpl implements WorkDayDao, RowMapper<WorkDay> {
     private String getFindScheduleForDateQuery() {
         return queryService.getQuery("select.work_day.schedule_for_day");
     }
+//    private  String  getFindScheduleForDateQueryForAllEmployee()
+//    {
+//
+//        return queryService.getQuery("select.work_day.schedule_for_day.all.employees");
+//    }
 }

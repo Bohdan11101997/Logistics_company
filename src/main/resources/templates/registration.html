@@ -8,9 +8,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <title>Registration</title>
-
-    <!-- Bootstrap -->
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"/>
+    <th:block th:replace="fragments/header :: header-bootstrap-config" />
+    <th:block th:replace="fragments/header :: header-bootstrap-config-IE" />
 
     <link th:href="@{/css/registration.css}" href="../static/css/registration.css" rel="stylesheet"/>
     <link rel="stylesheet" th:href="@{/css/main_content.css}" type="text/css" href="../static/css/main_content.css" />
@@ -37,13 +36,6 @@
     </style>
 
     <script th:src="@{/js/forms.js}" src="../static/js/forms.js"></script>
-
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
 </head>
 <body class="body-color">
 <div class="container">
@@ -81,9 +73,8 @@
                                            required="required" minlength="6" maxlength="30"
                                            oninput="clearErrorStyles(this)"
                                            th:field="*{userName}"/>
-                                    <div style="color:pink;" class="has-error help-block"
+                                    <div class="has-error help-block"
                                          th:if="${#fields.hasErrors('userName')}">
-                                        Sorry, but this username is already taken.
                                     </div>
                                 </div>
 
@@ -109,8 +100,8 @@
                                            oninput="clearErrorStyles(this)"
                                            th:field="*{contact.email}"/>
                                     <div class="has-error help-block"
-                                         th:if="${#fields.hasErrors('contact.email')}">
-                                        Sorry, but this email is already taken.
+                                         th:if="${#fields.hasErrors('contact.email')}"
+                                         th:errors="*{contact.email}">
                                     </div>
                                 </div>
 
@@ -119,11 +110,12 @@
                                     <label for="phone" class="control-label">Phone</label>
                                     <input type="text" class="form-control" id="phone" placeholder=""
                                            required="required" minlength="7" maxlength="15"
+                                           pattern="(\+380)?[\d\s-()]+"
                                            oninput="clearErrorStyles(this)"
                                            th:field="*{contact.phoneNumber}"/>
                                     <div class="has-error help-block"
-                                         th:if="${#fields.hasErrors('contact.phoneNumber')}">
-                                        Sorry, but this phone number is already taken.
+                                         th:if="${#fields.hasErrors('contact.phoneNumber')}"
+                                         th:errors="*{contact.phoneNumber}">
                                     </div>
                                 </div>
 
@@ -144,7 +136,10 @@
 
         </div>
     </div>
+
+    <th:block th:replace="fragments/footer :: footer" />
 </div>
+
 
     <th:block th:replace="fragments/footer :: footer" />
 

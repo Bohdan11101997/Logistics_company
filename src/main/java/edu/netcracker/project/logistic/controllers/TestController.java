@@ -4,12 +4,12 @@ import com.google.maps.model.GeocodingResult;
 import edu.netcracker.project.logistic.dao.ContactDao;
 import edu.netcracker.project.logistic.dao.OfficeDao;
 import edu.netcracker.project.logistic.dao.OrderDao;
+import edu.netcracker.project.logistic.dao.PersonCrudDao;
 import edu.netcracker.project.logistic.dao.impl.AddressDaoImpl;
+import edu.netcracker.project.logistic.dao.impl.ManagerStatisticsDaoImpl;
 import edu.netcracker.project.logistic.dao.impl.OrderDaoImpl;
-import edu.netcracker.project.logistic.model.Address;
-import edu.netcracker.project.logistic.model.Advertisement;
-import edu.netcracker.project.logistic.model.Office;
-import edu.netcracker.project.logistic.model.Pager;
+import edu.netcracker.project.logistic.dao.impl.PersonCrudDaoImpl;
+import edu.netcracker.project.logistic.model.*;
 import edu.netcracker.project.logistic.service.AddressService;
 import edu.netcracker.project.logistic.service.AdvertisementService;
 import edu.netcracker.project.logistic.service.PersonService;
@@ -24,7 +24,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.Arrays;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -39,12 +41,18 @@ public class TestController {
 
     private PersonService personService;
 
+
+    @Autowired
+    ManagerStatisticsDaoImpl managerStatisticsDao;
+
     @Autowired
     AddressService addressService;
 
     @Autowired
     ContactDao contactDao;
 
+    @Autowired
+    PersonCrudDaoImpl personCrudDao;
     Address address;
 
   OrderDaoImpl orderDao;
@@ -64,6 +72,12 @@ public class TestController {
     @RequestMapping(value = "/test")
     public String test(Model model) {
 
+//        SearchFormStatisticEmployee searchFormStatisticEmployee = new SearchFormStatisticEmployee();
+//        searchFormStatisticEmployee.setFirstName("Tyrion");
+
+
+
+
     //        PdfView pdfView;
 
 //        Address address = new Address("Київ, Академіка Янгеля, 5");
@@ -82,7 +96,7 @@ public class TestController {
 //        contactDao.save(contact);
 //        Person person1 = new Person("nick_name", "1121212", localDate, "sdfffsfsdf", contact);
 //        personService.savePerson(person1);
-model.addAttribute("pdfView");
+
         return "test";
     }
 

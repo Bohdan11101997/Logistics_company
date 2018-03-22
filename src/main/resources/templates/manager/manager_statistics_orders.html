@@ -12,6 +12,7 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css" />
 
+    <script th:src="@{/js/forms.js}" src="../../static/js/forms.js"></script>
 </head>
 <body class="body-color">
 
@@ -31,64 +32,87 @@
                     <div class="well">
                         <h3 class="caption">Search Criteria</h3>
 
-                        <form method="post" class="form-horizontal">
+                        <form method="post" class="form-horizontal"
+                              th:object="${searchFormOrderStatistic}">
 
                             <div class="row">
                                 <div class="col-lg-8 col-lg-offset-2">
 
+                                    <!--<div class="form-group">-->
+                                        <!--<label for="select-interval">Choose range</label>-->
+                                        <!--<select class="form-control" id="select-interval" onchange="showChosenRangeInputs()">-->
+                                            <!--<option value="year">Year</option>-->
+                                            <!--<option value="month">Month</option>-->
+                                            <!--<option value="interval">Interval</option>-->
+                                            <!--<option value="all">All time</option>-->
+                                        <!--</select>-->
+                                    <!--</div>-->
+
+                                    <!--<div style="display: block" class="form-group" id="select-year-block">-->
+                                        <!--<label for="select-year">Choose year</label>-->
+                                        <!--<select class="form-control" id="select-year"-->
+                                        <!--th:field="*{year}">-->
+                                            <!--<option th:value="${2017}">2017</option>-->
+                                            <!--<option  th:value="${2019}">2018</option>-->
+                                            <!--<option th:value="${2019}">2019</option>-->
+                                        <!--</select>-->
+                                    <!--</div>-->
+
+                                    <!--<div style="display: none" class="form-group" id="select-month-block">-->
+                                        <!--<label for="select-month">Choose month</label>-->
+                                        <!--<select class="form-control" id="select-month"-->
+                                            <!--th:field="*{month}">-->
+                                            <!--<option th:value="${1}">january</option>-->
+                                            <!--<option th:value="${2}">february</option>-->
+                                            <!--<option th:value="${3}">december</option>-->
+                                        <!--</select>-->
+                                    <!--</div>-->
                                     <div class="form-group">
-                                        <label for="select-interval" class="control-label">Choose range</label>
-                                        <select class="form-control" id="select-interval" onchange="showChosenRangeInputs()">
-                                            <option value="year">Year</option>
-                                            <option value="month">Month</option>
-                                            <option value="interval">Interval</option>
-                                            <option value="all">All time</option>
+                                        <label for="destination_typeIds" class="control-label">Destination type</label>
+                                        <br/>
+                                        <select id="destination_typeIds" multiple="multiple"
+                                                th:field="*{destination_typeIds}">
+                                            <option th:each="orderType: ${destination_typeOrders}"
+                                                    th:value="${orderType.id}"
+                                                    th:text="${{orderType}}">Order Type</option>
                                         </select>
                                     </div>
 
-                                    <div style="display: block" class="form-group" id="select-year-block">
-                                        <label for="select-year" class="control-label">Choose year</label>
-                                        <select class="form-control" id="select-year">
-                                            <option>2017</option>
-                                            <option>2018</option>
-                                            <option>2019</option>
-                                        </select>
-                                    </div>
-
-                                    <div style="display: none" class="form-group" id="select-month-block">
-                                        <label for="select-month" class="control-label">Choose month</label>
-                                        <select class="form-control" id="select-month">
-                                            <option>january</option>
-                                            <option>february</option>
-                                            <option>december</option>
-                                        </select>
-                                    </div>
-
-                                    <div style="display: none" class="form-group required" id="select-interval-block">
-                                        <label class="control-label">Date Interval</label>
+                                    <div class="form-group"
+                                         th:classappend="${#fields.hasErrors('from')}? 'has-error'">
+                                        <label class="control-label">Registration date interval</label>
                                         <div class="form-inline">
-                                            <input type="date" class="form-control" id="from-date" title="From"/>
-                                            <input type="date" class="form-control" id="to-date" title="To"/>
+                                            <input class="form-control" id="from-date" title="From"
+                                                   pattern="[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01])" placeholder="yyyy-mm-dd"
+                                                   th:field="*{{from}}" oninput="onSearchDateClick(this)"/>
+                                            <input class="form-control" id="to-date" title="To"
+                                                   pattern="[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01])" placeholder="yyyy-mm-dd"
+                                                   th:field="*{{to}}" oninput="onSearchDateClick(this)"/>
                                         </div>
                                     </div>
 
+                                    <!--<div class="form-group">-->
+                                        <!--<label for="select-order-type" class="control-label">Order Type</label>-->
+                                        <!--<select class="form-control" id="select-order-type">-->
+                                            <!--<option>All</option>-->
+                                            <!--<option>Documents</option>-->
+                                            <!--<option>Package</option>-->
+                                        <!--</select>-->
+                                    <!--</div>-->
+
                                     <div class="form-group">
-                                        <label for="select-order-type" class="control-label">Order Type</label>
-                                        <select class="form-control" id="select-order-type">
-                                            <option>All</option>
-                                            <option>Documents</option>
-                                            <option>Package</option>
+                                        <label for="order_statusIds" class="control-label">Order status</label>
+                                        <br/>
+                                        <select id="order_statusIds" multiple="multiple"
+                                                th:field="*{order_statusIds}">
+                                            <option th:each="orderStatus: ${status_OrdersList}"
+                                                    th:value="${orderStatus.id}"
+                                                    th:text="${{orderStatus.name}}">Order status</option>
                                         </select>
                                     </div>
 
-                                    <div class="form-group">
-                                        <label for="select-order-status"  class="control-label">Order Status</label>
-                                        <select id="select-order-status" class="selectpicker" multiple="multiple" data-width="100%" title="You can select some">
-                                            <option>Confirmed</option>
-                                            <option>Delivered</option>
-                                            <option>Cancelled</option>
-                                        </select>
-                                    </div>
+
+
 
                                     <div class="form-group">
                                         <button class="btn btn-primary">
@@ -103,92 +127,55 @@
 
                     </div>
 
-                    <!-- For year. Maybe there will be diagram -->
-                    <h2>Year: 2018</h2>
+
                     <div class="table-responsive">
+                        <h2 >Date range:</h2> <label  th:text="${{fromDate}}"></label> <label th:text="${{toDate}}"></label>
                         <table class="table">
                             <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Month</th>
-                                <th>Type</th>
-                                <th>Amount</th>
-                                <th>Percentage</th>
+                                <th>Username</th>
+                                <th>Role</th>
+                                <th>Count</th>
+
+                    <!--&lt;!&ndash; For month. Maybe there will be diagram &ndash;&gt;-->
+                    <!--<h2>Year: 2018 Month: February</h2>-->
+                    <!--<div class="table-responsive">-->
+                        <!--<table class="table">-->
+                            <!--<thead>-->
+                            <!--<tr>-->
+                                <!--<th>Day number</th>-->
+                                <!--<th>Type</th>-->
+                                <!--<th>Amount</th>-->
+                                <!--<th>Percentage</th>-->
                             </tr>
                             </thead>
                             <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>January</td>
-                                <td>Documents, Packages, Cargo</td>
-                                <td>420</td>
-                                <td>13%</td>
-                            </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>May</td>
-                                <td>Documents, Packages, Cargo</td>
-                                <td>200</td>
-                                <td>20%</td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td>Total</td>
-                                <td>Documents, Packages, Cargo</td>
-                                <td>750, 829, 321</td>
-                                <td>40%, 50%, 10%</td>
+
+                            <tr th:each="person, iter : ${personList}">
+                                <td th:text="${iter.index + 1}"></td>
+                                <td th:text="${person.userName}"></td>
+                                <td th:text="${person.roles}"></td>
+                                <td th:text="${person.id}"></td>
                             </tr>
                             </tbody>
                         </table>
+                        <h5>Count orders</h5>
+                        <label th:text="${countOrdersBetweenDate}"></label>
+                        <h2>Total orders:</h2>
+                        <label th:text="${countOrder}"></label>
                     </div>
-
-                    <!-- For month. Maybe there will be diagram -->
-                    <h2>Year: 2018 Month: February</h2>
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead>
-                            <tr>
-                                <th>Day number</th>
-                                <th>Type</th>
-                                <th>Amount</th>
-                                <th>Percentage</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>All</td>
-                                <td>420</td>
-                                <td>13%</td>
-                            </tr>
-                            <tr>
-                                <td>7</td>
-                                <td>All</td>
-                                <td>820</td>
-                                <td>20%</td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td>Total</td>
-                                <td>All</td>
-                                <td>4458</td>
-                                <td>100%</td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
                     <!-- For interval -->
-                    <h2>Date range: 2018/05/12 - 2018/10/12</h2>
-                    <h5>Total days:</h5><label>75</label>
-                    <h5>Types:</h5><label>Documents, Cargo</label>
-                    <h5>Total orders:</h5><label>820, 560</label>
+                    <!--<h2>Date range: 2018/05/12 - 2018/10/12</h2>-->
+                    <!--<h5>Total days:</h5><label>75</label>-->
+                    <!--<h5>Types:</h5><label>Documents, Cargo</label>-->
+                    <!--<h5>Total orders:</h5><label>820, 560</label>-->
 
                     <!-- For all time -->
-                    <h2>All time</h2>
-                    <h5>Total days:</h5><label>560</label>
-                    <h5>Types:</h5><label>Documents, Cargo</label>
-                    <h5>Total orders:</h5><label>1234, 5600</label>
+                    <!--<h2>All time</h2>-->
+                    <!--<h5>Total days:</h5><label>560</label>-->
+                    <!--<h5>Types:</h5><label>Documents, Cargo</label>-->
+                    <!--<h5>Total orders:</h5><label>1234, 5600</label>-->
 
                 </div>
 
@@ -225,6 +212,9 @@
             document.getElementById('select-interval-block').style.display = "block";
         }
     }
+
+    createDatePicker("#from-date");
+    createDatePicker("#to-date");
 </script>
 
 </body>

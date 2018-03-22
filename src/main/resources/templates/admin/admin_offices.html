@@ -39,13 +39,8 @@
                                     </div>
                                     <div class="form-group">
                                         <label for="department_number" class="control-label">Department Number</label>
-                                        <input type="text" class="form-control" id="department_number" />
+                                        <input type="text" class="form-control" id="department_number"  name="department"  />
                                      </div>
-
-                                    <div class="form-group">
-                                        <label for="offices" class="control-label">Department Name</label>
-                                        <input type="text" class="form-control" id="offices" name="department"/>
-                                    </div>
 
                                     <div class="form-group">
                                         <button class="btn btn-primary">
@@ -94,13 +89,13 @@
     </div>
 </div>
 
-<th:block th:replace="fragments/footer :: footer"/>
+    <th:block th:replace="fragments/footer :: footer"/>
 
 
-<th:block th:replace="fragments/left_menu :: left-menu-footer" />
-<script type="text/javascript">
-    document.getElementById('offices').className='active';
-</script>
+    <th:block th:replace="fragments/left_menu :: left-menu-footer" />
+    <script type="text/javascript">
+        document.getElementById('offices').className='active';
+    </script>
 
 </body>
 </html>

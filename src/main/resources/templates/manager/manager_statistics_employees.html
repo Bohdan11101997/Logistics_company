@@ -33,6 +33,8 @@
 
                     <div class="well">
                         <h3 class="caption">Search Criteria</h3>
+                        <form method="post" class="form-horizontal" th:object="${searchFormStatisticEmployee}">
+                        <h3 class="caption">Search Criteria</h3>
 
                         <form method="post" class="form-horizontal">
                             <div class="row">
@@ -40,45 +42,60 @@
 
                                     <div class="form-group">
                                         <label for="first-name" class="control-label">First Name</label>
-                                        <input type="text" class="form-control" id="first-name"/>
+                                        <input type="text" class="form-control" id="first-name"
+                                               th:field="*{firstName}" />
                                     </div>
 
                                     <div class="form-group">
                                         <label for="last-name" class="control-label">Last Name</label>
-                                        <input type="text" class="form-control" id="last-name"/>
+                                        <input type="text" class="form-control" id="last-name"
+                                               th:field="*{lastName}"/>
                                     </div>
 
-                                    <div class="form-group">
-                                        <label for="selectWorkDay" class="control-label">Work Days</label>
-                                        <select id="selectWorkDay" class="selectpicker" multiple="multiple" data-width="100%" title="You can select some">
-                                            <option>Monday</option>
-                                            <option>Tuesday</option>
-                                            <option>Friday</option>
-                                        </select>
-                                    </div>
 
-                                    <div class="form-group">
-                                        <label for="selectEmployee" class="control-label">Select List</label>
-                                        <select class="form-control" id="selectEmployee" onchange="showCourierMove()">
-                                            <option value="couriers" id="couriers">Couriers</option>
-                                            <option value="call-center-agents" id="call-center-agents">Call center agents</option>
-                                        </select>
-                                    </div>
+                            <!--<div class="form-group">-->
+                                <!--<label for="selectWorkDay" class="control-label">Work Days</label>-->
+                                <!--<select id="selectWorkDay" class="selectpicker" multiple="multiple" title="You can select some">-->
+                                    <!--<option>Monday</option>-->
+                                    <!--<option>Tuesday</option>-->
+                                    <!--<option>Friday</option>-->
+                                <!--</select>-->
+                            <!--</div>-->
 
-                                    <div class="form-group" style="display:block" id="radio-courier-move">
-                                        <label class="radio-inline control-label"><input type="radio" name="optradio" checked="checked" />Car</label>
-                                        <label class="radio-inline control-label"><input type="radio" name="optradio" />On foot</label>
-                                    </div>
+                                <div class="form-group">
+                                    <label for="role" class="control-label">Role</label>
+                                    <br />
+                                    <select id="role" multiple="multiple"
+                                            th:field="*{roleIds}">
+                                        <option th:each="role: ${availableRoles}"
+                                                th:value="${role.roleId}"
+                                                th:text="${{role}}">Role</option>
+                                    </select>
+                                </div>
 
-                                    <div class="form-group">
-                                        <label for="sortEmployees" class="control-label">Sort by</label>
-                                        <select class="form-control" id="sortEmployees">
-                                            <option>Last Name</option>
-                                            <option>Registration Date</option>
-                                            <option>Orders Handled</option>
-                                            <option>Usefulness</option>
-                                        </select>
-                                    </div>
+                            <!--<div class="form-group">-->
+                                <!--<label for="selectEmployee">Select list</label>-->
+                                <!--<select class="form-control" id="selectEmployee" onchange="showCourierMove()">-->
+                                    <!--<option value="couriers" id="couriers">Couriers</option>-->
+                                    <!--<option value="call-center-agents" id="call-center-agents">Call center agents</option>-->
+                                <!--</select>-->
+                            <!--</div>-->
+
+                            <!--<div class="form-group" style="display:block" id="radio-courier-move">-->
+                                <!--<label class="radio-inline"><input type="radio" name="optradio" checked="checked" />Car</label>-->
+                                <!--<label class="radio-inline"><input type="radio" name="optradio" />On foot</label>-->
+                            <!--</div>-->
+
+                            <div class="form-group">
+                                <label for="sortEmployees" class="control-label">Sort by</label>
+                                <select class="form-control" id="sortEmployees"
+                                        th:field="*{sortId}">
+                                    <!--<option>Last Name</option>-->
+                                    <option th:value="${1}">Registration Date</option>
+                                    <option th:value="${2}">Orders Handled</option>
+                                    <!--<option>Usefulness</option>-->
+                                </select>
+                            </div>
 
                                     <div class="form-group">
                                         <button class="btn btn-primary">
@@ -102,27 +119,32 @@
                                 <th>Last Name</th>
                                 <th>E-mail</th>
                                 <th>Phone</th>
-                                <th>Move</th>
-                                <th>Work Days</th>
-                                <th>Registration Date</th>
-                                <th>Orders Handled</th>
-                                <th>Usefulness</th>
+                                <!--<th>Move</th>-->
+                                <!--<th>Work Days</th>-->
+                                <th>Registration date</th>
+                                <th>Orders handled</th>
+                                <!--<th>Usefulness</th>-->
                             </tr>
                             </thead>
                             <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>First</td>
-                                <td>Last</td>
-                                <td>mail@gmail.com</td>
-                                <td>+380777777777</td>
-                                <td>Car</td>
-                                <td>Monday, Tuesday</td>
-                                <td>2018-03-02</td>
-                                <td>252</td>
-                                <td>32</td>
+                            <tr th:each="emp, iter: ${employees}">
+                                <td th:text="${iter.index + 1}">1</td>
+                                <td th:text="${emp.contact.firstName}">Count</td>
+                                <td th:text="${emp.contact.lastName}">Last</td>
+                                <td th:text="${emp.contact.email}">mail@gmail.com</td>
+                                <td th:text="${emp.contact.phoneNumber}">+380777777777</td>
+                                <td th:text="${{emp.registrationDate}}">16-02-2018</td>
+                                <td th:text="${{emp.id}}">16-02-2018</td>
+                                <!--<td>-->
+                                    <!--<form th:action="@{/manager/statistics/employee/1}" th:method="GET">-->
+                                        <!--<button class="btn btn-link more">more</button>-->
+                                    <!--</form>-->
+                                    <!--<a href="#"-->
+                                       <!--th:href="@{'/admin/crud/employee/' + ${emp.id}}"-->
+                                    <!--&gt;Edit</a>-->
+                                <!--</td>-->
                                 <td>
-                                    <form th:action="@{/manager/statistics/employee/1}" th:method="GET">
+                                    <form th:action="@{'/admin/crud/employee/' + ${emp.id}}" th:method="GET">
                                         <button class="btn btn-link more">more</button>
                                     </form>
                                 </td>

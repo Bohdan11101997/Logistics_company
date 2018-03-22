@@ -4,6 +4,7 @@ package edu.netcracker.project.logistic.dao.impl;
 import edu.netcracker.project.logistic.dao.PersonCrudDao;
 import edu.netcracker.project.logistic.dao.PersonRoleDao;
 import edu.netcracker.project.logistic.dao.QueryDao;
+import edu.netcracker.project.logistic.dao.WorkDayDao;
 import edu.netcracker.project.logistic.model.*;
 
 import edu.netcracker.project.logistic.service.QueryService;
@@ -13,6 +14,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +38,9 @@ public class PersonCrudDaoImpl implements PersonCrudDao, QueryDao, RowMapper<Per
     private PersonRoleDao personRoleDao;
     private RowMapper<Contact> contactMapper;
     private RowMapper<Role> roleMapper;
+
+    @Autowired
+    WorkDayDao workDayDao;
 
     @Autowired
     PersonCrudDaoImpl(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate,
@@ -282,6 +287,7 @@ public class PersonCrudDaoImpl implements PersonCrudDao, QueryDao, RowMapper<Per
         return Optional.empty();
     }
 
+
     @Override
     public String getInsertQuery() {
         return queryService.getQuery("insert.person");
@@ -302,8 +308,11 @@ public class PersonCrudDaoImpl implements PersonCrudDao, QueryDao, RowMapper<Per
         return queryService.getQuery("select.person");
     }
 
+
+
+
     private String getFindAllQuery() {
-        return queryService.getQuery("all.person");
+        return queryService.getQuery("count.all.employee");
     }
 
     private String getFindAllEmployeesQuery() {
@@ -327,4 +336,7 @@ public class PersonCrudDaoImpl implements PersonCrudDao, QueryDao, RowMapper<Per
     }
 
     private String getFindByContactIdQuery() { return queryService.getQuery("select.person.by.contact_id"); }
+
+
+
 }

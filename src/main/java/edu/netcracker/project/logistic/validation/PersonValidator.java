@@ -33,7 +33,7 @@ public class PersonValidator implements Validator {
     public void validate(Object o, Errors errors) {
         Person person = (Person) o;
         checkDuplicates(person, errors);
-        contactValidator.validate(person.getContact(), errors);
+        contactValidator.validate(person.getContact(), errors, "contact");
     }
 
     private void checkDuplicates(Person person, Errors errors) {

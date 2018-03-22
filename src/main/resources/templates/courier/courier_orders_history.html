@@ -9,6 +9,8 @@
     <link rel="stylesheet" th:href="@{/css/well.css}" type="text/css" href="../static/css/well.css" />
     <link rel="stylesheet" th:href="@{/css/table.css}" type="text/css" href="../static/css/table.css" />
 
+
+    <script th:src="@{/js/forms.js}" src="../../static/js/forms.js"></script>
 </head>
 <body class="body-color">
 
@@ -34,7 +36,8 @@
 
                                     <div class="form-group">
                                         <label class="control-label">Delivery Date</label>
-                                        <input type="date" class="form-control" id="delivery-date" title="Delivery Date"/>
+                                        <input class="form-control" id="delivery-date" title="Delivery Date"
+                                               pattern="[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01])" placeholder="yyyy-mm-dd" />
                                     </div>
 
                                     <div class="form-group">
@@ -97,6 +100,7 @@
 
 <script type="text/javascript">
     document.getElementById('call_center_tasks_history').className='active';
+    createDatePicker("#delivery-date");
 </script>
 
 </body>

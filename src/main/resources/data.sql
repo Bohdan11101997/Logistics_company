@@ -1,16 +1,27 @@
-
-INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (1, 'Bohdan', 'Zinkevich', '111-111-11', 'bohdan.zsnkevich@ukr.net');
-INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (2, 'Stanislav', 'Popov', '555-535-55', 'stanis1.stanis1@ukr.net');
-INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (3, 'Ned', 'Stark', '222-223-22', 'Ned.Stark@ukr.net');
-INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (4, 'Jaime', 'Lannister', '3313-33-33', 'Jaime.Lannister@ukr.net');
-INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (5, 'stanis1', 'stanis1', '4414-44-44', 'its_an_omen@ukr.net');
-INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (6, 'Tywin', 'Lannister', '5553-55-55', 'Tywin.Lannister@ukr.net');
-INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (7, 'Khal', 'Drogo', '666-66-661', 'Khal.Drogo@example.com');
-INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (8, 'Daenerys', 'Targaryen', '6636-66-636', 'Daenerys.Targaryen@example.com');
-INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (9, 'courier', 'rapidman', '777-616-636', 'courier.rapidman@example.com');
-INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (10, 'Sansa', 'Stark', '777-66-1636', 'Sansa.Stark@example.com');
-INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (11, 'callcenter', 'callcenter', '888-66-1636', 'callcenter.callcenter@example.com');
-INSERT INTO contact(contact_id, first_name, last_name, phone_number, email) VALUES (12, 'manager', 'manager', '888-46-1636', 'manager.manager@example.com');
+INSERT INTO contact (contact_id, first_name, last_name, phone_number, email)
+VALUES (1, 'Bohdan', 'Zinkevich', '984565656', 'bohdan.zsnkevich@ukr.net');
+INSERT INTO contact (contact_id, first_name, last_name, phone_number, email)
+VALUES (2, 'Stanislav', 'Popov', '984565657', 'stanis1.stanis1@ukr.net');
+INSERT INTO contact (contact_id, first_name, last_name, phone_number, email)
+VALUES (3, 'Ned', 'Stark', '984565658', 'Ned.Stark@ukr.net');
+INSERT INTO contact (contact_id, first_name, last_name, phone_number, email)
+VALUES (4, 'Jaime', 'Lannister', '984565659', 'Jaime.Lannister@ukr.net');
+INSERT INTO contact (contact_id, first_name, last_name, phone_number, email)
+VALUES (5, 'Tyrion', 'Lannister', '984565660', 'Tyrion.Lannister@ukr.net');
+INSERT INTO contact (contact_id, first_name, last_name, phone_number, email)
+VALUES (6, 'Tywin', 'Lannister', '984565661', 'Tywin.Lannister@ukr.net');
+INSERT INTO contact (contact_id, first_name, last_name, phone_number, email)
+VALUES (7, 'Khal', 'Drogo', '984565662', 'Khal.Drogo@example.com');
+INSERT INTO contact (contact_id, first_name, last_name, phone_number, email)
+VALUES (8, 'Daenerys', 'Targaryen', '984565663', 'Daenerys.Targaryen@example.com');
+INSERT INTO contact (contact_id, first_name, last_name, phone_number, email)
+VALUES (9, 'courier', 'rapidman', '984565664', 'courier.rapidman@example.com');
+INSERT INTO contact (contact_id, first_name, last_name, phone_number, email)
+VALUES (10, 'Sansa', 'Stark', '984565665', 'Sansa.Stark@example.com');
+INSERT INTO contact (contact_id, first_name, last_name, phone_number, email)
+VALUES (11, 'callcenter', 'callcenter', '984565666', 'callcenter.callcenter@example.com');
+INSERT INTO contact (contact_id, first_name, last_name, phone_number, email)
+VALUES (12, 'manager', 'manager', '888461636', 'manager.manager@example.com');
 
 
 INSERT INTO person(person_id,  user_name, password, contact_id)
@@ -34,13 +45,13 @@ VALUES (11, 'callcenter', '$2a$10$GgaiWAHTSsCZYdUJt.9Wo.Pr9z/3.r5mIbmzGV2gESwXm9
 INSERT INTO person (person_id, user_name, password, contact_id)
 VALUES (12, 'manager', '$2a$10$PKTqjODixGFeY4SG/6uUMOdmPS2neZBJiqOkoe2xgzYz7wPHlO/c.', 12);
 
-INSERT INTO role (role_id, role_name, is_employee_role) VALUES (1, 'ROLE_ADMIN', TRUE);
+INSERT INTO role (role_id, role_name, is_employee_role, priority) VALUES (1, 'ROLE_ADMIN', TRUE, 'VIP');
 INSERT INTO role (role_id, role_name, is_employee_role, priority) VALUES (2, 'ROLE_USER', FALSE, 'NORMAL');
-INSERT INTO role (role_id, role_name, is_employee_role) VALUES (3, 'ROLE_UNCONFIRMED', FALSE);
-INSERT INTO role (role_id, role_name, is_employee_role) VALUES (4, 'ROLE_MANAGER', TRUE);
-INSERT INTO role (role_id, role_name, is_employee_role) VALUES (5, 'ROLE_CALL_CENTER', TRUE);
+INSERT INTO role (role_id, role_name, is_employee_role, priority) VALUES (3, 'ROLE_UNCONFIRMED', FALSE, 'NORMAL');
+INSERT INTO role (role_id, role_name, is_employee_role, priority) VALUES (4, 'ROLE_MANAGER', TRUE, 'VIP');
+INSERT INTO role (role_id, role_name, is_employee_role, priority) VALUES (5, 'ROLE_CALL_CENTER', TRUE, 'VIP');
 INSERT INTO role (role_id, role_name, is_employee_role, priority) VALUES (6, 'ROLE_VIP_USER', FALSE, 'VIP');
-INSERT INTO role (role_id, role_name, is_employee_role) VALUES (7, 'ROLE_COURIER', TRUE );
+INSERT INTO role (role_id, role_name, is_employee_role, priority) VALUES (7, 'ROLE_COURIER', TRUE, 'VIP');
 
 INSERT INTO person_role (person_id, role_id) VALUES (1, 1);
 INSERT INTO person_role (person_id, role_id) VALUES (2, 3);
@@ -56,19 +67,22 @@ INSERT INTO person_role (person_id, role_id) VALUES (7, 7);
 INSERT INTO person_role (person_id, role_id) VALUES (8, 7);
 INSERT INTO person_role (person_id, role_id) VALUES (11, 5);
 INSERT INTO person_role (person_id, role_id) VALUES (12, 4);
+INSERT INTO person_role (person_id, role_id) VALUES (2, 4);
 
 INSERT INTO work_day (employee_id, week_day, start_time, end_time)
-VALUES (1, trim(to_char(CURRENT_DATE, 'DAY')) :: week_day, '12:00', '22:00');
+VALUES (1, trim(to_char(CURRENT_DATE, 'DAY')) :: WEEK_DAY, '12:00', '22:00');
 INSERT INTO work_day (employee_id, week_day, start_time, end_time)
-VALUES (2, trim(to_char(CURRENT_DATE, 'DAY')) :: week_day, '07:00', '15:00');
+VALUES (2, trim(to_char(CURRENT_DATE, 'DAY')) :: WEEK_DAY, '07:00', '15:00');
 INSERT INTO work_day (employee_id, week_day, start_time, end_time)
-VALUES (3, trim(to_char(CURRENT_DATE, 'DAY')) :: week_day, '15:00', '21:00');
+VALUES (3, trim(to_char(CURRENT_DATE, 'DAY')) :: WEEK_DAY, '15:00', '21:00');
 INSERT INTO work_day (employee_id, week_day, start_time, end_time)
-VALUES (4, trim(to_char(CURRENT_DATE, 'DAY')) :: week_day, '16:00', '02:00');
+VALUES (4, trim(to_char(CURRENT_DATE, 'DAY')) :: WEEK_DAY, '16:00', '02:00');
 INSERT INTO work_day (employee_id, week_day, start_time, end_time)
-VALUES (5, trim(to_char(CURRENT_DATE, 'DAY')) :: week_day, '06:00', '23:00');
+VALUES (5, trim(to_char(CURRENT_DATE, 'DAY')) :: WEEK_DAY, '06:00', '23:00');
 INSERT INTO work_day (employee_id, week_day, start_time, end_time)
-VALUES (6, trim(to_char(CURRENT_DATE, 'DAY')) :: week_day, '00:00', '23:59');
+VALUES (6, trim(to_char(CURRENT_DATE, 'DAY')) :: WEEK_DAY, '00:00', '23:59');
+INSERT INTO work_day (employee_id, week_day, start_time, end_time)
+VALUES (7, trim(to_char(CURRENT_DATE, 'DAY')) :: WEEK_DAY, '00:00', '23:59');
 
 INSERT INTO address (address_id, address_name) VALUES (1, 'Zodchykh St, 34А, Kyiv');
 INSERT INTO address (address_id, address_name) VALUES (2, 'Lesya Kurbasa Ave, 18, Kyiv');
@@ -100,6 +114,33 @@ INSERT INTO order_status (order_status_id, status_name) VALUES (5, 'CONFIRMED');
 INSERT INTO order_status (order_status_id, status_name) VALUES (6, 'DELIVERING');
 INSERT INTO order_status (order_status_id, status_name) VALUES (7, 'DELIVERED');
 
+
+INSERT INTO logistic_company."order"(order_id, estimated_delivery_time,  courier_id, receiver_contact_id, receiver_address_id, sender_contact_id, sender_address_id,  order_status_id, order_type_id, weight, width, height, length)
+VALUES (1, '04:05:06', 7, 5, 1,2,2,  6,1, 12,12,12,12);
+INSERT INTO logistic_company."order"(order_id, estimated_delivery_time,  courier_id, receiver_contact_id, receiver_address_id, sender_contact_id, sender_address_id, order_status_id, order_type_id, weight, width, height, length)
+VALUES (3, '14:05:06', 7, 5, 1,2,2,  6,1, 12,12,12,12);
+INSERT INTO logistic_company."order"(order_id, estimated_delivery_time,  courier_id, receiver_contact_id, receiver_address_id, sender_contact_id, sender_address_id, order_status_id, order_type_id, weight, width, height, length)
+VALUES (2, '04:05:06', 7, 2, 1,5,2,  6,2, 112,132,1322,12);
+INSERT INTO logistic_company."order"(order_id, estimated_delivery_time,  courier_id, receiver_contact_id, receiver_address_id, sender_contact_id, sender_address_id,  order_status_id, order_type_id, weight, width, height, length)
+VALUES (4, '04:05:06', 7, 7, 1,6,2,  6,1, 12,12,12,12);
+INSERT INTO logistic_company."order"(order_id, estimated_delivery_time,  courier_id, receiver_contact_id, receiver_address_id, sender_contact_id, sender_address_id, order_status_id, order_type_id, weight, width, height, length)
+VALUES (5, '14:05:06', 7, 8, 1,9,2,  6,1, 12,12,12,12);
+INSERT INTO logistic_company."order"(order_id, estimated_delivery_time,  courier_id, receiver_contact_id, receiver_address_id,  office_id, order_status_id, order_type_id, weight, width, height, length)
+VALUES (6, '14:05:06', 7, 8, 1, 1, 6,1, 12,12,12,12);
+
+
+INSERT INTO logistic_company.task(employee_id, order_id, is_completed) VALUES (6,1,TRUE );
+INSERT INTO logistic_company.task(employee_id, order_id, is_completed) VALUES (8,3,TRUE );
+INSERT INTO logistic_company.task(employee_id, order_id, is_completed) VALUES (8,3,TRUE );
+INSERT INTO logistic_company.task(employee_id, order_id, is_completed) VALUES (8,3,TRUE );
+INSERT INTO logistic_company.task(employee_id, order_id, is_completed) VALUES (11,3,TRUE );
+INSERT INTO logistic_company.task(employee_id, order_id, is_completed) VALUES (11,1,TRUE );
+INSERT INTO logistic_company.task(employee_id, order_id, is_completed) VALUES (6,3,TRUE );
+INSERT INTO logistic_company.task(employee_id, order_id, is_completed) VALUES (11,2,TRUE );
+INSERT INTO logistic_company.task(employee_id, order_id, is_completed) VALUES (6,5,TRUE );
+INSERT INTO logistic_company.task(employee_id, order_id, is_completed) VALUES (6,5,TRUE );
+INSERT INTO logistic_company.task(employee_id, order_id, is_completed) VALUES (8,3,TRUE );
+
 INSERT INTO advertisement_type(type_advertisement_id, advertisement_name) VALUES (1, 'Advertisement');
 INSERT INTO advertisement_type(type_advertisement_id, advertisement_name) VALUES (2, 'Announcement');
 INSERT INTO advertisement_type(type_advertisement_id, advertisement_name) VALUES (3, 'Other');
@@ -117,18 +158,18 @@ INSERT INTO "advertisement" (advertisement_id,caption,description,show_first_dat
 INSERT INTO "advertisement" (advertisement_id,caption,description,show_first_date,show_end_date,type_advertisement_id) VALUES (91,'Aliquam Fringilla Ltd','quam a felis ullamcorper viverra. Maecenas iaculis aliquet diam. Sed diam lorem, auctor quis, tristique ac, eleifend vitae, erat. Vivamus nisi. Mauris nulla. Integer urna. Vivamus molestie dapibus ligula. Aliquam erat volutpat. Nulla dignissim. Maecenas ornare egestas ligula. Nullam feugiat placerat velit. Quisque varius. Nam porttitor scelerisque neque. Nullam nisl. Maecenas malesuada fringilla est. Mauris eu turpis. Nulla aliquet. Proin velit. Sed malesuada augue ut lacus. Nulla tincidunt, neque vitae semper egestas, urna justo faucibus lectus, a','2019-06-14','2029-09-14',1),(92,'Neque Corp.','nec enim. Nunc ut erat. Sed nunc est, mollis non, cursus non, egestas a, dui. Cras pellentesque. Sed dictum. Proin eget odio. Aliquam vulputate','2018-09-16','2033-04-29',1),(93,'Mi Tempor Incorporated','posuere cubilia Curae; Donec tincidunt. Donec vitae erat vel pede blandit congue. In scelerisque scelerisque dui. Suspendisse ac metus vitae velit egestas lacinia. Sed congue, elit sed consequat auctor, nunc nulla vulputate dui, nec tempus mauris erat eget ipsum. Suspendisse sagittis. Nullam vitae diam. Proin dolor. Nulla semper tellus id nunc interdum feugiat. Sed nec metus facilisis lorem tristique aliquet. Phasellus fermentum convallis ligula. Donec luctus aliquet odio. Etiam ligula tortor, dictum eu, placerat eget,','2019-04-11','2029-06-10',2),(94,'Euismod Mauris Consulting','dui. Fusce aliquam, enim nec tempus scelerisque, lorem ipsum sodales purus, in molestie tortor nibh sit amet orci. Ut sagittis lobortis mauris. Suspendisse aliquet molestie tellus. Aenean egestas hendrerit neque. In ornare sagittis felis. Donec tempor, est ac mattis semper, dui lectus','2018-10-03','2033-07-30',1),(95,'Lorem Lorem Luctus PC','elit erat vitae risus. Duis a mi fringilla mi lacinia mattis. Integer eu lacus. Quisque imperdiet, erat nonummy ultricies ornare, elit elit fermentum risus, at fringilla purus mauris a nunc. In at pede. Cras vulputate velit eu sem. Pellentesque ut ipsum ac mi eleifend egestas. Sed pharetra, felis eget varius ultrices, mauris ipsum porta elit, a feugiat tellus','2019-06-25','2029-05-01',2),(96,'Nulla Eget Metus Company','sem ut cursus luctus, ipsum leo elementum sem, vitae aliquam eros turpis non enim. Mauris quis turpis vitae purus gravida sagittis. Duis gravida. Praesent eu nulla at sem molestie sodales. Mauris blandit enim consequat purus. Maecenas libero est, congue a, aliquet vel, vulputate eu, odio. Phasellus at augue id ante dictum cursus. Nunc mauris elit, dictum eu, eleifend nec, malesuada ut, sem. Nulla interdum. Curabitur dictum. Phasellus in felis. Nulla tempor augue ac ipsum. Phasellus vitae mauris sit amet lorem semper auctor. Mauris vel turpis. Aliquam adipiscing lobortis risus. In mi pede, nonummy ut, molestie in, tempus eu, ligula.','2018-12-23','2034-03-28',3),(97,'Congue In Associates','fringilla cursus purus. Nullam scelerisque neque sed sem egestas blandit. Nam nulla magna, malesuada vel, convallis in, cursus et, eros. Proin ultrices. Duis volutpat nunc sit amet metus. Aliquam erat volutpat. Nulla facilisis. Suspendisse commodo tincidunt nibh. Phasellus nulla. Integer vulputate, risus a ultricies adipiscing, enim mi tempor lorem, eget mollis lectus','2018-08-20','2039-05-03',3),(98,'Est Mauris Company','quis diam. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Fusce aliquet magna a neque. Nullam ut nisi a odio semper cursus. Integer mollis. Integer tincidunt aliquam arcu. Aliquam ultrices iaculis odio. Nam interdum enim non nisi. Aenean eget metus. In nec orci. Donec nibh. Quisque nonummy ipsum non arcu. Vivamus sit amet risus. Donec egestas. Aliquam nec enim. Nunc ut erat. Sed nunc est, mollis non, cursus non, egestas a, dui. Cras pellentesque. Sed dictum. Proin','2018-12-26','2038-09-25',1),(99,'Viverra Donec Associates','porttitor tellus non magna. Nam ligula elit, pretium et, rutrum non, hendrerit id, ante. Nunc mauris sapien, cursus in, hendrerit consectetuer, cursus et, magna. Praesent interdum ligula eu enim. Etiam imperdiet dictum magna. Ut tincidunt orci quis lectus. Nullam suscipit, est ac facilisis facilisis, magna tellus faucibus leo, in lobortis tellus justo sit amet nulla. Donec non justo. Proin non massa non ante bibendum ullamcorper. Duis cursus, diam at pretium aliquet, metus urna convallis erat, eget tincidunt dui augue eu tellus. Phasellus elit pede,','2018-04-17','2024-01-05',3),(100,'Tortor PC','nulla at sem molestie sodales. Mauris blandit enim consequat purus. Maecenas libero est, congue a, aliquet vel, vulputate eu, odio. Phasellus at augue id ante dictum cursus. Nunc mauris elit, dictum eu, eleifend nec, malesuada ut, sem. Nulla','2019-06-20','2036-11-21',2);
 
 
-INSERT INTO reset_password(person_id, reset_token) VALUES (4, '47a95c8c-a5d1-4984-9ce5-904ecd81e637');
+INSERT INTO reset_password (person_id, reset_token) VALUES (4, '47a95c8c-a5d1-4984-9ce5-904ecd81e637');
 
-INSERT INTO logistic_company."order"(order_id, estimated_delivery_time,  courier_id, receiver_contact_id, receiver_address_id, sender_contact_id, sender_address_id, office_id, order_status_id, order_type_id, weight, width, height, length)
-VALUES (1, '04:05:06', 7, 5, 1,2,2, 1, 6,1, 12,12,12,12);
-INSERT INTO logistic_company."order"(order_id, estimated_delivery_time,  courier_id, receiver_contact_id, receiver_address_id, sender_contact_id, sender_address_id, office_id, order_status_id, order_type_id, weight, width, height, length)
-VALUES (3, '14:05:06', 7, 5, 1,2,2, 1, 6,1, 12,12,12,12);
-INSERT INTO logistic_company."order"(order_id, estimated_delivery_time,  courier_id, receiver_contact_id, receiver_address_id, sender_contact_id, sender_address_id, office_id, order_status_id, order_type_id, weight, width, height, length)
-VALUES (2, '04:05:06', 7, 2, 1,5,2, 1, 6,2, 112,132,1322,12);
+-- INSERT INTO logistic_company."order" (order_id, estimated_delivery_time, courier_id, receiver_contact_id, receiver_address_id, sender_contact_id, sender_address_id, office_id, order_status_id, order_type_id, weight, width, height, length)
+-- VALUES (1, '04:05:06', 7, 5, 1, 2, 2, 1, 6, 1, 12, 12, 12, 12);
+-- INSERT INTO logistic_company."order" (order_id, estimated_delivery_time, courier_id, receiver_contact_id, receiver_address_id, sender_contact_id, sender_address_id, office_id, order_status_id, order_type_id, weight, width, height, length)
+-- VALUES (3, '14:05:06', 7, 5, 1, 2, 2, 1, 6, 1, 12, 12, 12, 12);
+-- INSERT INTO logistic_company."order" (order_id, estimated_delivery_time, courier_id, receiver_contact_id, receiver_address_id, sender_contact_id, sender_address_id, office_id, order_status_id, order_type_id, weight, width, height, length)
+-- VALUES (2, '04:05:06', 7, 2, 1, 5, 2, 1, 6, 2, 112, 132, 1322, 12);
 
-INSERT INTO logistic_company."courier_data"(person_id,  courier_status, courier_last_location,  courier_travel_mode)
-VALUES (5 , trim('free'):: logistic_company.courier_status, '', 'driving');
-INSERT INTO logistic_company."courier_data"(person_id,  courier_status, courier_last_location,  courier_travel_mode)
-VALUES (7 , trim('free'):: logistic_company.courier_status, '', 'walking');
-INSERT INTO logistic_company."courier_data"(person_id,  courier_status, courier_last_location,  courier_travel_mode)
-VALUES (8 , trim('free'):: logistic_company.courier_status, '', 'driving');
+INSERT INTO logistic_company."courier_data" (person_id, courier_status, courier_last_location, courier_travel_mode)
+VALUES (5, trim('FREE') :: logistic_company.COURIER_STATUS, '', 'DRIVING');
+INSERT INTO logistic_company."courier_data" (person_id, courier_status, courier_last_location, courier_travel_mode)
+VALUES (7, trim('FREE') :: logistic_company.COURIER_STATUS, '', 'WALKING');
+INSERT INTO logistic_company."courier_data" (person_id, courier_status, courier_last_location, courier_travel_mode)
+VALUES (8, trim('FREE') :: logistic_company.COURIER_STATUS, '', 'WALKING');

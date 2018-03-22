@@ -29,7 +29,7 @@ DROP SCHEMA IF EXISTS "logistic_company" CASCADE;
 CREATE SCHEMA "logistic_company";
 
 CREATE TYPE logistic_company.WEEK_DAY AS ENUM ('MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY');
-CREATE TYPE logistic_company.COURIER_STATUS AS ENUM ('on_way','free');
+CREATE TYPE logistic_company.COURIER_STATUS AS ENUM ('ON_WAY','FREE');
 CREATE SEQUENCE "logistic_company"."main_seq_id"
   INCREMENT 1
   MINVALUE 1
@@ -54,7 +54,8 @@ CREATE TABLE "logistic_company"."courier_data"
   "person_id"             INT4,
   "courier_status"        COURIER_STATUS,
   "courier_last_location" VARCHAR(45) COLLATE "default" NOT NULL,
-  "courier_travel_mode"   VARCHAR(45) COLLATE "default" NOT NULL
+  "courier_travel_mode"   VARCHAR(45) COLLATE "default" NOT NULL,
+  "route"                 JSONB
 );
 
 CREATE TABLE "logistic_company"."person" (
@@ -226,6 +227,8 @@ ALTER TABLE logistic_company.work_day
   ADD PRIMARY KEY (employee_id, week_day);
 ALTER TABLE logistic_company.day_off
   ADD PRIMARY KEY (day_off_id);
+ALTER TABLE logistic_company.courier_data
+  ADD PRIMARY KEY (person_id);
 
 
 ALTER TABLE "logistic_company"."courier_data"
@@ -309,9 +312,9 @@ AS $$
 DECLARE
   row_count INT;
 BEGIN
-  DELETE FROM person
-  WHERE person.registration_date < NOW() - INTERVAL '24 hour' AND person_id IN (SELECT person_id
-                                                                                FROM person_role
+  DELETE FROM logistic_company.person
+  WHERE logistic_company.person.registration_date < NOW() - INTERVAL '24 hour' AND person_id IN (SELECT person_id
+                                                                                FROM logistic_company.person_role
                                                                                 WHERE role_id IN (SELECT
                                                                                                     logistic_company.role.role_id
                                                                                                   FROM
@@ -329,7 +332,7 @@ $$;
 
 CREATE TRIGGER trigger_delete_old_rows
   AFTER INSERT
-  ON person
+  ON logistic_company.person
 EXECUTE PROCEDURE delete_old_rows();
 
 
@@ -338,7 +341,7 @@ CREATE FUNCTION advertisement_delete_old_rows()
 LANGUAGE plpgsql
 AS $$
 BEGIN
-  DELETE FROM advertisement
+  DELETE FROM logistic_company.advertisement
   WHERE show_end_date < NOW();
   RETURN NEW;
 END;
@@ -348,4 +351,3 @@ CREATE TRIGGER advertisement_delete_old_rows_trigger
   AFTER INSERT
   ON advertisement
 EXECUTE PROCEDURE advertisement_delete_old_rows();
-SELECT * FROM contact WHERE  contact.first_name='Stanislav'
