@@ -1,7 +1,5 @@
-package edu.netcracker.project.logistic.maps_wrapper;
+package edu.netcracker.project.logistic.mapsWrapper;
 
-import edu.netcracker.project.logistic.maps_wrapper.PolyLine;
-import edu.netcracker.project.logistic.maps_wrapper.UrlBuilder;
 import com.google.maps.model.LatLng;
 //import org.intellji.annotations.Nullable;
 

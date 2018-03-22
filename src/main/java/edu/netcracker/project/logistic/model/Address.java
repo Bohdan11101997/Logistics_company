@@ -3,10 +3,9 @@ package edu.netcracker.project.logistic.model;
 import com.google.maps.DirectionsApi;
 import com.google.maps.errors.ApiException;
 import com.google.maps.model.*;
-import edu.netcracker.project.logistic.maps_wrapper.GoogleApiRequest;
+import edu.netcracker.project.logistic.mapsWrapper.GoogleApiRequest;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.Objects;
 
 public class Address {

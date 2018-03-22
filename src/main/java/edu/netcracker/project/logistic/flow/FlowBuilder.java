@@ -2,12 +2,10 @@ package edu.netcracker.project.logistic.flow;
 
 import com.google.maps.DirectionsApi;
 import com.google.maps.model.*;
-import edu.netcracker.project.logistic.maps_wrapper.GoogleApiRequest;
-import edu.netcracker.project.logistic.maps_wrapper.StaticMap;
+import edu.netcracker.project.logistic.mapsWrapper.GoogleApiRequest;
+import edu.netcracker.project.logistic.mapsWrapper.StaticMap;
 import edu.netcracker.project.logistic.model.Office;
-import edu.netcracker.project.logistic.model.Order;
 import edu.netcracker.project.logistic.model.OrderType;
-import edu.netcracker.project.logistic.model.Person;
 import edu.netcracker.project.logistic.processing.RouteProcessor;
 
 import java.util.*;
