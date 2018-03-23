@@ -360,9 +360,7 @@ public class RouteProcessor {
                     worker.courierData.getRoute().setMapUrl(flowBuilder.getStaticMap().toString());
                     courierDataDao.save(worker.courierData);
                     notificationService.send(personDao.findOne(worker.employeeId).get().getUserName(),
-                            new Notification("route", "New orders added\n" +
-                                    "estimated time " + flowBuilder.getDuration() + "\n" +
-                                    "estimated distance " + flowBuilder.getDistance()));
+                            new Notification("info", "Delivery route assigned."));
                     logger.info("Courier #{} get #{} orders", worker.employeeId, flowBuilder.getOrdersSequence().size());
                 }
 

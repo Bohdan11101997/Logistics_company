@@ -295,7 +295,7 @@ public class RadiusSelector extends FlowBuilderImpl {
                     color = color & 0x00ffff + 0xff0000;
                 }
                 staticMap.marker(
-                        new StaticMap.Marker.Style.Builder().label((char) ((index++) % 10 + '0')).color(color).build(),
+                        new StaticMap.Marker.Style.Builder().label((char) ((index++) % 10 + '1')).color(color).build(),
                         new StaticMap.GeoPoint(
                                 o.getOrder().getReceiverAddress().getLocation().lat,
                                 o.getOrder().getReceiverAddress().getLocation().lng)
