@@ -17,11 +17,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 @Scope("singleton")
 @Component
@@ -177,7 +179,7 @@ public class RouteProcessor {
     private void prepareQueues(LatLng center) {
         this.walkOrdersQueue = new PriorityBlockingQueue<>(
                 11,
-                FlowBuilder.makeOrderComparator(center,false, TravelMode.WALKING)
+                FlowBuilder.makeOrderComparator(center, false, TravelMode.WALKING)
         );
         this.driveOrdersQueue = new PriorityBlockingQueue<>(
                 11,
@@ -193,15 +195,6 @@ public class RouteProcessor {
                 FlowBuilder.makeCourierComparator(center, false, TravelMode.DRIVING)
         );
 
-        List<Person> potentialCouriers = personDao.findAll();
-        for(Person data : potentialCouriers ){
-            for (Role r : data.getRoles()) {
-                if (r.getRoleName().equals("ROLE_COURIER")) {
-                    addCourier(data.getId());
-                    break;
-                }
-            }
-        }
         List<Order> confirmedOrders = orderDao.findConfirmed();
         for (Order data : confirmedOrders) {
             createOrder(data);
@@ -267,49 +260,51 @@ public class RouteProcessor {
         order.setCourier(employee);
         order.setOrderStatusTime(LocalDateTime.now());
         Optional<OrderStatus> optOrderStatus = orderStatusDao.findByName("DELIVERING");
-        if(!optOrderStatus.isPresent()){
-            logger.error("Order status not found in DB ({})","DELIVERING");
-            order.setOrderStatus(new OrderStatus((long)-1,"DELIVERING"));
-        }
-        else {
+        if (!optOrderStatus.isPresent()) {
+            logger.error("Order status not found in DB ({})", "DELIVERING");
+            order.setOrderStatus(new OrderStatus((long) -1, "DELIVERING"));
+        } else {
             order.setOrderStatus(optOrderStatus.get());
         }
         logger.info("Assigned order #{} to courier #{}", order.getId(), employeeId);
 
-        List<RoutePoint> routePoints = courierEntry.getCourierData().getRoute().getWayPoints();
-        if(routePoints != null) {
-            LatLng point = orderEntry.getOrder().getReceiverAddress().getLocation();
-            routePoints.add(new RoutePoint(
-                    String.format("%.8f",point.lat),
-                    String.format("%.8f",point.lng),
-                    OrderDTO.valueOf(order)));
+        Route route = courierEntry.courierData.getRoute();
+        if (route == null) {
+            courierEntry.courierData.setRoute(new Route(null, new ArrayList<>()));
+        } else if (route.getWayPoints() == null) {
+            route.setWayPoints(new ArrayList<>());
         }
-        if(!orderEntry.isOrderFromClient()) {
+        List<RoutePoint> routePoints = courierEntry.courierData.getRoute().getWayPoints();
+        LatLng point = orderEntry.getOrder().getReceiverAddress().getLocation();
+        routePoints.add(new RoutePoint(
+                String.format("%.8f", point.lat),
+                String.format("%.8f", point.lng),
+                OrderDTO.valueOf(order)));
+        courierDataDao.save(courierEntry.courierData);
+        if (!orderEntry.isOrderFromClient()) {
             //there are no office-sender order in chain office-sender-client
             orderDao.save(order);
         }
         return true;
     }
 
-    public Office getRandomOffice(){
+    public Office getRandomOffice() {
         List<Office> offices = officeDao.allOffices();
-        if(offices == null || offices.size() == 0) {
+        if (offices == null || offices.size() == 0) {
             logger.error("There are no offices created");
             return null;
         }
-        return offices.get((int)((Math.random()*(offices.size()-1))));
+        return offices.get((int) ((Math.random() * (offices.size() - 1))));
     }
 
     @Async
     public void taskLoop() throws InterruptedException {
-        RouteProcessor.CourierEntry worker = null;
-        RouteProcessor.OrderEntry oe = null;
         Office office;
         try {
             office = getRandomOffice();
-            if(office == null){
+            if (office == null) {
                 logger.error("There are no offices created");
-                prepareQueues(new LatLng(0,0));
+                prepareQueues(new LatLng(0, 0));
             } else {//use first founded office
                 prepareQueues(office.getAddress().getLocation());
             }
@@ -317,40 +312,55 @@ public class RouteProcessor {
             flowBuilder = new RadiusSelector(walkOrdersQueue, driveOrdersQueue, walkWorkerQueue, driveWorkerQueue, office);
             flowBuilder.setUseMapRequests(true);
             while (true) {
-                System.out.println(320);
-
-                if(driveOrdersQueue.isEmpty()){
-                    System.out.println(323);
-                    worker = walkWorkerQueue.take();
-                    oe = walkOrdersQueue.poll();
-                    System.out.println(326);
+                RouteProcessor.CourierEntry worker = null;
+                RouteProcessor.OrderEntry order = null;
+                boolean driverWorker = true;
+                try {
+                    while (worker == null) {
+                        worker = driveWorkerQueue.poll(15, TimeUnit.SECONDS);
+                        if (worker == null) {
+                            driverWorker = false;
+                            worker = walkWorkerQueue.poll(15, TimeUnit.SECONDS);
+                        }
+                    }
+                } catch (InterruptedException ex) {
+                    logger.error("Interrupted while waiting for courier");
+                    continue;
                 }
-                if (worker == null || oe == null) {
-                    System.out.println(328);
-                    worker = driveWorkerQueue.take();
-                    oe = driveOrdersQueue.take();
-                    System.out.println(330);
+
+                try {
+                    if (!driverWorker) {
+                        order = walkOrdersQueue.take();
+                    } else {
+                        while (order == null) {
+                            order = driveOrdersQueue.poll(15, TimeUnit.SECONDS);
+                            if (order == null) {
+                                order = walkOrdersQueue.poll(15, TimeUnit.SECONDS);
+                            }
+                        }
+                    }
+                } catch (InterruptedException ex) {
+                    logger.error("Interrupted while waiting for order");
+                    walkWorkerQueue.put(worker);
+                    continue;
                 }
 
                 logger.info("Begin - new route building for ({})", worker);
 
-                office = oe.getOrder().getOffice() == null ? getRandomOffice() : oe.getOrder().getOffice();
+                office = order.getOrder().getOffice() == null ? getRandomOffice() : order.getOrder().getOffice();
                 flowBuilder.setOffice(office);
 
-                if(!flowBuilder.process(oe, worker)){
+                if (!flowBuilder.process(order, worker)) {
                     logger.error(flowBuilder.getError());
                     //manual rollback successfully picked orders
-                    for(OrderEntry orderEntry : flowBuilder.getOrdersSequence())
-                        if(!orderEntry.isOrderFromClient())//do not multiply fake orders
+                    for (OrderEntry orderEntry : flowBuilder.getOrdersSequence())
+                        if (!orderEntry.isOrderFromClient())//do not multiply fake orders
                             addOrder(orderEntry);
-                }
-                else if(assignOrders(flowBuilder.getOrdersSequence(), worker)){
+                } else if (assignOrders(flowBuilder.getOrdersSequence(), worker)) {
                     worker.courierData.getRoute().setMapUrl(flowBuilder.getStaticMap().toString());
                     courierDataDao.save(worker.courierData);
                     notificationService.send(personDao.findOne(worker.employeeId).get().getUserName(),
-                            new Notification("route","New orders added\n"+
-                                    "estimated time "+flowBuilder.getDuration()+"\n"+
-                                    "estimated distance " + flowBuilder.getDistance()));
+                            new Notification("info", "Delivery route assigned."));
                     logger.info("Courier #{} get #{} orders", worker.employeeId, flowBuilder.getOrdersSequence().size());
                 }
 
@@ -435,7 +445,7 @@ public class RouteProcessor {
             return;
         }
         CourierData courierData = optCd.get();
-        if(!courierData.getCourierStatus().equals(CourierStatus.FREE)){
+        if (!courierData.getCourierStatus().equals(CourierStatus.FREE)) {
             logger.warn("Courier is still busy ({})", courierData.getCourierStatus());
             return;
         }

@@ -89,8 +89,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6 col-xs-12" id="map">
-                        <img src="./staticmap.png" width="100%" height="100%"/>
+                    <div class="col-md-6 col-xs-12">
+                        <img id="map" src="./staticmap.png" width="100%" height="100%"/>
                     </div>
                 </div>
             </div>
@@ -129,7 +129,7 @@
 
         var orderNumberEl = document.getElementById("order-number");
         if (!status) {
-            orderNumberEl.textContent = "Order: " + orderNum + "/" + orderCount;
+            orderNumberEl.textContent = "Order " + orderNum + "/" + orderCount;
             document.getElementById('btn-confirm').removeAttribute("disabled");
             document.getElementById('btn-cancel').removeAttribute("disabled");
         } else {
@@ -159,6 +159,8 @@
         document.getElementById("phone").textContent = order.receiverContact.phoneNumber;
         document.getElementById("order-id").textContent = order.id;
         document.getElementById("order-type").textContent = order.orderType;
+
+        document.getElementById("map").setAttribute("src", APP.route.mapUrl);
 
         APP.currentPage = orderNum - 1;
     }
