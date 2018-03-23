@@ -213,10 +213,10 @@ public class ManagerStatisticsDaoImpl {
 
 
 
-    public List<Person> EmployeesByOfficeOrCall_Center() {
+    public List<Person> EmployeesByCourierOrCall_Center() {
 
         return jdbcTemplate.query(
-                getQueryEmployeesByOfficeOrCall_Center(),
+                getQueryEmployeesByCourierOrCall_Center(),
              this::extractMany1);
     }
 
@@ -438,7 +438,7 @@ public class ManagerStatisticsDaoImpl {
         return queryService.getQuery("count.orders.from.office");
     }
 
-    private String getQueryEmployeesByOfficeOrCall_Center()
+    private String getQueryEmployeesByCourierOrCall_Center()
     {
 
         return queryService.getQuery("select.employee.call_center.couriers");

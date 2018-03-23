@@ -10,34 +10,39 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 
 @Repository
-public class OfficeDaoImpl implements OfficeDao, QueryDao {
+public class OfficeDaoImpl implements OfficeDao, QueryDao, RowMapper<Office> {
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(OfficeDaoImpl.class);
 
     private JdbcTemplate jdbcTemplate;
+    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private QueryService queryService;
     private RowMapper<Address> addressRowMapper;
 
+
     @Autowired
-    public OfficeDaoImpl(JdbcTemplate jdbcTemplate, QueryService queryService,  RowMapper<Address> addressRowMapper) {
+    public OfficeDaoImpl(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate, QueryService queryService, RowMapper<Address> addressRowMapper) {
         this.jdbcTemplate = jdbcTemplate;
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
         this.queryService = queryService;
         this.addressRowMapper = addressRowMapper;
     }
 
-    private RowMapper<Office> getMapper() {
-        return (resultSet, i) ->
-        {
+    @Override
+    public Office mapRow(ResultSet resultSet, int i) throws SQLException {
+
             Office office = new Office();
             office.setOfficeId(resultSet.getLong("office_id"));
             office.setName(resultSet.getString("name"));
@@ -46,8 +51,10 @@ public class OfficeDaoImpl implements OfficeDao, QueryDao {
             office.setAddress(address);
 
             return office;
-        };
-    }
+        }
+
+
+
 
 
     @Override
@@ -93,7 +100,7 @@ public class OfficeDaoImpl implements OfficeDao, QueryDao {
             office = jdbcTemplate.queryForObject(
                     getFindOneQuery(),
                     new Object[]{aLong},
-                    getMapper());
+                    this::mapRow);
             logger.info("Find one office");
             return Optional.of(office);
 
@@ -104,20 +111,40 @@ public class OfficeDaoImpl implements OfficeDao, QueryDao {
         return Optional.empty();
     }
 
-    @Override
-    public Office findByDepartment(String department) {
+    private String prepareSearchString(String input) {
+        return "%" + input.replace("%", "\\%") + "%";
+    }
 
-        return jdbcTemplate.queryForObject(
-                getAllOfficesByDepartment(),
-                new Object[]{department},
-                getMapper());
+    public List<Office> findByDepartmentOrAddress( String department, String address) {
+
+        String departmentSearch= department;
+     departmentSearch = departmentSearch == null ? "%%" : prepareSearchString(departmentSearch.trim());
+
+        String addressSearch= address;
+        addressSearch = addressSearch == null ? "%%" : prepareSearchString(addressSearch.trim());
 
 
+        Map<String, Object> paramMap = new HashMap<>(5);
+        paramMap.put("department",  departmentSearch);
+        paramMap.put("address", addressSearch);
+
+        System.out.println(departmentSearch);
+        System.out.println(addressSearch);
+
+        try {
+            return namedParameterJdbcTemplate.query(
+                    getAllOfficesByDepartment(),
+                    paramMap,
+                    this);
+
+        } catch (EmptyResultDataAccessException ex) {
+            return Collections.emptyList();
+        }
     }
 
     @Override
     public List<Office> allOffices() {
-        return jdbcTemplate.query(getAllOffices(), getMapper());
+        return jdbcTemplate.query(getAllOffices(), this);
     }
 
     @Override
@@ -147,4 +174,6 @@ public class OfficeDaoImpl implements OfficeDao, QueryDao {
     private String getAllOfficesByDepartment() {
         return queryService.getQuery("all.office.by.department");
     }
+
+
 }

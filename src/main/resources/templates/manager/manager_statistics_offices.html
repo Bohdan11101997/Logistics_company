@@ -25,27 +25,18 @@
                 <h1 style="text-align:center"> Office statistics </h1>
 
                 <div class="col-lg-10 col-md-10 col-md-offset-1 col-lg-offset-1">
-
                     <div class="well">
-                        <h3 align="center">Search Filters</h3>
-                        <form method="post" class="form-horizontal">
 
+                        <h3 align="center">Search Filter</h3>
+
+                        <form class="form-horizontal"  method="post" action="/manager/FindOfficeByDepartmentOrAddressStatistic">
                             <div class="form-group">
                                 <label for="address" class="control-label">Address</label>
-                                <input type="text" class="form-control" id="address"/>
+                                <input type="text" class="form-control" id="address" name="address" />
                             </div>
-
                             <div class="form-group">
-                                <label for="department-number" class="control-label">Department Number</label>
-                                <input type="text" class="form-control" id="department-number"/>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="sort-offices">Sort by</label>
-                                <select class="form-control" id="sort-offices">
-                                    <option>Department number</option>
-                                    <option>Orders sent</option>
-                                </select>
+                                <label for="department_number" class="control-label">Department Number</label>
+                                <input type="text" class="form-control" id="department_number"  name="department"  />
                             </div>
 
                             <button class="btn btn-primary">
@@ -60,23 +51,22 @@
                             <tr>
                                 <th>#</th>
                                 <th>Address</th>
-                                <th>Department number</th>
-                                <th>Orders sent</th>
-                                <th>Percentage</th>
+                                <th>Department Number</th>
                             </tr>
                             </thead>
                             <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>Peremohy Ave, 37</td>
-                                <td>14</td>
-                                <td>493</td>
-                                <td>1.5%</td>
+                            <tr th:each="office : ${offices}">
+                                <td th:text="${office.officeId}"></td>
+                                <td th:text="${office.address}"></td>
+                                <td th:text="${office.name}"></td>
+                                <td>
+                                    <a class="material-icons button delete" th:href="${'/admin/office/delete/' + office.officeId}">delete</a>
+                                    <a class="material-icons button delete" th:href="${'/admin/office/update/' + office.officeId}">edit</a>
+                                </td>
                             </tr>
                             </tbody>
                         </table>
                     </div>
-
                 </div>
 
             </div>

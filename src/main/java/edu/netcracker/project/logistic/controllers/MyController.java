@@ -57,7 +57,7 @@ public class MyController {
         Person person = optionalPerson.get();
 
 
-        ArrayList<Person> employee = (ArrayList<Person>) managerStatisticsDao.EmployeesByOfficeOrCall_Center();
+        ArrayList<Person> employee = (ArrayList<Person>) managerStatisticsDao.EmployeesByCourierOrCall_Center();
         ArrayList<Office> offices = (ArrayList<Office>) officeService.allOffices();
 
         List listEmployees = new com.itextpdf.text.List(List.ORDERED);

@@ -27,17 +27,19 @@
 
                         <h3 align="center">Search Filter</h3>
 
-                        <form class="form-horizontal"  method="post" action="/admin/FindOfficeByDepartment">
+                        <form class="form-horizontal"  method="post" action="/admin/FindOfficeByDepartmentOrAddress">
                             <div class="form-group">
                                 <label for="address" class="control-label">Address</label>
-                                <input type="text" class="form-control" id="address" />
+                                <input type="text" class="form-control" id="address" name="address" />
                             </div>
                             <div class="form-group">
                                 <label for="department_number" class="control-label">Department Number</label>
                                 <input type="text" class="form-control" id="department_number"  name="department"  />
                              </div>
 
-                            <input type="submit" value="send"/>
+                            <button class="btn btn-primary">
+                                Search
+                            </button>
                         </form>
                     </div>
 
