@@ -282,7 +282,7 @@ public class RouteProcessor {
             routePoints.add(new RoutePoint(
                     String.format("%.8f",point.lat),
                     String.format("%.8f",point.lng),
-                    order));
+                    OrderDTO.valueOf(order)));
         }
         if(!orderEntry.isOrderFromClient()) {
             //there are no office-sender order in chain office-sender-client
@@ -317,13 +317,19 @@ public class RouteProcessor {
             flowBuilder = new RadiusSelector(walkOrdersQueue, driveOrdersQueue, walkWorkerQueue, driveWorkerQueue, office);
             flowBuilder.setUseMapRequests(true);
             while (true) {
+                System.out.println(320);
+
                 if(driveOrdersQueue.isEmpty()){
+                    System.out.println(323);
                     worker = walkWorkerQueue.take();
                     oe = walkOrdersQueue.poll();
+                    System.out.println(326);
                 }
                 if (worker == null || oe == null) {
+                    System.out.println(328);
                     worker = driveWorkerQueue.take();
                     oe = driveOrdersQueue.take();
+                    System.out.println(330);
                 }
 
                 logger.info("Begin - new route building for ({})", worker);

@@ -8,13 +8,14 @@ import edu.netcracker.project.logistic.dao.WorkDayDao;
 import edu.netcracker.project.logistic.model.*;
 
 import edu.netcracker.project.logistic.service.QueryService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +23,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 
 @Repository
 public class PersonCrudDaoImpl implements PersonCrudDao, QueryDao, RowMapper<Person> {
+    private final Logger logger = LoggerFactory.getLogger(PersonCrudDaoImpl.class);
 
     private JdbcTemplate jdbcTemplate;
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
@@ -38,20 +39,19 @@ public class PersonCrudDaoImpl implements PersonCrudDao, QueryDao, RowMapper<Per
     private PersonRoleDao personRoleDao;
     private RowMapper<Contact> contactMapper;
     private RowMapper<Role> roleMapper;
-
-    @Autowired
-    WorkDayDao workDayDao;
+    private WorkDayDao workDayDao;
 
     @Autowired
     PersonCrudDaoImpl(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate,
-                      QueryService queryService, PersonRoleDao personRoleDao,
-                      RowMapper<Contact> contactMapper, RowMapper<Role> roleMapper) {
+                      QueryService queryService, PersonRoleDao personRoleDao, RowMapper<Contact> contactMapper,
+                      RowMapper<Role> roleMapper, WorkDayDao workDayDao) {
         this.jdbcTemplate = jdbcTemplate;
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
         this.queryService = queryService;
         this.personRoleDao = personRoleDao;
         this.contactMapper = contactMapper;
         this.roleMapper = roleMapper;
+        this.workDayDao = workDayDao;
     }
 
     @Override
@@ -130,7 +130,7 @@ public class PersonCrudDaoImpl implements PersonCrudDao, QueryDao, RowMapper<Per
             return Optional.of(person);
 
         } catch (EmptyResultDataAccessException e) {
-            System.err.println("Empty data");
+            logger.info("Empty data");
         }
         return Optional.empty();
     }
@@ -161,7 +161,7 @@ public class PersonCrudDaoImpl implements PersonCrudDao, QueryDao, RowMapper<Per
             return Optional.ofNullable(person);
 
         } catch (EmptyResultDataAccessException e) {
-            System.err.println("Empty data");
+            logger.info("Empty data");
         }
         return Optional.empty();
     }
@@ -228,7 +228,7 @@ public class PersonCrudDaoImpl implements PersonCrudDao, QueryDao, RowMapper<Per
     }
 
     private String prepareSearchString(String input) {
-        return "%" + input.replace("%", "\\%") + "%";
+        return "%" + input.replace("%", "\\%").trim() + "%";
     }
 
     @Override
@@ -282,7 +282,7 @@ public class PersonCrudDaoImpl implements PersonCrudDao, QueryDao, RowMapper<Per
             return Optional.of(person);
 
         } catch (EmptyResultDataAccessException e) {
-            System.err.println("Empty data");
+            logger.info("Empty data");
         }
         return Optional.empty();
     }

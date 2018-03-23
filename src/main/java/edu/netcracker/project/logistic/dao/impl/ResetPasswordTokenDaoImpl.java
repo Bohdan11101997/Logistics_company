@@ -6,6 +6,8 @@ import edu.netcracker.project.logistic.dao.ResetPasswordTokenDao;
 import edu.netcracker.project.logistic.model.Person;
 import edu.netcracker.project.logistic.model.ResetPasswordToken;
 import edu.netcracker.project.logistic.service.QueryService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -20,6 +22,7 @@ import java.util.Optional;
 
 @Repository
 public class ResetPasswordTokenDaoImpl implements ResetPasswordTokenDao, QueryDao, RowMapper<ResetPasswordToken> {
+    private final Logger logger = LoggerFactory.getLogger(ResetPasswordTokenDaoImpl.class);
 
     private RowMapper<Person> personMapper;
     private JdbcTemplate jdbcTemplate;
@@ -75,7 +78,7 @@ public class ResetPasswordTokenDaoImpl implements ResetPasswordTokenDao, QueryDa
             return Optional.ofNullable(resetPasswordToken);
 
         } catch (EmptyResultDataAccessException e) {
-            System.err.println("Empty data");
+            logger.info("Empty data");
         }
         return Optional.empty();
     }
@@ -96,7 +99,7 @@ public class ResetPasswordTokenDaoImpl implements ResetPasswordTokenDao, QueryDa
             return Optional.ofNullable(resetPasswordToken);
 
         } catch (EmptyResultDataAccessException e) {
-            System.err.println("Empty data");
+            logger.info("Empty data");
         }
         return Optional.empty();
     }

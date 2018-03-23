@@ -2,8 +2,8 @@ package edu.netcracker.project.logistic.flow;
 
 import com.google.maps.DirectionsApi;
 import com.google.maps.model.*;
-import edu.netcracker.project.logistic.mapsWrapper.GoogleApiRequest;
-import edu.netcracker.project.logistic.mapsWrapper.StaticMap;
+import edu.netcracker.project.logistic.mapswrapper.GoogleApiRequest;
+import edu.netcracker.project.logistic.mapswrapper.StaticMap;
 import edu.netcracker.project.logistic.model.Office;
 import edu.netcracker.project.logistic.model.OrderType;
 import edu.netcracker.project.logistic.processing.RouteProcessor;
