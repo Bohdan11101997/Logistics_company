@@ -282,7 +282,7 @@ public class RouteProcessor {
             routePoints.add(new RoutePoint(
                     String.format("%.8f",point.lat),
                     String.format("%.8f",point.lng),
-                    order));
+                    OrderDTO.valueOf(order)));
         }
         if(!orderEntry.isOrderFromClient()) {
             //there are no office-sender order in chain office-sender-client

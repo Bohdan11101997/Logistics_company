@@ -15,6 +15,19 @@
         #orders {
             margin-bottom: 15px;
         }
+
+        .non-visible {
+            visibility: hidden;
+        }
+
+        .end-page {
+            color: inherit;
+            cursor: default;
+        }
+
+        .end-page:hover, .end-page:focus {
+            text-decoration: none;
+        }
     </style>
 </head>
 <body>
@@ -32,47 +45,47 @@
                 <div class="row">
                     <div class="col-md-6 col-xs-12" id="orders">
                         <div class="row" id="navigator">
-                            <div class="col-md-1 col-md-offset-1 col-xs-2">
-                                <a href="#">&lt;&lt;</a>
+                            <div class="col-md-1 col-md-offset-1 col-xs-2 non-visible">
+                                <a id="prev-order" href="#">&lt;&lt;</a>
                             </div>
                             <div class="col-md-8 col-xs-8">
-                                <p class="text-center" id="order-number">Order 2/6</p>
+                                <p class="text-center" id="order-number">No orders for now!</p>
                             </div>
-                            <div class="col-md-1 col-md-offset-1 col-xs-2">
-                                <a href="#">&gt;&gt;</a>
+                            <div class="col-md-1 col-xs-2 non-visible">
+                                <a id="next-order" href="#">&gt;&gt;</a>
                             </div>
                         </div>
                         <div class="form-group col-md-12">
                             <label class="control-label">Address</label>
-                            <div class="form-control" id="address">Ioanna Pavla St.,4/6</div>
+                            <div class="form-control" id="address"></div>
                         </div>
                         <div>
                             <div class="form-group col-md-6 col-sm-12">
                                 <label class="control-label">Contact</label>
-                                <div class="form-control" id="contact">John Doe</div>
+                                <div class="form-control" id="contact"></div>
                             </div>
                             <div class="form-group col-md-6 col-sm-12">
                                 <label class="control-label">Phone</label>
-                                <div class="form-control" id="phone">(+380)901234567</div>
+                                <div class="form-control" id="phone"></div>
                             </div>
                         </div>
                         <div>
                             <div class="form-group col-md-6 col-sm-12">
                                 <label class="control-label">Order ID</label>
-                                <div class="form-control" id="order-id">1</div>
+                                <div class="form-control" id="order-id"></div>
                             </div>
                             <div class="form-group col-md-6 col-sm-12">
                                 <label class="control-label">Order Type</label>
-                                <div class="form-control" id="order-type">Documents</div>
+                                <div class="form-control" id="order-type"></div>
                             </div>
                         </div>
 
                         <div class="col-md-12">
                             <div class="pull-left">
-                                <button class="btn btn-lg btn-success">Confirm</button>
+                                <button id="btn-confirm" class="btn btn-lg btn-success">Confirm</button>
                             </div>
                             <div class="pull-right">
-                                <button class="btn btn-lg btn-danger">Cancel</button>
+                                <button id="btn-cancel" class="btn btn-lg btn-danger">Cancel</button>
                             </div>
                         </div>
                     </div>
@@ -88,54 +101,136 @@
 <th:block th:replace="fragments/footer :: footer"/>
 <th:block th:replace="fragments/left_menu :: left-menu-footer"/>
 
-<script>
-    document.getElementById('courier_route').className = 'active';
-
-    // var csrfHeader = document.getElementsByName('_csrf_header')[0].getAttribute('content');
-    // var csrfToken = document.getElementsByName('_csrf')[0].getAttribute('content');
-
-    var route = {
-        mapUrl: null,
-        wayPoints: []
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var APP = {
+        route: {
+            mapUrl: null,
+            wayPoints: []
+        },
+        currentPage: null
     };
 
-    var data = {
-        method: 'GET',
-        mode: 'same-origin',
-        credentials: 'same-origin'
-    };
+    function nextPage() {
+        setOrderPage(APP.currentPage + 1);
+    }
+
+    function prevPage() {
+        setOrderPage(APP.currentPage - 1);
+    }
 
     function setOrderPage(orderNum) {
-        let orderCount = route.wayPoints.length;
-        let order = route.wayPoints[orderNum].order;
+        var orderCount = APP.route.wayPoints.length;
+        if (orderNum > orderCount || orderNum < 0) {
+            return;
+        }
+        var order = APP.route.wayPoints[orderNum - 1].order;
+        var status = APP.route.wayPoints[orderNum - 1].status;
 
-        document.getElementById("order-number").textContent = `Order: ${orderNum}/${orderCount}`;
-        document.getElementById("address").textContent = order.address.name;
-        document.getElementById("contact").textContent = `${order.contact.firstName} + ${order.contact.lastName}`;
-        document.getElementById("phone").textContent = order.contact.phoneNumber;
+        var orderNumberEl = document.getElementById("order-number");
+        if (!status) {
+            orderNumberEl.textContent = "Order: " + orderNum + "/" + orderCount;
+            document.getElementById('btn-confirm').removeAttribute("disabled");
+            document.getElementById('btn-cancel').removeAttribute("disabled");
+        } else {
+            orderNumberEl.textContent = "Order: " + orderNum + "/" + orderCount + "(" + status + ")";
+            document.getElementById('btn-confirm').setAttribute("disabled", "disabled");
+            document.getElementById('btn-cancel').setAttribute("disabled", "disabled");
+        }
+
+        var prevPageEl = orderNumberEl.parentElement.previousElementSibling;
+        prevPageEl.classList.remove("non-visible");
+        if (orderNum === 1) {
+            prevPageEl.firstElementChild.classList.add("end-page");
+        } else {
+            prevPageEl.firstElementChild.classList.remove("end-page");
+        }
+
+        var nextPageEl = orderNumberEl.parentElement.nextElementSibling;
+        nextPageEl.classList.remove("non-visible");
+        if (orderNum === orderCount) {
+            nextPageEl.firstElementChild.classList.add("end-page");
+        } else {
+            nextPageEl.firstElementChild.classList.remove("end-page");
+        }
+
+        document.getElementById("address").textContent = order.receiverAddress.name;
+        document.getElementById("contact").textContent = order.receiverContact.firstName + " " + order.receiverContact.lastName;
+        document.getElementById("phone").textContent = order.receiverContact.phoneNumber;
         document.getElementById("order-id").textContent = order.id;
-        document.getElementById("order-type").textContent = order.orderType.name;
+        document.getElementById("order-type").textContent = order.orderType;
+
+        APP.currentPage = orderNum - 1;
     }
 
-    fetch('/courier/route/orders', data)
-        .then(res => res.json())
-        .then(data => {
-            route = data;
-            if (!route.orders) return;
-            if (route.wayPoints.length > 0)
+    function confirmOrder() {
+        var orderId = APP.route.wayPoints[APP.currentPage].order.id;
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/courier/route/orders/" + orderId + "/confirm");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState !== XMLHttpRequest.DONE) return;
+            if (xhr.status === 200) {
+                APP.wayPoints[orderId].status = "completed";
+            }
+        };
+        xhr.send();
+    }
+
+    function cancelOrder() {
+        var orderId = APP.route.wayPoints[APP.currentPage].order.id;
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/courier/route/orders/" + orderId + "/fail");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState !== XMLHttpRequest.DONE) return;
+            if (xhr.status === 200) {
+                APP.wayPoints[orderId].status = "cancelled";
+            }
+        };
+        xhr.send();
+    }
+
+    document.getElementById('courier_route').className = 'active';
+    document.getElementById('prev-order').addEventListener('click', function (ev) {
+        ev.preventDefault();
+        prevPage();
+    });
+    document.getElementById('next-order').addEventListener('click', function (ev) {
+        ev.preventDefault();
+        prevPage();
+    });
+    document.getElementById('btn-confirm').addEventListener('click', function (ev) {
+        confirmOrder();
+        setOrderPage(APP.currentPage);
+    });
+    document.getElementById('btn-cancel').addEventListener('click', function (ev) {
+        cancelOrder();
+        setOrderPage(APP.currentPage);
+    });
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "/courier/route/orders");
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+            try {
+                APP.route = JSON.parse(xhr.responseText);
+            } catch (e) {
+                document.getElementById("order-number").textContent = "No orders for now!";
+                document.getElementById("address").textContent = "";
+                document.getElementById("contact").textContent = "";
+                document.getElementById("phone").textContent = "";
+                document.getElementById("order-id").textContent = "";
+                document.getElementById("order-type").textContent = "";
+
+                document.getElementById('btn-cancel').style.display = "none";
+                document.getElementById('btn-confirm').style.display = "none";
+            }
+            if (APP.route.wayPoints.length > 0) {
                 setOrderPage(1);
-        });
-
-    function confirmOrder(orderId) {
-        fetch(`/courier/route/orders/${orderId}/confirm`)
-            .then(res => {
-                if (res.status === 200) {
-
-                } else {
-
-                }
-            })
-    }
+            }
+        }
+    };
+    xhr.send();
+    /*]]>*/
 </script>
 
 </body>

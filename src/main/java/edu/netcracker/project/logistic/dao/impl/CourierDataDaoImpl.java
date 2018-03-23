@@ -42,9 +42,7 @@ public class CourierDataDaoImpl implements CourierDataDao, RowMapper<CourierData
 
     @Override
     public CourierData mapRow(ResultSet rs, int rowNum) throws SQLException {
-
         CourierData courierData = new CourierData();
-
         Optional<Person> person = personCrudDao.findOne(rs.getLong("person_id"));
         if (!person.isPresent()) {
             return null;
@@ -53,7 +51,6 @@ public class CourierDataDaoImpl implements CourierDataDao, RowMapper<CourierData
         courierData.setCourierStatus(CourierStatus.valueOf(rs.getString("courier_status").toUpperCase()));
         courierData.setLastLocation(rs.getString("courier_last_location"));
         courierData.setTravelMode(TravelMode.valueOf(rs.getString("courier_travel_mode").toUpperCase()));
-
         Route route;
         try {
             route = objectMapper.readValue(
