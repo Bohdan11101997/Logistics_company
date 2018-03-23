@@ -1,6 +1,4 @@
-package edu.netcracker.project.logistic.maps_wrapper;
-
-import edu.netcracker.project.logistic.maps_wrapper.StaticMap;
+package edu.netcracker.project.logistic.mapswrapper;
 
 final public class PolyLine {
 

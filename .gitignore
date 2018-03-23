@@ -39,3 +39,5 @@ src/main/resources/mail.properties
 
 # Local files for boostsrap and jquery
 src/main/resources/static/local/
+
+logs/

@@ -150,6 +150,7 @@ public class RouteProcessor {
     private OrderStatusDao orderStatusDao;
     private OfficeDao officeDao;
     private PersonCrudDao personDao;
+    private PersonRoleDao personRoleDao;
     private WorkDayDao workDayDao;
     private CourierDataDao courierDataDao;
     private NotificationService notificationService;
@@ -159,6 +160,7 @@ public class RouteProcessor {
                           PersonCrudDao personDao,
                           OrderStatusDao orderStatusDao,
                           OfficeDao officeDao,
+                          PersonRoleDao personRoleDao,
                           WorkDayDao workDayDao,
                           CourierDataDao courierDataDao,
                           NotificationService notificationService) {
@@ -166,6 +168,7 @@ public class RouteProcessor {
         this.orderStatusDao = orderStatusDao;
         this.officeDao = officeDao;
         this.personDao = personDao;
+        this.personRoleDao = personRoleDao;
         this.workDayDao = workDayDao;
         this.courierDataDao = courierDataDao;
         this.notificationService = notificationService;
@@ -190,10 +193,15 @@ public class RouteProcessor {
                 FlowBuilder.makeCourierComparator(center, false, TravelMode.DRIVING)
         );
 
-//        List<Person> potentialCouriers = personDao.findAllEmployees();
-//        for(Person data : potentialCouriers ){
-//            addCourier(data.getId());
-//        }
+        List<Person> potentialCouriers = personDao.findAll();
+        for(Person data : potentialCouriers ){
+            for (Role r : data.getRoles()) {
+                if (r.getRoleName().equals("ROLE_COURIER")) {
+                    addCourier(data.getId());
+                    break;
+                }
+            }
+        }
         List<Order> confirmedOrders = orderDao.findConfirmed();
         for (Order data : confirmedOrders) {
             createOrder(data);
@@ -274,7 +282,7 @@ public class RouteProcessor {
             routePoints.add(new RoutePoint(
                     String.format("%.8f",point.lat),
                     String.format("%.8f",point.lng),
-                    order));
+                    OrderDTO.valueOf(order)));
         }
         if(!orderEntry.isOrderFromClient()) {
             //there are no office-sender order in chain office-sender-client
@@ -283,40 +291,50 @@ public class RouteProcessor {
         return true;
     }
 
+    public Office getRandomOffice(){
+        List<Office> offices = officeDao.allOffices();
+        if(offices == null || offices.size() == 0) {
+            logger.error("There are no offices created");
+            return null;
+        }
+        return offices.get((int)((Math.random()*(offices.size()-1))));
+    }
+
     @Async
     public void taskLoop() throws InterruptedException {
         RouteProcessor.CourierEntry worker = null;
         RouteProcessor.OrderEntry oe = null;
         Office office;
         try {
-            List<Office> offices = officeDao.allOffices();
-            if(offices == null || offices.size() == 0){
+            office = getRandomOffice();
+            if(office == null){
                 logger.error("There are no offices created");
                 prepareQueues(new LatLng(0,0));
             } else {//use first founded office
-                prepareQueues(offices.get(0).getAddress().getLocation());
+                prepareQueues(office.getAddress().getLocation());
             }
-            if(driveOrdersQueue.isEmpty()){
-                worker = walkWorkerQueue.take();
-                oe = walkOrdersQueue.poll();
-            }
-            if(worker == null || oe == null) {
-                worker = driveWorkerQueue.take();
-                oe = driveOrdersQueue.take();
-            }
-            office = oe.getOrder().getOffice();
+
             flowBuilder = new RadiusSelector(walkOrdersQueue, driveOrdersQueue, walkWorkerQueue, driveWorkerQueue, office);
+            flowBuilder.setUseMapRequests(true);
             while (true) {
+                System.out.println(320);
+
                 if(driveOrdersQueue.isEmpty()){
+                    System.out.println(323);
                     worker = walkWorkerQueue.take();
                     oe = walkOrdersQueue.poll();
+                    System.out.println(326);
                 }
                 if (worker == null || oe == null) {
+                    System.out.println(328);
                     worker = driveWorkerQueue.take();
                     oe = driveOrdersQueue.take();
+                    System.out.println(330);
                 }
 
-                office = oe.getOrder().getOffice();
+                logger.info("Begin - new route building for ({})", worker);
+
+                office = oe.getOrder().getOffice() == null ? getRandomOffice() : oe.getOrder().getOffice();
                 flowBuilder.setOffice(office);
 
                 if(!flowBuilder.process(oe, worker)){
@@ -335,6 +353,8 @@ public class RouteProcessor {
                                     "estimated distance " + flowBuilder.getDistance()));
                     logger.info("Courier #{} get #{} orders", worker.employeeId, flowBuilder.getOrdersSequence().size());
                 }
+
+                logger.info("End - route building for ({})", worker);
             }
         } catch (InterruptedException ex) {
             logger.error("Route processor terminated");
