@@ -1,6 +1,8 @@
 package edu.netcracker.project.logistic.controllers;
 
 import com.google.maps.model.GeocodingResult;
+import edu.netcracker.project.logistic.dao.OfficeDao;
+import edu.netcracker.project.logistic.dao.impl.OfficeDaoImpl;
 import edu.netcracker.project.logistic.model.*;
 import edu.netcracker.project.logistic.service.*;
 
@@ -53,6 +55,9 @@ public class AdminController {
     private AdvertisementValidator advertisementValidator;
     private SearchFormValidator searchFormValidator;
     private UserDetailsService userDetailsService;
+
+    @Autowired
+    OfficeDaoImpl officeDao;
 
 
     @Autowired
@@ -358,9 +363,9 @@ public class AdminController {
     }
 
 
-    @PostMapping("/FindOfficeByDepartment")
-    public String findByDepartment(@RequestParam String department, Model model) {
-        model.addAttribute("offices", officeService.findByDepartment(department));
+    @PostMapping("/FindOfficeByDepartmentOrAddress")
+    public String findByDepartment(@RequestParam String department, @RequestParam String address, Model model) {
+        model.addAttribute("offices", officeDao.findByDepartmentOrAddress(department, address));
         return "/admin/admin_offices";
 
     }

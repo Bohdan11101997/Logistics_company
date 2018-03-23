@@ -43,7 +43,7 @@ public class OfficeServiceImpl implements OfficeService {
     }
 
     @Override
-    public Office findByDepartment(String department) {
-        return officeDao.findByDepartment(department);
+    public List<Office> findByDepartment(String department, String address) {
+        return officeDao.findByDepartmentOrAddress(department, address);
     }
 }
