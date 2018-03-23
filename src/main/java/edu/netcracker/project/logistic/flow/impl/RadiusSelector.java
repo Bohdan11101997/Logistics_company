@@ -54,7 +54,9 @@ public class RadiusSelector extends FlowBuilderImpl {
     }
 
     public void newPath(@NotNull RouteProcessor.OrderEntry pivot) {
-        resultSequence.add(pivot);
+        if (resultSequence.size() == 0) {
+            resultSequence.add(pivot);
+        }
         center = pivot.getOrder().getReceiverAddress().getLocation();
         searchRadius = FlowBuilder.distance(office.getAddress().getLocation(), center, isUseMapRequests(), travelMode);
         candidates = new LinkedList<>();
@@ -103,6 +105,9 @@ public class RadiusSelector extends FlowBuilderImpl {
                 office.getAddress().getLocation().lat, 0.001) &&
                 nearlyEqual(next.getOrder().getSenderAddress().getLocation().lng,
                         office.getAddress().getLocation().lng, 0.001)) {*/
+        if (next == null) {
+            return null;
+        }
         if(next.getOrder().getOffice() == null) {
             //client_to_client
             if (resultSequence.size() < maxOrderCount-1/*is here 2 places*/ && count_c2c_orders < 1) {
@@ -228,8 +233,8 @@ public class RadiusSelector extends FlowBuilderImpl {
         }
 
         //warehouse marker
-        staticMap.marker(new StaticMap.Marker.Style.Builder().label('#').color(0x0ff0000).build(),
-                new StaticMap.GeoPoint(office.getAddress().getLocation().lat, office.getAddress().getLocation().lng));
+//        staticMap.marker(new StaticMap.Marker.Style.Builder().label('#').color(0x0ff0000).build(),
+//                new StaticMap.GeoPoint(office.getAddress().getLocation().lat, office.getAddress().getLocation().lng));
 
         if (directionsResult.geocodedWaypoints[0].geocoderStatus != GeocodedWaypointStatus.OK) {
             System.err.println("DirectionsApi returned ZERO_RESULTS");
@@ -259,6 +264,8 @@ public class RadiusSelector extends FlowBuilderImpl {
             path = directionsResult.routes[0].overviewPolyline.decodePath();
             staticMap = GoogleApiRequest.StaticMap()
                     .center(new StaticMap.GeoPoint(center.lat, center.lng))
+                    .marker(new StaticMap.Marker.Style.Builder().label('#').color(0x0ff0000).build(),
+                            new StaticMap.GeoPoint(office.getAddress().getLocation().lat, office.getAddress().getLocation().lng))
                     .path(new StaticMap.Path(StaticMap.Path.Style.builder().color(0xff4136).build(),
                             path.toArray(new LatLng[]{})));
 
