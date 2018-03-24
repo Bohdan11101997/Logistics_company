@@ -6,6 +6,7 @@
     <!--<th:block th:replace="fragments/header :: csrf" />-->
 
     <link rel="stylesheet" th:href="@{/css/left_menu.css}" type="text/css" href="../../static/css/left_menu.css"/>
+    <link rel="stylesheet" th:href="@{/css/main_content.css}" type="text/css" href="../../static/css/main_content.css"/>
 
     <style>
         #navigator {
@@ -30,7 +31,7 @@
         }
     </style>
 </head>
-<body>
+<body class="body-color">
 
 <div class="row">
 
@@ -90,7 +91,7 @@
                         </div>
                     </div>
                     <div class="col-md-6 col-xs-12">
-                        <img id="map" src="./staticmap.png" width="100%" height="100%"/>
+                        <img id="map" th:src="@{/images/mapplaceholder.png}" src="../../static/images/mapplaceholder.png" width="100%" height="100%"/>
                     </div>
                 </div>
             </div>
@@ -108,39 +109,48 @@
             mapUrl: null,
             wayPoints: []
         },
-        currentPage: null
+        currentOrder: null
     };
 
     function nextPage() {
-        setOrderPage(APP.currentPage + 1);
+        setOrderPage(APP.currentOrder + 1);
     }
 
     function prevPage() {
-        setOrderPage(APP.currentPage - 1);
+        setOrderPage(APP.currentOrder - 1);
+    }
+
+    function titleCase(str) {
+        str = str.toLowerCase().split(' ');
+        for (var i = 0; i < str.length; i++) {
+            str[i] = str[i].charAt(0).toUpperCase() + str[i].slice(1);
+        }
+        return str.join(' ');
     }
 
     function setOrderPage(orderNum) {
         var orderCount = APP.route.wayPoints.length;
-        if (orderNum > orderCount || orderNum < 0) {
+        if (orderNum >= orderCount || orderNum < 0) {
             return;
         }
-        var order = APP.route.wayPoints[orderNum - 1].order;
-        var status = APP.route.wayPoints[orderNum - 1].status;
+        var order = APP.route.wayPoints[orderNum].order;
+        var status = APP.route.wayPoints[orderNum].status;
+        var pageNum = orderNum + 1;
 
         var orderNumberEl = document.getElementById("order-number");
-        if (!status) {
-            orderNumberEl.textContent = "Order " + orderNum + "/" + orderCount;
+        if (status === "DELIVERING") {
+            orderNumberEl.textContent = "Order " + pageNum + "/" + orderCount;
             document.getElementById('btn-confirm').removeAttribute("disabled");
             document.getElementById('btn-cancel').removeAttribute("disabled");
         } else {
-            orderNumberEl.textContent = "Order: " + orderNum + "/" + orderCount + "(" + status + ")";
+            orderNumberEl.textContent = "Order " + pageNum + "/" + orderCount + " (" + titleCase(status) + ")";
             document.getElementById('btn-confirm').setAttribute("disabled", "disabled");
             document.getElementById('btn-cancel').setAttribute("disabled", "disabled");
         }
 
         var prevPageEl = orderNumberEl.parentElement.previousElementSibling;
         prevPageEl.classList.remove("non-visible");
-        if (orderNum === 1) {
+        if (orderNum === 0) {
             prevPageEl.firstElementChild.classList.add("end-page");
         } else {
             prevPageEl.firstElementChild.classList.remove("end-page");
@@ -148,7 +158,7 @@
 
         var nextPageEl = orderNumberEl.parentElement.nextElementSibling;
         nextPageEl.classList.remove("non-visible");
-        if (orderNum === orderCount) {
+        if (orderNum === orderCount - 1) {
             nextPageEl.firstElementChild.classList.add("end-page");
         } else {
             nextPageEl.firstElementChild.classList.remove("end-page");
@@ -162,30 +172,46 @@
 
         document.getElementById("map").setAttribute("src", APP.route.mapUrl);
 
-        APP.currentPage = orderNum - 1;
+        APP.currentOrder = orderNum;
     }
 
     function confirmOrder() {
-        var orderId = APP.route.wayPoints[APP.currentPage].order.id;
+        var orderId = APP.route.wayPoints[APP.currentOrder].order.id;
         var xhr = new XMLHttpRequest();
         xhr.open("POST", "/courier/route/orders/" + orderId + "/confirm");
         xhr.onreadystatechange = function () {
             if (xhr.readyState !== XMLHttpRequest.DONE) return;
             if (xhr.status === 200) {
-                APP.wayPoints[orderId].status = "completed";
+                APP.route.wayPoints[APP.currentOrder].status = "DELIVERED";
+                var routeCompleted = APP.route.wayPoints.every(function (point) {
+                    return point.status !== "DELIVERING";
+                });
+                if (routeCompleted) {
+                    setEmptyPage();
+                } else {
+                    setOrderPage(APP.currentOrder);
+                }
             }
         };
         xhr.send();
     }
 
     function cancelOrder() {
-        var orderId = APP.route.wayPoints[APP.currentPage].order.id;
+        var orderId = APP.route.wayPoints[APP.currentOrder].order.id;
         var xhr = new XMLHttpRequest();
         xhr.open("POST", "/courier/route/orders/" + orderId + "/fail");
         xhr.onreadystatechange = function () {
             if (xhr.readyState !== XMLHttpRequest.DONE) return;
             if (xhr.status === 200) {
-                APP.wayPoints[orderId].status = "cancelled";
+                APP.wayPoints[APP.currentOrder].status = "CANCELLED";
+                var routeCompleted = APP.route.wayPoints.every(function (point) {
+                    return point.status !== "DELIVERING";
+                });
+                if (routeCompleted) {
+                    setEmptyPage();
+                } else {
+                    setOrderPage(APP.currentOrder);
+                }
             }
         };
         xhr.send();
@@ -198,40 +224,59 @@
     });
     document.getElementById('next-order').addEventListener('click', function (ev) {
         ev.preventDefault();
-        prevPage();
+        nextPage();
     });
-    document.getElementById('btn-confirm').addEventListener('click', function (ev) {
-        confirmOrder();
-        setOrderPage(APP.currentPage);
-    });
-    document.getElementById('btn-cancel').addEventListener('click', function (ev) {
-        cancelOrder();
-        setOrderPage(APP.currentPage);
-    });
+    document.getElementById('btn-confirm').addEventListener('click', confirmOrder);
+    document.getElementById('btn-cancel').addEventListener('click', cancelOrder);
 
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", "/courier/route/orders");
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-            try {
+    function setEmptyPage() {
+        document.getElementById("order-number").textContent = "No orders for now!";
+        document.getElementById("address").textContent = "";
+        document.getElementById("contact").textContent = "";
+        document.getElementById("phone").textContent = "";
+        document.getElementById("order-id").textContent = "";
+        document.getElementById("order-type").textContent = "";
+
+        document.getElementById('btn-confirm').setAttribute("disabled", "disabled");
+        document.getElementById('btn-cancel').setAttribute("disabled", "disabled");
+
+        document.getElementById('prev-order').style.display = "none";
+        document.getElementById('next-order').style.display = "none";
+
+        document.getElementById('map').src = "/images/mapplaceholder.png";
+    }
+
+    function getRoute() {
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "/courier/route/orders");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
                 APP.route = JSON.parse(xhr.responseText);
-            } catch (e) {
-                document.getElementById("order-number").textContent = "No orders for now!";
-                document.getElementById("address").textContent = "";
-                document.getElementById("contact").textContent = "";
-                document.getElementById("phone").textContent = "";
-                document.getElementById("order-id").textContent = "";
-                document.getElementById("order-type").textContent = "";
+                if (APP.route.wayPoints.length > 0) {
+                    document.getElementById('prev-order').style.display = "";
+                    document.getElementById('next-order').style.display = "";
+                    var routeCompleted = APP.route.wayPoints.every(function (point) {
+                        return point.status !== "DELIVERING";
+                    });
+                    if (routeCompleted) {
+                        setEmptyPage();
+                    } else {
+                        setOrderPage(0);
+                    }
+                } else {
+                    setEmptyPage();
+                }
+            }
+        };
+        xhr.send();
+    }
 
-                document.getElementById('btn-cancel').style.display = "none";
-                document.getElementById('btn-confirm').style.display = "none";
-            }
-            if (APP.route.wayPoints.length > 0) {
-                setOrderPage(1);
-            }
+    getRoute();
+    connect({
+        'route': function () {
+            getRoute();
         }
-    };
-    xhr.send();
+    });
     /*]]>*/
 </script>
 

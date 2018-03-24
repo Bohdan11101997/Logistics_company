@@ -169,9 +169,9 @@ INSERT INTO reset_password (person_id, reset_token) VALUES (4, '47a95c8c-a5d1-49
 -- INSERT INTO logistic_company."order" (order_id, estimated_delivery_time, courier_id, receiver_contact_id, receiver_address_id, sender_contact_id, sender_address_id, office_id, order_status_id, order_type_id, weight, width, height, length)
 -- VALUES (2, '04:05:06', 7, 2, 1, 5, 2, 1, 6, 2, 112, 132, 1322, 12);
 
-INSERT INTO logistic_company."courier_data" (person_id, courier_status, courier_last_location, courier_travel_mode)
-VALUES (5, trim('FREE') :: logistic_company.COURIER_STATUS, '', 'DRIVING');
-INSERT INTO logistic_company."courier_data" (person_id, courier_status, courier_last_location, courier_travel_mode)
-VALUES (7, trim('FREE') :: logistic_company.COURIER_STATUS, '', 'WALKING');
-INSERT INTO logistic_company."courier_data" (person_id, courier_status, courier_last_location, courier_travel_mode)
-VALUES (8, trim('FREE') :: logistic_company.COURIER_STATUS, '', 'WALKING');
+INSERT INTO logistic_company."courier_data" (person_id, courier_status, courier_last_location, courier_travel_mode, route)
+VALUES (5, trim('FREE') :: logistic_company.COURIER_STATUS, '', 'DRIVING', '{"mapUrl":null,"wayPoints":[]}' :: json);
+INSERT INTO logistic_company."courier_data" (person_id, courier_status, courier_last_location, courier_travel_mode, route)
+VALUES (7, trim('FREE') :: logistic_company.COURIER_STATUS, '', 'WALKING', '{"mapUrl":null,"wayPoints":[]}' :: json);
+INSERT INTO logistic_company."courier_data" (person_id, courier_status, courier_last_location, courier_travel_mode, route)
+VALUES (8, trim('FREE') :: logistic_company.COURIER_STATUS, '', 'WALKING', '{"mapUrl":null,"wayPoints":[]}' :: json);

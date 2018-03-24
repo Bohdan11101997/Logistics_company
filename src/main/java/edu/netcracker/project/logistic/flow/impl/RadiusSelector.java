@@ -119,7 +119,7 @@ public class RadiusSelector extends FlowBuilderImpl {
                     //success
                     resultSequence.add(next);
                     resultSequence.add(sender);
-                    currentWeight.add(sender.getOrder().getWeight());
+                    currentWeight = currentWeight.add(sender.getOrder().getWeight());
                     updateTimeAndDistance(sender);
                     updateTimeAndDistance(next);
                     /*currentAproxDistance += FlowBuilder.distance(
@@ -352,6 +352,9 @@ public class RadiusSelector extends FlowBuilderImpl {
 
     @Override
     public boolean process(RouteProcessor.OrderEntry pivot, RouteProcessor.CourierEntry courierEntry) {
+        // remove previous route
+        resultSequence.clear();
+
         newPath(pivot);
 
         for (int i = 0; i < MAX_RADIUS_STEPS && candidates.size() == 0; i++) {

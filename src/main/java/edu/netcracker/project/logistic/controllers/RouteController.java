@@ -3,7 +3,6 @@ package edu.netcracker.project.logistic.controllers;
 import edu.netcracker.project.logistic.dao.CourierDataDao;
 import edu.netcracker.project.logistic.model.CourierData;
 import edu.netcracker.project.logistic.model.Route;
-import edu.netcracker.project.logistic.model.RoutePoint;
 import edu.netcracker.project.logistic.service.OrderService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,11 +26,8 @@ public class RouteController {
     @GetMapping
     public ResponseEntity<Route> getRoute(Principal principal) {
         Optional<CourierData> data = courierDataDao.findOne(principal.getName());
-        if (!data.isPresent()) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-        Route route = data.get().getRoute();
-        return ResponseEntity.ok(route);
+        return data.map(d -> ResponseEntity.ok(d.getRoute()))
+                .orElse(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
     }
 
     @PostMapping("{orderId}/confirm")

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -107,6 +108,37 @@ public class OrderServiceImpl implements OrderService {
         taskDao.save(task);
     }
 
+    private void updateRoutePoint(CourierData data, Long orderId, DeliveryStatus status) {
+        Long employeeId = data.getCourier().getId();
+        Route route = data.getRoute();
+        List<RoutePoint> points = route.getWayPoints();
+        RoutePoint point = points
+                .stream()
+                .filter(p -> p.getOrder().getId().equals(orderId))
+                .findFirst()
+                .orElseThrow(() -> {
+                    logger.error(
+                            "Attempt to change delivery status for order #{} which is not in current route for courier #{}",
+                            orderId,
+                            employeeId
+                    );
+                    return new IllegalArgumentException("Route point for order not exists");
+                });
+        if (!point.getStatus().equals(DeliveryStatus.DELIVERING)) {
+            throw new IllegalArgumentException("Can't change state for order which is not in DELIVERING state");
+        }
+        point.setStatus(status);
+        if (points.stream().allMatch(p -> p.getStatus() != DeliveryStatus.DELIVERING)) {
+            data.setCourierStatus(CourierStatus.FREE);
+            Route emptyRoute = new Route();
+            emptyRoute.setWayPoints(Collections.emptyList());
+            data.setRoute(emptyRoute);
+        }
+        data.setLastLocation(String.format("%s,%s", point.getLatitude(), point.getLongitude()));
+        data.setRoute(route);
+        courierDataDao.save(data);
+    }
+
     @Override
     public void confirmDelivered(CourierData data, Long orderId) {
         Long employeeId = data.getCourier().getId();
@@ -118,27 +150,7 @@ public class OrderServiceImpl implements OrderService {
         if (!employeeId.equals(order.getCourier().getId())) {
             throw new IllegalArgumentException("Can't fail not assigned order");
         }
-        Route route = data.getRoute();
-        List<RoutePoint> points = route.getWayPoints();
-        RoutePoint point = points
-                .stream()
-                .filter(p -> p.getOrder().getId().equals(orderId))
-                .findFirst()
-                .orElseThrow(() -> {
-                    logger.error(
-                            "Attempt to confirm delivery for order #{} which is not in current route for courier #{}",
-                            orderId,
-                            employeeId
-                    );
-                    return new IllegalArgumentException("Route point for order not exists");
-                });
-        if (points.size() == 0) {
-            data.setCourierStatus(CourierStatus.FREE);
-            data.setRoute(null);
-        }
-        data.setLastLocation(String.format("%s,%s", point.getLatitude(), point.getLongitude()));
-        data.setRoute(route);
-        courierDataDao.save(data);
+        updateRoutePoint(data, orderId, DeliveryStatus.DELIVERED);
         order.setOrderStatus(orderStatusDao.findByName("DELIVERED")
                 .orElseThrow(
                         () -> new IllegalStateException("Can't find order status 'DELIVERED'")
@@ -157,29 +169,7 @@ public class OrderServiceImpl implements OrderService {
         if (!employeeId.equals(order.getCourier().getId())) {
             throw new IllegalArgumentException("Can't fail not assigned order");
         }
-
-        Route route = data.getRoute();
-        List<RoutePoint> points = route.getWayPoints();
-        RoutePoint point = points
-                .stream()
-                .filter(p -> p.getOrder().getId().equals(orderId))
-                .findFirst()
-                .orElseThrow(() -> {
-                    logger.error(
-                            "Attempt to fail delivery for order #{} which is not in current route for courier #{}",
-                            orderId,
-                            employeeId
-                    );
-                    return new IllegalArgumentException("Route point for order not exists");
-                });
-        if (points.size() == 0) {
-            data.setCourierStatus(CourierStatus.FREE);
-            data.setRoute(null);
-        }
-        data.setLastLocation(String.format("%s,%s", point.getLatitude(), point.getLongitude()));
-        data.setRoute(route);
-        courierDataDao.save(data);
-
+        updateRoutePoint(data, orderId, DeliveryStatus.CANCELLED);
         order.setOrderStatus(orderStatusDao.findByName("PROCESSING")
                 .orElseThrow(
                         () -> new IllegalStateException("Can't find order status 'PROCESSING'")
