@@ -279,6 +279,7 @@ public class RouteProcessor {
         routePoints.add(new RoutePoint(
                 String.format("%.8f", point.lat),
                 String.format("%.8f", point.lng),
+                DeliveryStatus.DELIVERING,
                 OrderDTO.valueOf(order)));
         courierDataDao.save(courierEntry.courierData);
         if (!orderEntry.isOrderFromClient()) {
@@ -366,7 +367,7 @@ public class RouteProcessor {
                     worker.courierData.setCourierStatus(CourierStatus.ON_WAY);
                     courierDataDao.save(worker.courierData);
                     notificationService.send(personDao.findOne(worker.employeeId).get().getUserName(),
-                            new Notification("info", "Delivery route assigned."));
+                            new Notification("route", "Delivery route assigned."));
                     logger.info("Courier #{} get #{} orders", worker.employeeId, flowBuilder.getOrdersSequence().size());
                 }
 

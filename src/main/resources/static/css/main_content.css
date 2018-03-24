@@ -2,43 +2,25 @@
     --main-color: #5B7DAA;
     --second-color: #485d8c;
     --third-color: #363D69;
-    --fourth-color: #fdfeff;
+    --text-color: #fdfeff;
     --error-color: #F1F227;
 }
 
 h1 {
-    color: white;
     text-align: center;
 }
 
-h2 {
-    color: white;
-}
-
-h3{
-    color: white;
-}
-
-h5{
-    color: white;
-}
-
 .body-color {
+    color: var(--text-color);
     background-color: var(--main-color);
-}
-
-.body-color label{
-    color: white;
 }
 
 .panel.panel-default .panel-heading{
     background-color: var(--second-color);
-    color: white;
 }
 
 .panel.panel-default .panel-body{
     background-color: var(--third-color);
-    color: white;
 }
 
 .has-error .help-block {
