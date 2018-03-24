@@ -15,11 +15,12 @@ h1 {
     background-color: var(--main-color);
 }
 
-.panel.panel-default .panel-heading{
+.panel.panel-default .panel-heading {
     background-color: var(--second-color);
+    color: var(--text-color);
 }
 
-.panel.panel-default .panel-body{
+.panel.panel-default .panel-body {
     background-color: var(--third-color);
 }
 
@@ -33,7 +34,7 @@ h1 {
 
 .has-error .form-control:focus {
     border-color: var(--error-color);
-    box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 6px var(--error-color);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 6px var(--error-color);
 }
 
 .panel {
