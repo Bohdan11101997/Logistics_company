@@ -3,6 +3,7 @@
     --second-color: #485d8c;
     --third-color: #363D69;
     --fourth-color: #fdfeff;
+    --error-color: #F1f227;
 }
 
 h1 {
@@ -36,6 +37,18 @@ h5{
 }
 
 .panel.panel-default .panel-body{
-    background-color: var(--main-color);
+    background-color: var(--third-color);
     color: white;
+}
+
+.has-error .help-block {
+    color: var(--error-color);
+}
+
+.has-error .form-control {
+    border-color: var(--error-color);
+}
+
+.panel {
+    border: 2px solid transparent;
 }
