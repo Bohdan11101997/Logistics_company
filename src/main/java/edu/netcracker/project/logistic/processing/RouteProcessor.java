@@ -328,6 +328,11 @@ public class RouteProcessor {
                     continue;
                 }
 
+                if (worker.courierData.getCourierStatus().equals(CourierStatus.ON_WAY)) {
+                    logger.error("Courier #{} is already delivering orders", worker.getEmployeeId());
+                    continue;
+                }
+
                 try {
                     if (!driverWorker) {
                         order = walkOrdersQueue.take();
@@ -358,6 +363,7 @@ public class RouteProcessor {
                             addOrder(orderEntry);
                 } else if (assignOrders(flowBuilder.getOrdersSequence(), worker)) {
                     worker.courierData.getRoute().setMapUrl(flowBuilder.getStaticMap().toString());
+                    worker.courierData.setCourierStatus(CourierStatus.ON_WAY);
                     courierDataDao.save(worker.courierData);
                     notificationService.send(personDao.findOne(worker.employeeId).get().getUserName(),
                             new Notification("info", "Delivery route assigned."));

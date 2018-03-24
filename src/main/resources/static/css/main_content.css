@@ -3,7 +3,7 @@
     --second-color: #485d8c;
     --third-color: #363D69;
     --fourth-color: #fdfeff;
-    --error-color: #F1f227;
+    --error-color: #F1F227;
 }
 
 h1 {
@@ -47,6 +47,11 @@ h5{
 
 .has-error .form-control {
     border-color: var(--error-color);
+}
+
+.has-error .form-control:focus {
+    border-color: var(--error-color);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 6px var(--error-color);
 }
 
 .panel {
