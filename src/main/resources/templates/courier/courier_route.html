@@ -3,33 +3,9 @@
 <head>
     <th:block th:replace="fragments/header :: header-bootstrap-config"/>
     <th:block th:replace="fragments/header :: header-bootstrap-config-IE"/>
-    <!--<th:block th:replace="fragments/header :: csrf" />-->
-
     <link rel="stylesheet" th:href="@{/css/left_menu.css}" type="text/css" href="../../static/css/left_menu.css"/>
     <link rel="stylesheet" th:href="@{/css/main_content.css}" type="text/css" href="../../static/css/main_content.css"/>
-
-    <style>
-        #navigator {
-            margin-bottom: 15px;
-        }
-
-        #orders {
-            margin-bottom: 15px;
-        }
-
-        .non-visible {
-            visibility: hidden;
-        }
-
-        .end-page {
-            color: inherit;
-            cursor: default;
-        }
-
-        .end-page:hover, .end-page:focus {
-            text-decoration: none;
-        }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/courier.css}" type="text/css" href="../../static/css/courier.css"/>
 </head>
 <body class="body-color">
 
@@ -43,8 +19,13 @@
         <div class="side-body">
             <div class="row">
                 <h1 style="text-align:center"> Route </h1>
-                <div class="row">
+                <div class="row" id="main-row">
                     <div class="col-md-6 col-xs-12" id="orders">
+                        <div id="spinner" class="empty">
+                            <img draggable="false"
+                                 src="../../static/images/spinner.gif"
+                                 th:src="@{/images/spinner.gif}"/>
+                        </div>
                         <div class="row" id="navigator">
                             <div class="col-md-1 col-md-offset-1 col-xs-2 non-visible">
                                 <a id="prev-order" href="#">&lt;&lt;</a>
@@ -91,7 +72,8 @@
                         </div>
                     </div>
                     <div class="col-md-6 col-xs-12">
-                        <img id="map" th:src="@{/images/mapplaceholder.png}" src="../../static/images/mapplaceholder.png" width="100%" height="100%"/>
+                        <img id="map" th:src="@{/images/mapplaceholder.png}"
+                             src="../../static/images/mapplaceholder.png" width="100%" height="100%"/>
                     </div>
                 </div>
             </div>
@@ -109,7 +91,11 @@
             mapUrl: null,
             wayPoints: []
         },
-        currentOrder: null
+        currentOrder: null,
+        spinner: {
+            visible: false,
+            delayMs: 50
+        }
     };
 
     function nextPage() {
@@ -177,6 +163,7 @@
 
     function confirmOrder() {
         var orderId = APP.route.wayPoints[APP.currentOrder].order.id;
+        var spinnerTimeout = null;
         var xhr = new XMLHttpRequest();
         xhr.open("POST", "/courier/route/orders/" + orderId + "/confirm");
         xhr.onreadystatechange = function () {
@@ -191,13 +178,17 @@
                 } else {
                     setOrderPage(APP.currentOrder);
                 }
+                clearTimeout(spinnerTimeout);
+                hideSpinner();
             }
         };
+        spinnerTimeout = setTimeout(showSpinner, APP.spinner.delayMs);
         xhr.send();
     }
 
     function cancelOrder() {
         var orderId = APP.route.wayPoints[APP.currentOrder].order.id;
+        var spinnerTimeout = null;
         var xhr = new XMLHttpRequest();
         xhr.open("POST", "/courier/route/orders/" + orderId + "/fail");
         xhr.onreadystatechange = function () {
@@ -212,8 +203,11 @@
                 } else {
                     setOrderPage(APP.currentOrder);
                 }
+                clearTimeout(spinnerTimeout);
+                hideSpinner();
             }
         };
+        spinnerTimeout = setTimeout(showSpinner, APP.spinner.delayMs);
         xhr.send();
     }
 
@@ -247,14 +241,15 @@
     }
 
     function getRoute() {
+        var spinnerTimeout = null;
         var xhr = new XMLHttpRequest();
         xhr.open("GET", "/courier/route/orders");
         xhr.onreadystatechange = function () {
             if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
                 APP.route = JSON.parse(xhr.responseText);
                 if (APP.route.wayPoints.length > 0) {
-                    document.getElementById('prev-order').style.display = "";
-                    document.getElementById('next-order').style.display = "";
+                    document.getElementById("prev-order").style.display = "";
+                    document.getElementById("next-order").style.display = "";
                     var routeCompleted = APP.route.wayPoints.every(function (point) {
                         return point.status !== "DELIVERING";
                     });
@@ -266,14 +261,29 @@
                 } else {
                     setEmptyPage();
                 }
+                clearTimeout(spinnerTimeout);
+                hideSpinner();
             }
         };
+        spinnerTimeout = setTimeout(showSpinner, APP.spinner.delayMs);
         xhr.send();
+    }
+
+    var spinnerEl = document.getElementById("spinner");
+
+    function showSpinner() {
+        spinnerEl.classList.remove("empty");
+        APP.spinner.visible = true;
+    }
+
+    function hideSpinner() {
+        spinnerEl.classList.add("empty");
+        APP.spinner.visible = false;
     }
 
     getRoute();
     connect({
-        'route': function () {
+        "route": function () {
             getRoute();
         }
     });

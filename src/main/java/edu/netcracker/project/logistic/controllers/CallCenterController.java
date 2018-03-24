@@ -60,7 +60,7 @@ public class CallCenterController {
         } catch (IllegalArgumentException ex) {
             return "error/400";
         }
-        return "call_center/call_center_orders_actual";
+        return "redirect:/call-center/orders/actual";
     }
 
     @PostMapping("/orders/{id}/confirm")
@@ -74,6 +74,6 @@ public class CallCenterController {
         } catch (IllegalArgumentException ex) {
             return "error/400";
         }
-        return "call_center/call_center_orders_actual";
+        return "redirect:/call-center/orders/actual";
     }
 }
