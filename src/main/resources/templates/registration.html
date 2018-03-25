@@ -110,8 +110,9 @@
                                      th:classappend="${#fields.hasErrors('contact.phoneNumber')}? 'has-error'">
                                     <label for="phone" class="control-label">Phone</label>
                                     <input type="text" class="form-control" id="phone" placeholder=""
-                                           required="required" minlength="7" maxlength="15"
-                                           pattern="(\+380)?[\d\s\-()]+"
+                                           required="required" minlength="9" maxlength="15"
+                                           pattern="(\+380)*([\-\s]*\d[\-\s]*){9}"
+                                           title="9 digit phone number without country code"
                                            oninput="clearErrorStyles(this)"
                                            th:field="*{contact.phoneNumber}"/>
                                     <div class="has-error help-block"

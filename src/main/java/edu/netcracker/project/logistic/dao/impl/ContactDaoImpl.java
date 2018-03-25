@@ -3,7 +3,6 @@ package edu.netcracker.project.logistic.dao.impl;
 import edu.netcracker.project.logistic.dao.ContactDao;
 import edu.netcracker.project.logistic.dao.QueryDao;
 import edu.netcracker.project.logistic.model.Contact;
-import edu.netcracker.project.logistic.model.Person;
 import edu.netcracker.project.logistic.service.QueryService;
 import org.slf4j.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +43,6 @@ public class ContactDaoImpl implements ContactDao, QueryDao, RowMapper<Contact> 
         c.setPhoneNumber(rs.getString("phone_number"));
         return c;
     }
-
 
 
     @Override
@@ -95,11 +93,11 @@ public class ContactDaoImpl implements ContactDao, QueryDao, RowMapper<Contact> 
         }
     }
 
-    public List<Contact> findByPhoneNumberOrEmail(String phoneNumber, String email) {
+    public List<Contact> findByEmail(String email) {
         try {
             return jdbcTemplate.query(
-                    getFindByPhoneNumberOrEmailQuery(),
-                    new Object[]{phoneNumber, email},
+                    getFindByEmailQuery(),
+                    new Object[]{email},
                     this
             );
         } catch (EmptyResultDataAccessException e) {
@@ -128,7 +126,7 @@ public class ContactDaoImpl implements ContactDao, QueryDao, RowMapper<Contact> 
         return queryService.getQuery("select.contact");
     }
 
-    private String getFindByPhoneNumberOrEmailQuery() {
-        return queryService.getQuery("select.contact.by.phone_number.or.email");
+    private String getFindByEmailQuery() {
+        return queryService.getQuery("select.contact.by.email");
     }
 }
