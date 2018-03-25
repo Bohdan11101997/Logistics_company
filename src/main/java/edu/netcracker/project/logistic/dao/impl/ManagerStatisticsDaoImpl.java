@@ -29,6 +29,7 @@ public class ManagerStatisticsDaoImpl {
     private PersonRoleDao personRoleDao;
     private RowMapper<Contact> contactMapper;
     private RowMapper<Role> roleMapper;
+    private RowMapper<Order> orderRowMapper;
 
 
 
@@ -73,8 +74,45 @@ public class ManagerStatisticsDaoImpl {
 
 
 
+    private List<Statistic_task> extractOrderForStatistic(ResultSet rs) throws SQLException {
 
-    public List<Person> searchStatisiticOrders(SearchFormOrderStatistic searchFormOrderStatistic) {
+        List<Statistic_task> result = new ArrayList<>();
+        boolean rowsLeft = rs.next();
+        for (int i = 0; rowsLeft; i++) {
+            Person person = new Person();
+            person.setId(rs.getLong("person_id"));
+            person.setUserName(rs.getString("user_name"));
+
+            Contact contact = new Contact();
+            contact.setFirstName(rs.getString("first_name"));
+            contact.setFirstName(rs.getString("last_name"));
+
+            OrderType orderType = new OrderType();
+            orderType.setName(rs.getString("name"));
+
+            Order order = new Order();
+            order.setId(rs.getLong("order_id"));
+//            order.setDeliveryTime(rs.getTimestamp("estimated_delivery_time").toLocalDateTime());
+            order.setReceiverContact(contact);
+            order.setSenderContact(contact);
+            order.setOrderType(orderType);
+            Set<Role> roles = new HashSet<>();
+            do {
+                roles.add(roleMapper.mapRow(rs, i));
+                rowsLeft = rs.next();
+            } while (rowsLeft && rs.getLong("person_id") == person.getId());
+            person.setRoles(roles);
+
+            Statistic_task statistic_task = new Statistic_task();
+            statistic_task.setPerson(person);
+            statistic_task.setOrder(order);
+            result.add(statistic_task);
+        }
+        return result;
+
+    }
+
+    public List<Statistic_task> searchStatisiticOrders(SearchFormOrderStatistic searchFormOrderStatistic) {
         LocalDateTime from = searchFormOrderStatistic.getFrom();
         if (from == null) {
             from = LocalDateTime.MIN;
@@ -104,26 +142,6 @@ public class ManagerStatisticsDaoImpl {
         }
     }
 
-    private List<Person> extractOrderForStatistic(ResultSet rs) throws SQLException {
-
-            List<Person> result = new ArrayList<>();
-            boolean rowsLeft = rs.next();
-            for (int i = 0; rowsLeft; i++) {
-                Person person = new Person();
-                person.setId(rs.getLong("person_id"));
-                person.setId(rs.getLong("count_orders"));
-                person.setUserName(rs.getString("user_name"));
-                Set<Role> roles = new HashSet<>();
-                do {
-                    roles.add(roleMapper.mapRow(rs, i));
-                    rowsLeft = rs.next();
-                } while (rowsLeft && rs.getLong("person_id") == person.getId());
-                person.setRoles(roles);
-                result.add(person);
-        }
-            return result;
-
-    }
 
 
     private String prepareSearchString(String input) {
@@ -134,10 +152,10 @@ public class ManagerStatisticsDaoImpl {
 
 
         String firstName = searchFormStatisticEmployee.getFirstName();
-        firstName = firstName == null ? "%%" : prepareSearchString(firstName);
+        firstName = firstName == null ? "%%" : prepareSearchString(firstName.trim());
 
         String lastName = searchFormStatisticEmployee.getLastName();
-        lastName = lastName == null ? "%%" : prepareSearchString(lastName);
+        lastName = lastName == null ? "%%" : prepareSearchString(lastName.trim());
 
         Map<String, Object> paramMap = new HashMap<>(6);
         paramMap.put("first_name", firstName);
@@ -195,10 +213,10 @@ public class ManagerStatisticsDaoImpl {
 
 
 
-    public List<Person> EmployeesByOfficeOrCall_Center() {
+    public List<Person> EmployeesByCourierOrCall_Center() {
 
         return jdbcTemplate.query(
-                getQueryEmployeesByOfficeOrCall_Center(),
+                getQueryEmployeesByCourierOrCall_Center(),
              this::extractMany1);
     }
 
@@ -396,7 +414,7 @@ public class ManagerStatisticsDaoImpl {
 
     {
 
-        return queryService.getQuery("select.count.task.by.employee");
+        return queryService.getQuery("select.manager.statistic.filter.order");
     }
 
 
@@ -420,7 +438,7 @@ public class ManagerStatisticsDaoImpl {
         return queryService.getQuery("count.orders.from.office");
     }
 
-    private String getQueryEmployeesByOfficeOrCall_Center()
+    private String getQueryEmployeesByCourierOrCall_Center()
     {
 
         return queryService.getQuery("select.employee.call_center.couriers");

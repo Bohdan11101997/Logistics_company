@@ -6,6 +6,8 @@ import java.util.List;
 
 
 public interface OfficeDao extends CrudDao<Office, Long> {
-    Office findByDepartment(String department);
+
+    List<Office> findByDepartmentOrAddress(String department, String address);
+
     List<Office> allOffices();
 }

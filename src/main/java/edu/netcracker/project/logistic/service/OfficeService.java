@@ -9,5 +9,6 @@ import java.util.List;
 @Service
 public interface OfficeService extends CrudService<Office, Long>{
     List<Office> allOffices();
-   Office findByDepartment(String department);
+
+    List<Office> findByDepartment(String department, String address);
 }

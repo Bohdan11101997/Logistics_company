@@ -13,10 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.SmartValidator;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
@@ -56,6 +53,9 @@ public class ManagerController {
     OrderStatusDaoImpl orderStatusDao;
 
     @Autowired
+    OfficeDaoImpl officeDao;
+
+    @Autowired
     public ManagerController(SmartValidator fieldValidator, UpdateUserValidator updateUserValidator,
                           CurrentPasswordValidator currentPasswordValidator, NewOrderValidator newOrderValidator,
                           UserService userService, SecurityService securityService, OrderTypeDao orderTypeDao,
@@ -73,7 +73,7 @@ public class ManagerController {
 
     @GetMapping("/statistics/employees")
     public String viewEmployeesStatistics(Model model){
-        List<Person> employees = managerStatisticsDao.EmployeesByOfficeOrCall_Center();
+        List<Person> employees = managerStatisticsDao.EmployeesByCourierOrCall_Center();
     model.addAttribute("employees", employees);
     model.addAttribute("availableRoles", roleCrudDao.findEmployeeRolesForManager());
     model.addAttribute("searchFormStatisticEmployee", new SearchFormStatisticEmployee());
@@ -111,7 +111,7 @@ public class ManagerController {
     @PostMapping("/statistics/orders")
     public  String SearchOrdersByManager(@ModelAttribute("searchFormOrderStatistic") SearchFormOrderStatistic searchFormOrderStatistic, Model model)
     {
-        List<Person> personList = managerStatisticsDao.searchStatisiticOrders(searchFormOrderStatistic);
+        List<Statistic_task> personList = managerStatisticsDao.searchStatisiticOrders(searchFormOrderStatistic);
         model.addAttribute("countOrder",managerStatisticsDao.countOrders());
         model.addAttribute("destination_typeOrders", orderTypeDao.findAll());
         model.addAttribute("status_OrdersList", orderStatusDao.findAll());
@@ -149,5 +149,12 @@ public class ManagerController {
         return "/manager/manager_statistics_employee_single";
     }
 
+
+    @PostMapping("/FindOfficeByDepartmentOrAddressStatistic")
+    public String findByDepartment(@RequestParam String department, @RequestParam String address, Model model) {
+        model.addAttribute("offices", officeDao.findByDepartmentOrAddress(department, address));
+        return "/manager/manager_statistics_offices";
+
+    }
 
 }
