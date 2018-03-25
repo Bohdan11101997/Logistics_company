@@ -12,6 +12,7 @@ import edu.netcracker.project.logistic.service.AdvertisementService;
 
 import edu.netcracker.project.logistic.validation.AdvertisementValidator;
 import edu.netcracker.project.logistic.validation.EmployeeValidator;
+import edu.netcracker.project.logistic.validation.ImageValidator;
 import edu.netcracker.project.logistic.validation.SearchFormValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.MessagingException;
 import javax.validation.Valid;
@@ -53,6 +55,7 @@ public class AdminController {
     private AdvertisementValidator advertisementValidator;
     private SearchFormValidator searchFormValidator;
     private UserDetailsService userDetailsService;
+    private ImageValidator imageValidator;
 
 
     @Autowired
@@ -60,7 +63,7 @@ public class AdminController {
                            RoleService roleService, AdvertisementService advertisementService,
                            AddressService addressService, EmployeeValidator employeeValidator,
                            AdvertisementValidator advertisementValidator, SearchFormValidator searchFormValidator,
-                           UserDetailsService userDetailsService) {
+                           UserDetailsService userDetailsService, ImageValidator imageValidator) {
         this.officeService = officeService;
         this.employeeService = employeeService;
         this.roleService = roleService;
@@ -70,6 +73,7 @@ public class AdminController {
         this.advertisementValidator = advertisementValidator;
         this.searchFormValidator = searchFormValidator;
         this.userDetailsService = userDetailsService;
+        this.imageValidator = imageValidator;
     }
 
     @GetMapping("/crud/advertisement")
@@ -80,10 +84,18 @@ public class AdminController {
     }
 
     @PostMapping("/crud/advertisement")
-    public String publishAdvertisement(@Valid @ModelAttribute(value = "advertisement") AdvertisementForm advertisementForm, BindingResult bindingResult) {
+    public String publishAdvertisement(@Valid @ModelAttribute(value = "advertisement") AdvertisementForm advertisementForm,
+                                       @RequestParam("file")MultipartFile file,
+                                       Model model,
+                                       BindingResult bindingResult) {
 
         advertisementValidator.validate(advertisementForm, bindingResult);
         if (bindingResult.hasErrors()) {
+            return "/admin/admin_crud_advertisement";
+        }
+
+        if (!imageValidator.isImage(file)){
+            model.addAttribute("notImage", "Please, upload only image there!");
             return "/admin/admin_crud_advertisement";
         }
 
