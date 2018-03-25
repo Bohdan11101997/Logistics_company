@@ -37,7 +37,7 @@ VALUES (5, 'stanis1', '$2a$10$x8wKe1tpGVJTE4zkHRbDj.OXXblGefWRjjdWw82e5s.m3OjHXG
 INSERT INTO person (person_id, user_name, password, contact_id)
 VALUES (6, 'agent-smith', '$2a$10$wTuyKwJX2hUhhuy5Po/lVeKWppG0H3fH0x4UmX4ketu/PHzhghS12', 6);
 INSERT INTO person (person_id, user_name, password, contact_id)
-VALUES (7, 'agent-lol', 'r245', 7);
+VALUES (7, 'khal', '$2a$10$VVyAe5T0h9uy5DmUf2XGmOLji7MhIXECaQz1t7h9QVZjukRDsgTt2', 7);
 INSERT INTO person (person_id, user_name, password, contact_id)
 VALUES (8, 'courier', '$2a$10$xAqw2EDobxgMKPp3.yBt5OJAuWa/eQxajk2W1ALNuW5MiFxWs4YZC', 8);
 INSERT INTO person (person_id, user_name, password, contact_id)

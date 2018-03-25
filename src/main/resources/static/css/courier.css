@@ -10,15 +10,6 @@
     visibility: hidden;
 }
 
-.end-page {
-    color: inherit;
-    cursor: default;
-}
-
-.end-page:hover, .end-page:focus {
-    text-decoration: none;
-}
-
 #orders {
     position: relative;
 }
