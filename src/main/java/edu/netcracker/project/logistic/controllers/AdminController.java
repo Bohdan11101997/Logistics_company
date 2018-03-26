@@ -45,9 +45,10 @@ public class AdminController {
     private final Logger logger = LoggerFactory.getLogger(RegistrationController.class);
 
     private static final int INITIAL_PAGE_SIZE = 20;
-    private static final int BUTTONS_TO_SHOW = 5;
+    private static final int INITIAL_BUTTONS_TO_SHOW = 5;
     private static final int INITIAL_PAGE = 0;
     private static final int[] PAGE_SIZES = {5, 10, 20, 50};
+    private static final int[] BUTTONS_TO_SHOW = {5, 7, 9};
 
     private EmployeeService employeeService;
     private OfficeService officeService;
@@ -191,6 +192,7 @@ public class AdminController {
     @GetMapping("/advertisements")
     public String getAllAdvertisementsOnPage(@RequestParam("pageSize")Optional<Integer> pageSize,
                                              @RequestParam("page") Optional<Integer> page,
+                                             @RequestParam("buttonsToShow") Optional<Integer> buttonsToShowOptional,
                                              Model model){
 
         int itemsOnPage = pageSize.orElse(INITIAL_PAGE_SIZE);
@@ -199,13 +201,20 @@ public class AdminController {
         List<Advertisement> advertisementsForCurrentPage = advertisementService.findAmountOfAdvertisementsForCurrentPage(itemsOnPage, currentPage);
 
         int totalPages = allAdvertisementsCount/itemsOnPage;
-        Pager pager = new Pager(totalPages, currentPage, BUTTONS_TO_SHOW);
+        if (allAdvertisementsCount % itemsOnPage != 0){
+            totalPages++;
+        }
+
+        int buttonsToShow = buttonsToShowOptional.orElse(INITIAL_BUTTONS_TO_SHOW);
+        Pager pager = new Pager(totalPages, currentPage, buttonsToShow);
 
         model.addAttribute("advertisements", advertisementsForCurrentPage);
         model.addAttribute("selectedPageSize", itemsOnPage);
+        model.addAttribute("selectedButtonsToShow", buttonsToShow);
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("currentPage", currentPage);
         model.addAttribute("pageSizes", PAGE_SIZES);
+        model.addAttribute("buttonsToShow", BUTTONS_TO_SHOW);
         model.addAttribute("pager", pager);
 
         return "/admin/admin_advertisements";
