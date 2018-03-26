@@ -124,6 +124,7 @@ public class ManagerController {
         return "manager/manager_statistics_orders";
     }
 
+
     @GetMapping("/statistics/common")
     public String viewCommonStatistics(Model model){
         model.addAttribute("countOrdersHandtoHand", managerStatisticsDao.countOrdersHandtoHand());
