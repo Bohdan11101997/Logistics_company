@@ -70,7 +70,7 @@
                                     <div class="form-group">
                                         <label for="destination_typeIds" class="control-label">Destination type</label>
                                         <br/>
-                                        <select id="destination_typeIds" multiple="multiple"
+                                        <select id="destination_typeIds" multiple="multiple" class="selectpicker"
                                                 th:field="*{destination_typeIds}">
                                             <option th:each="orderType: ${destination_typeOrders}"
                                                     th:value="${orderType.id}"
@@ -103,7 +103,7 @@
                                     <div class="form-group">
                                         <label for="order_statusIds" class="control-label">Order status</label>
                                         <br/>
-                                        <select id="order_statusIds" multiple="multiple"
+                                        <select id="order_statusIds" multiple="multiple" class="selectpicker"
                                                 th:field="*{order_statusIds}">
                                             <option th:each="orderStatus: ${status_OrdersList}"
                                                     th:value="${orderStatus.id}"
@@ -130,7 +130,7 @@
 
                     <div class="table-responsive">
                         <h2 >Date range:</h2> <label  th:text="${{fromDate}}"></label> <label th:text="${{toDate}}"></label>
-                        <table class="table">
+                        <table class="table table-striped">
                             <thead>
                             <tr>
                                 <th>#</th>

@@ -63,7 +63,7 @@
                                         <div class="form-group">
                                             <label for="role" class="control-label">Role</label>
                                             <br />
-                                            <select id="role" multiple="multiple"
+                                            <select id="role" multiple="multiple" class="selectpicker"
                                                     th:field="*{roleIds}">
                                                 <option th:each="role: ${availableRoles}"
                                                         th:value="${role.roleId}"
@@ -108,7 +108,7 @@
                     </div>
 
                     <div class="table-responsive">
-                        <table class="table">
+                        <table class="table table-striped">
                             <thead>
                             <tr>
                                 <th>#</th>
