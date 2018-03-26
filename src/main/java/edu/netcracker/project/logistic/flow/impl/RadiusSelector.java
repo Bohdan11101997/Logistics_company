@@ -3,20 +3,15 @@ package edu.netcracker.project.logistic.flow.impl;
 import com.google.maps.*;
 import com.google.maps.errors.ApiException;
 import com.google.maps.model.*;
-import edu.netcracker.project.logistic.dao.CourierDataDao;
-import edu.netcracker.project.logistic.dao.OrderTypeDao;
 import edu.netcracker.project.logistic.flow.FlowBuilder;
-import edu.netcracker.project.logistic.maps_wrapper.StaticMap;
-import edu.netcracker.project.logistic.maps_wrapper.GoogleApiRequest;
+import edu.netcracker.project.logistic.mapswrapper.StaticMap;
+import edu.netcracker.project.logistic.mapswrapper.GoogleApiRequest;
 import edu.netcracker.project.logistic.model.*;
 import edu.netcracker.project.logistic.processing.RouteProcessor;
-import edu.netcracker.project.logistic.service.RoleService;
 
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.*;
 
 public class RadiusSelector extends FlowBuilderImpl {
@@ -59,7 +54,9 @@ public class RadiusSelector extends FlowBuilderImpl {
     }
 
     public void newPath(@NotNull RouteProcessor.OrderEntry pivot) {
-        resultSequence.add(pivot);
+        if (resultSequence.size() == 0) {
+            resultSequence.add(pivot);
+        }
         center = pivot.getOrder().getReceiverAddress().getLocation();
         searchRadius = FlowBuilder.distance(office.getAddress().getLocation(), center, isUseMapRequests(), travelMode);
         candidates = new LinkedList<>();
@@ -108,6 +105,9 @@ public class RadiusSelector extends FlowBuilderImpl {
                 office.getAddress().getLocation().lat, 0.001) &&
                 nearlyEqual(next.getOrder().getSenderAddress().getLocation().lng,
                         office.getAddress().getLocation().lng, 0.001)) {*/
+        if (next == null) {
+            return null;
+        }
         if(next.getOrder().getOffice() == null) {
             //client_to_client
             if (resultSequence.size() < maxOrderCount-1/*is here 2 places*/ && count_c2c_orders < 1) {
@@ -119,7 +119,7 @@ public class RadiusSelector extends FlowBuilderImpl {
                     //success
                     resultSequence.add(next);
                     resultSequence.add(sender);
-                    currentWeight.add(sender.getOrder().getWeight());
+                    currentWeight = currentWeight.add(sender.getOrder().getWeight());
                     updateTimeAndDistance(sender);
                     updateTimeAndDistance(next);
                     /*currentAproxDistance += FlowBuilder.distance(
@@ -233,8 +233,8 @@ public class RadiusSelector extends FlowBuilderImpl {
         }
 
         //warehouse marker
-        staticMap.marker(new StaticMap.Marker.Style.Builder().label('#').color(0x0ff0000).build(),
-                new StaticMap.GeoPoint(office.getAddress().getLocation().lat, office.getAddress().getLocation().lng));
+//        staticMap.marker(new StaticMap.Marker.Style.Builder().label('#').color(0x0ff0000).build(),
+//                new StaticMap.GeoPoint(office.getAddress().getLocation().lat, office.getAddress().getLocation().lng));
 
         if (directionsResult.geocodedWaypoints[0].geocoderStatus != GeocodedWaypointStatus.OK) {
             System.err.println("DirectionsApi returned ZERO_RESULTS");
@@ -264,6 +264,8 @@ public class RadiusSelector extends FlowBuilderImpl {
             path = directionsResult.routes[0].overviewPolyline.decodePath();
             staticMap = GoogleApiRequest.StaticMap()
                     .center(new StaticMap.GeoPoint(center.lat, center.lng))
+                    .marker(new StaticMap.Marker.Style.Builder().label('#').color(0x0ff0000).build(),
+                            new StaticMap.GeoPoint(office.getAddress().getLocation().lat, office.getAddress().getLocation().lng))
                     .path(new StaticMap.Path(StaticMap.Path.Style.builder().color(0xff4136).build(),
                             path.toArray(new LatLng[]{})));
 
@@ -293,7 +295,7 @@ public class RadiusSelector extends FlowBuilderImpl {
                     color = color & 0x00ffff + 0xff0000;
                 }
                 staticMap.marker(
-                        new StaticMap.Marker.Style.Builder().label((char) ((index++) % 10 + '0')).color(color).build(),
+                        new StaticMap.Marker.Style.Builder().label((char) ((index++) % 10 + '1')).color(color).build(),
                         new StaticMap.GeoPoint(
                                 o.getOrder().getReceiverAddress().getLocation().lat,
                                 o.getOrder().getReceiverAddress().getLocation().lng)
@@ -350,6 +352,9 @@ public class RadiusSelector extends FlowBuilderImpl {
 
     @Override
     public boolean process(RouteProcessor.OrderEntry pivot, RouteProcessor.CourierEntry courierEntry) {
+        // remove previous route
+        resultSequence.clear();
+
         newPath(pivot);
 
         for (int i = 0; i < MAX_RADIUS_STEPS && candidates.size() == 0; i++) {

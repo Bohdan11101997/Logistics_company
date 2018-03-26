@@ -1,6 +1,5 @@
 package edu.netcracker.project.logistic.flow.impl;
 
-import edu.netcracker.project.logistic.maps_wrapper.StaticMap;
 import com.google.maps.model.*;
 import edu.netcracker.project.logistic.flow.FlowBuilder;
 import edu.netcracker.project.logistic.model.*;

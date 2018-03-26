@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <th:block th:replace="fragments/header :: header-bootstrap-config" />
-    <th:block th:replace="fragments/header :: header-bootstrap-config-IE" />
+    <th:block th:replace="fragments/header :: header-bootstrap-config"/>
+    <th:block th:replace="fragments/header :: header-bootstrap-config-IE"/>
 
-    <link rel="stylesheet" th:href="@{/css/left_menu.css}" type="text/css" href="../../static/css/left_menu.css" />
-    <link rel="stylesheet" th:href="@{/css/main_content.css}" type="text/css" href="../static/css/main_content.css" />
-    <link rel="stylesheet" th:href="@{/css/well.css}" type="text/css" href="../static/css/well.css" />
-    <link rel="stylesheet" th:href="@{/css/table.css}" type="text/css" href="../static/css/table.css" />
+    <link rel="stylesheet" th:href="@{/css/left_menu.css}" type="text/css" href="../../static/css/left_menu.css"/>
+    <link rel="stylesheet" th:href="@{/css/main_content.css}" type="text/css" href="../static/css/main_content.css"/>
+    <link rel="stylesheet" th:href="@{/css/well.css}" type="text/css" href="../static/css/well.css"/>
+    <link rel="stylesheet" th:href="@{/css/table.css}" type="text/css" href="../static/css/table.css"/>
 
 </head>
 <body class="body-color">
@@ -25,33 +25,8 @@
 
                     <h1>Order History</h1>
 
-                    <div class="well">
-                        <h3 class="caption">Search Criteria</h3>
-
-                        <form method="post" class="form-horizontal">
-                            <div class="row">
-                                <div class="col-lg-8 col-lg-offset-2">
-
-                                    <div class="form-group">
-                                        <label for="phone-number" class="control-label">Phone</label>
-                                        <input type="text" class="form-control" id="phone-number"/>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <button class="btn btn-primary">
-                                            <a href="#" class="glyphicon glyphicon-search"></a>
-                                            Search
-                                        </button>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </form>
-
-                    </div>
-
                     <div class="table-responsive">
-                        <table class="table">
+                        <table class="table table-striped">
                             <thead>
                             <tr>
                                 <th>#</th>
@@ -61,21 +36,19 @@
                                 <th>Receiver Name</th>
                                 <th>Receiver Address</th>
                                 <th>Receiver Phone</th>
-                                <th>Office Address</th>
                                 <th>Order Status</th>
                             </tr>
                             </thead>
                             <tbody>
-                            <tr>
-                                <td>#</td>
-                                <td>Sender Name</td>
-                                <td>Sender Address</td>
-                                <td>Sender Phone</td>
-                                <td>Receiver Name</td>
-                                <td>Receiver Address</td>
-                                <td>Receiver Phone</td>
-                                <td>Office Address</td>
-                                <td>Order Status</td>
+                            <tr th:each="order: ${orders}">
+                                <td th:text="${order.id}">#</td>
+                                <td th:text="${order.senderContact.firstName}">Sender Name</td>
+                                <td th:text="${order.senderAddress.name}">Sender Address</td>
+                                <td th:text="${order.senderContact.phoneNumber}">Sender Phone</td>
+                                <td th:text="${order.receiverContact.firstName}">Receiver Name</td>
+                                <td th:text="${order.receiverAddress.name}">Receiver Address</td>
+                                <td th:text="${order.receiverContact.phoneNumber}">Receiver Phone</td>
+                                <td th:text="${order.orderStatus.name}">Order Status</td>
                             </tr>
                             </tbody>
                         </table>
@@ -88,10 +61,10 @@
 </div>
 
 <th:block th:replace="fragments/footer :: footer"/>
-<th:block th:replace="fragments/left_menu :: left-menu-footer" />
+<th:block th:replace="fragments/left_menu :: left-menu-footer"/>
 
 <script type="text/javascript">
-    document.getElementById('call_center_tasks_history').className='active';
+    document.getElementById('call_center_tasks_history').className = 'active';
 </script>
 
 </body>

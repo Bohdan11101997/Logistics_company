@@ -8,18 +8,22 @@
 
 .table-responsive {
     background-color: var(--second-color);
-    color:white;
+    color: white;
     border: 1px solid white;
 }
 
-.btn.btn-link.update{
-    color:#A1CC55;
+.table-striped > tbody > tr:nth-of-type(2n+1) {
+    background-color: var(--third-color);
 }
 
-.btn.btn-link.more{
-    color:#A1CC55;
+.btn.btn-link.update {
+    color: #A1CC55;
 }
 
-.btn.btn-link.delete{
-    color:pink;
+.btn.btn-link.more {
+    color: #A1CC55;
+}
+
+.btn.btn-link.delete {
+    color: pink;
 }

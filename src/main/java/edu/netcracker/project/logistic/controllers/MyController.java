@@ -9,6 +9,7 @@ import edu.netcracker.project.logistic.dao.impl.OfficeDaoImpl;
 import edu.netcracker.project.logistic.dao.impl.PersonCrudDaoImpl;
 import edu.netcracker.project.logistic.model.Office;
 import edu.netcracker.project.logistic.model.Person;
+import edu.netcracker.project.logistic.model.SearchFormOrderStatistic;
 import edu.netcracker.project.logistic.service.OfficeService;
 import edu.netcracker.project.logistic.service.PersonService;
 import edu.netcracker.project.logistic.service.UserService;
@@ -20,6 +21,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -47,17 +50,16 @@ public class MyController {
     UserService userService;
 
 
-    @RequestMapping(value = "/pdfreport", method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_PDF_VALUE )
-    public ResponseEntity<InputStreamResource> citiesReport(Principal principal) throws IOException {
+    @RequestMapping(value = "/pdfreport", produces = MediaType.APPLICATION_PDF_VALUE)
+    public ResponseEntity<InputStreamResource> citiesReport(Principal principal, @ModelAttribute("searchFormOrderStatistic") SearchFormOrderStatistic searchFormOrderStatistic) throws IOException {
 
-    String username = principal.getName();
+        String username = principal.getName();
         Optional<Person> optionalPerson = userService.findOne(username);
 
         Person person = optionalPerson.get();
 
 
-        ArrayList<Person> employee = (ArrayList<Person>) managerStatisticsDao.EmployeesByOfficeOrCall_Center();
+        ArrayList<Person> employee = (ArrayList<Person>) managerStatisticsDao.EmployeesByCourierOrCall_Center();
         ArrayList<Office> offices = (ArrayList<Office>) officeService.allOffices();
 
         List listEmployees = new com.itextpdf.text.List(List.ORDERED);
@@ -71,22 +73,22 @@ public class MyController {
         listEmployees.setSymbolIndent(42);
 
 
-        listEmployees.add(new ListItem("Number employees:   "  +  managerStatisticsDao.countEmployees()));
-        listEmployees.add(new ListItem("Number admins:  " + managerStatisticsDao.countEmployeesAdmins()));
-        listEmployees.add(new ListItem("Number couriers: " + managerStatisticsDao.countEmployeesCouriers() ));
-        listEmployees.add(new ListItem("On foot:  " + managerStatisticsDao.countEmployeesCouriersWalking()));
-        listEmployees.add(new ListItem("On car:  " + managerStatisticsDao.countEmployeesCouriersDriving()));
-        listEmployees.add(new ListItem("Call center agents:  " + managerStatisticsDao.countEmployeesAgentCallCenter()));
-        listEmployees.add(new ListItem("Managers:  " + managerStatisticsDao.countEmployeesManagers()));
+        listEmployees.add(new ListItem("Number employees:   " + managerStatisticsDao.countEmployees(searchFormOrderStatistic.getFrom(), searchFormOrderStatistic.getTo())));
+        listEmployees.add(new ListItem("Number admins:  " + managerStatisticsDao.countEmployeesAdmins(searchFormOrderStatistic.getFrom(), searchFormOrderStatistic.getTo())));
+        listEmployees.add(new ListItem("Number couriers: " + managerStatisticsDao.countEmployeesCouriers(searchFormOrderStatistic.getFrom(), searchFormOrderStatistic.getTo())));
+        listEmployees.add(new ListItem("On foot:  " + managerStatisticsDao.countEmployeesCouriersWalking(searchFormOrderStatistic.getFrom(), searchFormOrderStatistic.getTo())));
+        listEmployees.add(new ListItem("On car:  " + managerStatisticsDao.countEmployeesCouriersDriving(searchFormOrderStatistic.getFrom(), searchFormOrderStatistic.getTo())));
+        listEmployees.add(new ListItem("Call center agents:  " + managerStatisticsDao.countEmployeesAgentCallCenter(searchFormOrderStatistic.getFrom(), searchFormOrderStatistic.getTo())));
+        listEmployees.add(new ListItem("Managers:  " + managerStatisticsDao.countEmployeesManagers(searchFormOrderStatistic.getFrom(), searchFormOrderStatistic.getTo())));
 
-        listOffices.add(new ListItem("Number offices:   "  +  managerStatisticsDao.countOffices()));
+        listOffices.add(new ListItem("Number offices:   " + managerStatisticsDao.countOffices()));
 
- listOrders.add(new ListItem("Number orders:   "  + managerStatisticsDao.countOrders()));
- listOrders.add(new ListItem("Hand to hand:   "  +  managerStatisticsDao.countOrdersHandtoHand()));
- listOrders.add(new ListItem("From office:   "  +  managerStatisticsDao.countOrdersFromOffice()));
+        listOrders.add(new ListItem("Number orders:   " + managerStatisticsDao.countOrdersBetweenDate(searchFormOrderStatistic.getFrom(), searchFormOrderStatistic.getTo())));
+        listOrders.add(new ListItem("Hand to hand:   " + managerStatisticsDao.countOrdersHandToHand(searchFormOrderStatistic.getFrom(), searchFormOrderStatistic.getTo())));
+        listOrders.add(new ListItem("From office:   " + managerStatisticsDao.countOrdersFromOffice(searchFormOrderStatistic.getFrom(), searchFormOrderStatistic.getTo())));
 
-        GeneratePdfReport generatePdfReport = new GeneratePdfReport();
-        ByteArrayInputStream bis = GeneratePdfReport.citiesReport(employee, offices, listEmployees,  listOffices, listOrders, person.getContact().getFirstName(), person.getContact().getLastName());
+
+        ByteArrayInputStream bis = GeneratePdfReport.citiesReport(employee, offices, listEmployees, listOffices, listOrders, person.getContact().getFirstName(), person.getContact().getLastName());
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "inline; filename=ManagerStatistic.pdf");
@@ -98,3 +100,5 @@ public class MyController {
                 .body(new InputStreamResource(bis));
     }
 }
+
+

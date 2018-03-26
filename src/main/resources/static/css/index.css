@@ -1,8 +1,8 @@
 :root {
     --main-color: #5B7DAA;
-    --second-color: #485d8c;
+    --second-color: #485D8C;
     --third-color: #363D69;
-    --fourth-color: #fdfeff;
+    --fourth-color: #FDFEFF;
 }
 
 .jumbotron{
@@ -47,6 +47,10 @@ footer {
     display:block;
 
     text-align:left;
+}
+
+.has-error {
+    color: var(--error-color);
 }
 
 @media (max-width: 768px) {

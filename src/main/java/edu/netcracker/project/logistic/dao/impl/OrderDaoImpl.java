@@ -42,7 +42,6 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
     }
 
 
-
     private Contact mapContact(ResultSet rs, String prefix) throws SQLException {
         Contact c = new Contact();
         c.setContactId(rs.getLong(prefix + "contact_id"));
@@ -142,7 +141,7 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
         ps.setObject(7, order.getSenderContact() == null ? null : order.getSenderContact().getContactId());
         ps.setObject(8, order.getSenderAddress() == null ? null : order.getSenderAddress().getId());
         ps.setObject(9, order.getOffice() == null ? null : order.getOffice().getOfficeId());
-        ps.setLong(10,  order.getOrderStatus().getId());
+        ps.setLong(10, order.getOrderStatus().getId());
         ps.setObject(11, order.getOrderType() == null ? null : order.getOrderType().getId());
         ps.setBigDecimal(12, order.getWeight());
         ps.setObject(13, order.getWidth());
@@ -201,7 +200,7 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
 
 
     @Override
-    public List<Order> findConfirmed(){
+    public List<Order> findConfirmed() {
         try {
             return jdbcTemplate.query(
                     getFindConfirmedQuery(),
@@ -232,10 +231,10 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
     public List<Order> search(SearchFormOrder searchFormOrder, Long id) {
 
         String firstName = searchFormOrder.getFirstName();
-        firstName = firstName == null ? "%%" : prepareSearchString(firstName);
+        firstName = firstName == null ? "%%" : prepareSearchString(firstName.trim());
 
         String lastName = searchFormOrder.getLastName();
-        lastName = lastName == null ? "%%" : prepareSearchString(lastName);
+        lastName = lastName == null ? "%%" : prepareSearchString(lastName.trim());
 
         LocalDateTime from = searchFormOrder.getFrom();
         if (from == null) {
@@ -251,39 +250,60 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
             to = to.with(LocalTime.MAX);
         }
 
-
         List<Long> destination_type = searchFormOrder.getDestination_typeIds();
-        if(destination_type.isEmpty())
-        {
 
-            destination_type.add(1L);
-
-        }
         Map<String, Object> paramMap = new HashMap<>(9);
         paramMap.put("first_name_contact", firstName);
         paramMap.put("last_name_contact", lastName);
         paramMap.put("start_date", from);
         paramMap.put("end_date", to);
-        paramMap.put("destination_type",destination_type);
+        paramMap.put("destination_type", destination_type);
         paramMap.put("order_status", searchFormOrder.getOrder_statusIds());
         paramMap.put("sender_contact_id", id);
         paramMap.put("receiver_contact_id", id);
 
-        try {
-            return namedParameterJdbcTemplate.query(
-                    getSearchQuery(),
-                    paramMap,
-                    this
+        if (searchFormOrder.getContact_side() == 1) {
+            try {
+                return namedParameterJdbcTemplate.query(
+                        getSearchSenderQuery(),
+                        paramMap,
+                        this
 
-            );
+                );
 
-        } catch (EmptyResultDataAccessException ex) {
-            return Collections.emptyList();
+            } catch (EmptyResultDataAccessException ex) {
+                return Collections.emptyList();
+            }
+        } else if (searchFormOrder.getContact_side() == 2) {
+            try {
+                return namedParameterJdbcTemplate.query(
+                        getSearchReceiverQuery(),
+                        paramMap,
+                        this
+
+                );
+
+            } catch (EmptyResultDataAccessException ex) {
+                return Collections.emptyList();
+            }
         }
+            else if (searchFormOrder.getContact_side() == 3) {
+                try {
+                    return namedParameterJdbcTemplate.query(
+                            getSearchFromOfficeQuery(),
+                            paramMap,
+                            this
 
+                    );
+
+                } catch (EmptyResultDataAccessException ex) {
+                    return Collections.emptyList();
+                }
+        } else {
+
+            return orderBySenderOrReceiver(id);
+        }
     }
-
-
 
 
     @Override
@@ -296,7 +316,7 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
     }
 
     @Override
-    public List<Order> findConfirmedByEmployeeId(Long employeeId){
+    public List<Order> findConfirmedByEmployeeId(Long employeeId) {
         return jdbcTemplate.query(
                 getFindByEmployeeIdConfirmedQuery(),
                 new Object[]{employeeId},
@@ -304,7 +324,7 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
         );
     }
 
-    public List<Order> HistoryCompleteOrderSender(Long aLong) {
+    public List<Order> orderBySenderOrReceiver(Long aLong) {
         try {
             return jdbcTemplate.query(
                     getOrderByUser(),
@@ -317,11 +337,10 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
     }
 
 
-
-    private  String getOrderByUser(){
+    private String getOrderByUser() {
 
         return queryService.getQuery("select.order.by.user");
-     }
+    }
 
     private String getFindByEmployeeIdNotProcessedQuery() {
         return queryService.getQuery("select.order.not_processed.by.employee_id");
@@ -347,9 +366,19 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
         return queryService.getQuery("delete.order");
     }
 
-    private String getSearchQuery() {
-        return queryService.getQuery("select.order.search");
+    private String getSearchSenderQuery() {
+        return queryService.getQuery("select.order.search.sender");
     }
+
+    private String getSearchReceiverQuery() {
+        return queryService.getQuery("select.order.search.receiver");
+    }
+
+    private String getSearchFromOfficeQuery() {
+        return queryService.getQuery("select.order.search.from.office");
+    }
+
+
 
     private String getFindNotProcessedQuery() {
         return queryService.getQuery("select.order.not_processed");

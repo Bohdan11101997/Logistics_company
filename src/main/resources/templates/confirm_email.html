@@ -1,26 +1,42 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8"/>
     <title>Confirm email address</title>
+
+    <th:block th:replace="fragments/header :: header-bootstrap-config"/>
+
+    <link rel="stylesheet" th:href="@{/css/index.css}" href="../static/css/index.css"/>
+    <link rel="stylesheet" th:href="@{/css/main_content.css}" type="text/css" href="../static/css/main_content.css"/>
+    <link rel="stylesheet" th:href="@{/css/well.css}" type="text/css" href="../static/css/well.css"/>
+
+    <th:block th:replace="fragments/header :: header-bootstrap-config-IE"/>
+
     <style>
-        h1 {
-            font-size: 48px;
-            text-align: center;
+        .jumbotron {
+            border-bottom: 1px solid red;
         }
 
-        .redirect-msg {
-            text-align: center;
+        a {
+            color: var(--link-color);
         }
 
+        a:hover {
+            color: var(--link-hover-color);
+        }
     </style>
 </head>
-<body>
-    <h1 style="font-size: 48px; text-align: center">Congratulations!</h1>
-    <div class="redirect-msg">
-        Account is activated now!
-        <br />
-        You will be redirected to <a th:href="@{/index.html}" href="#" id="index">main</a> page after 10 seconds.
+
+<body class="body-color">
+<div class="container">
+    <div class="jumbotron">
+        <div class="text-center">
+            <h1>Congratulations!</h1>
+            <br />
+            <p>Account is activated now!</p>
+            <br />
+            <p>You will be redirected to <a th:href="@{/index.html}" href="#" id="index">main</a> page after 10 seconds.
+        </div>
     </div>
 
     <script>
@@ -31,5 +47,6 @@
 
         setTimeout(redirectToIndex, 10000);
     </script>
+</div>
 </body>
 </html>

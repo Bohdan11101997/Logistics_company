@@ -4,40 +4,46 @@ import edu.netcracker.project.logistic.dao.OfficeDao;
 import edu.netcracker.project.logistic.dao.QueryDao;
 import edu.netcracker.project.logistic.model.Address;
 import edu.netcracker.project.logistic.model.Office;
+import edu.netcracker.project.logistic.model.OfficeSearchForm;
 import edu.netcracker.project.logistic.service.QueryService;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 
 @Repository
-public class OfficeDaoImpl implements OfficeDao, QueryDao {
+public class OfficeDaoImpl implements OfficeDao, QueryDao, RowMapper<Office> {
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(OfficeDaoImpl.class);
 
     private JdbcTemplate jdbcTemplate;
+    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private QueryService queryService;
     private RowMapper<Address> addressRowMapper;
 
+
     @Autowired
-    public OfficeDaoImpl(JdbcTemplate jdbcTemplate, QueryService queryService,  RowMapper<Address> addressRowMapper) {
+    public OfficeDaoImpl(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate, QueryService queryService, RowMapper<Address> addressRowMapper) {
         this.jdbcTemplate = jdbcTemplate;
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
         this.queryService = queryService;
         this.addressRowMapper = addressRowMapper;
     }
 
-    private RowMapper<Office> getMapper() {
-        return (resultSet, i) ->
-        {
+    @Override
+    public Office mapRow(ResultSet resultSet, int i) throws SQLException {
+
             Office office = new Office();
             office.setOfficeId(resultSet.getLong("office_id"));
             office.setName(resultSet.getString("name"));
@@ -46,7 +52,20 @@ public class OfficeDaoImpl implements OfficeDao, QueryDao {
             office.setAddress(address);
 
             return office;
-        };
+        }
+
+
+    public Office mapRowOrder(ResultSet resultSet, int i) throws SQLException {
+
+        Office office = new Office();
+        office.setOfficeId(resultSet.getLong("office_id"));
+        office.setName(resultSet.getString("name"));
+        office.setCount(resultSet.getLong("count_orders"));
+
+        Address address = addressRowMapper.mapRow(resultSet, i);
+        office.setAddress(address);
+
+        return office;
     }
 
 
@@ -93,7 +112,7 @@ public class OfficeDaoImpl implements OfficeDao, QueryDao {
             office = jdbcTemplate.queryForObject(
                     getFindOneQuery(),
                     new Object[]{aLong},
-                    getMapper());
+                    this::mapRow);
             logger.info("Find one office");
             return Optional.of(office);
 
@@ -104,20 +123,65 @@ public class OfficeDaoImpl implements OfficeDao, QueryDao {
         return Optional.empty();
     }
 
-    @Override
-    public Office findByDepartment(String department) {
-
-        return jdbcTemplate.queryForObject(
-                getAllOfficesByDepartment(),
-                new Object[]{department},
-                getMapper());
-
-
+    private String prepareSearchString(String input) {
+        return "%" + input.replace("%", "\\%") + "%";
     }
+
+    public List<Office> findByDepartmentOrAddress(OfficeSearchForm officeSearchForm) {
+
+        String department = officeSearchForm.getDepartment();
+        department = department == null ? "%%" : prepareSearchString(department.trim());
+
+        String address = officeSearchForm.getAddress();
+        address = address == null ? "%%" : prepareSearchString(address.trim());
+
+
+        Map<String, Object> paramMap = new HashMap<>(5);
+        paramMap.put("department", department);
+        paramMap.put("address", address);
+
+        if (officeSearchForm.getSort_ids() == 1) {
+            try {
+                return namedParameterJdbcTemplate.query(
+                        getAllOfficesSortByNumber(),
+                        paramMap,
+                        this::mapRowOrder);
+
+            } catch (EmptyResultDataAccessException ex) {
+                return Collections.emptyList();
+            }
+        }
+            else if (officeSearchForm.getSort_ids() == 2){
+
+            try {
+                return namedParameterJdbcTemplate.query(
+                        getAllOfficesSortByOrdersSent(),
+                        paramMap,
+                        this::mapRowOrder);
+
+            } catch (EmptyResultDataAccessException ex) {
+                return Collections.emptyList();
+            }
+        }
+
+        else {
+
+            try {
+                return namedParameterJdbcTemplate.query(
+                        getAllOfficesByDepartmentOrAddress(),
+                        paramMap,
+                        this::mapRowOrder);
+
+            } catch (EmptyResultDataAccessException ex) {
+                return Collections.emptyList();
+            }
+        }
+    }
+
 
     @Override
     public List<Office> allOffices() {
-        return jdbcTemplate.query(getAllOffices(), getMapper());
+        return jdbcTemplate.query(getAllOffices(), this::mapRowOrder);
     }
 
     @Override
@@ -144,7 +208,17 @@ public class OfficeDaoImpl implements OfficeDao, QueryDao {
         return queryService.getQuery("all.office");
     }
 
-    private String getAllOfficesByDepartment() {
-        return queryService.getQuery("all.office.by.department");
+    private String getAllOfficesByDepartmentOrAddress() {
+        return queryService.getQuery("all.office.by.department.or.address");
     }
+
+    private String getAllOfficesSortByOrdersSent() {
+        return queryService.getQuery("all.office.sort.by.amount.orders");
+    }
+
+    private String getAllOfficesSortByNumber() {
+        return queryService.getQuery("all.office.sort.by.number");
+    }
+
+
 }

@@ -22,6 +22,7 @@ import java.util.Locale;
 
 @Configuration
 public class WebMvcConfig extends WebMvcConfigurerAdapter {
+
 	@Bean
 	public MessageSource messageSource() {
 		ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();

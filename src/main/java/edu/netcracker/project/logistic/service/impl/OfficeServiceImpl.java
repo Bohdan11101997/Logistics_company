@@ -42,8 +42,8 @@ public class OfficeServiceImpl implements OfficeService {
         return officeDao.allOffices();
     }
 
-    @Override
-    public Office findByDepartment(String department) {
-        return officeDao.findByDepartment(department);
-    }
+//    @Override
+//    public List<Office> findByDepartment(String department, String address) {
+//        return officeDao.findByDepartmentOrAddress(department, address);
+//    }
 }

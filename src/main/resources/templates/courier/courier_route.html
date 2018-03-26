@@ -3,21 +3,11 @@
 <head>
     <th:block th:replace="fragments/header :: header-bootstrap-config"/>
     <th:block th:replace="fragments/header :: header-bootstrap-config-IE"/>
-    <!--<th:block th:replace="fragments/header :: csrf" />-->
-
     <link rel="stylesheet" th:href="@{/css/left_menu.css}" type="text/css" href="../../static/css/left_menu.css"/>
-
-    <style>
-        #navigator {
-            margin-bottom: 15px;
-        }
-
-        #orders {
-            margin-bottom: 15px;
-        }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/main_content.css}" type="text/css" href="../../static/css/main_content.css"/>
+    <link rel="stylesheet" th:href="@{/css/courier.css}" type="text/css" href="../../static/css/courier.css"/>
 </head>
-<body>
+<body class="body-color">
 
 <div class="row">
 
@@ -29,55 +19,61 @@
         <div class="side-body">
             <div class="row">
                 <h1 style="text-align:center"> Route </h1>
-                <div class="row">
+                <div class="row" id="main-row">
                     <div class="col-md-6 col-xs-12" id="orders">
+                        <div id="spinner" class="empty">
+                            <img draggable="false"
+                                 src="../../static/images/spinner.gif"
+                                 th:src="@{/images/spinner.gif}"/>
+                        </div>
                         <div class="row" id="navigator">
-                            <div class="col-md-1 col-md-offset-1 col-xs-2">
-                                <a href="#">&lt;&lt;</a>
+                            <div class="col-md-1 col-md-offset-1 col-xs-2 non-visible">
+                                <a id="prev-order" href="#">&lt;&lt;</a>
                             </div>
                             <div class="col-md-8 col-xs-8">
-                                <p class="text-center" id="order-number">Order 2/6</p>
+                                <p class="text-center" id="order-number">No orders for now!</p>
                             </div>
-                            <div class="col-md-1 col-md-offset-1 col-xs-2">
-                                <a href="#">&gt;&gt;</a>
+                            <div class="col-md-1 col-xs-2 non-visible">
+                                <a id="next-order" href="#">&gt;&gt;</a>
                             </div>
                         </div>
                         <div class="form-group col-md-12">
                             <label class="control-label">Address</label>
-                            <div class="form-control" id="address">Ioanna Pavla St.,4/6</div>
+                            <div class="form-control" id="address"></div>
                         </div>
                         <div>
                             <div class="form-group col-md-6 col-sm-12">
                                 <label class="control-label">Contact</label>
-                                <div class="form-control" id="contact">John Doe</div>
+                                <div class="form-control" id="contact"></div>
                             </div>
                             <div class="form-group col-md-6 col-sm-12">
                                 <label class="control-label">Phone</label>
-                                <div class="form-control" id="phone">(+380)901234567</div>
+                                <div class="form-control" id="phone"></div>
                             </div>
                         </div>
                         <div>
                             <div class="form-group col-md-6 col-sm-12">
                                 <label class="control-label">Order ID</label>
-                                <div class="form-control" id="order-id">1</div>
+                                <div class="form-control" id="order-id"></div>
                             </div>
                             <div class="form-group col-md-6 col-sm-12">
                                 <label class="control-label">Order Type</label>
-                                <div class="form-control" id="order-type">Documents</div>
+                                <div class="form-control" id="order-type"></div>
                             </div>
                         </div>
 
                         <div class="col-md-12">
                             <div class="pull-left">
-                                <button class="btn btn-lg btn-success">Confirm</button>
+                                <button id="btn-confirm" class="btn btn-lg btn-success">Confirm</button>
                             </div>
                             <div class="pull-right">
-                                <button class="btn btn-lg btn-danger">Cancel</button>
+                                <button id="btn-cancel" class="btn btn-lg btn-danger">Cancel</button>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6 col-xs-12" id="map">
-                        <img src="./staticmap.png" width="100%" height="100%"/>
+                    <div class="col-md-6 col-xs-12">
+                        <img id="map" th:src="@{/images/mapplaceholder.png}"
+                             src="../../static/images/mapplaceholder.png" width="100%" height="100%"/>
                     </div>
                 </div>
             </div>
@@ -88,54 +84,208 @@
 <th:block th:replace="fragments/footer :: footer"/>
 <th:block th:replace="fragments/left_menu :: left-menu-footer"/>
 
-<script>
-    document.getElementById('courier_route').className = 'active';
-
-    // var csrfHeader = document.getElementsByName('_csrf_header')[0].getAttribute('content');
-    // var csrfToken = document.getElementsByName('_csrf')[0].getAttribute('content');
-
-    var route = {
-        mapUrl: null,
-        wayPoints: []
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var APP = {
+        route: {
+            mapUrl: null,
+            wayPoints: []
+        },
+        currentOrder: null,
+        spinner: {
+            visible: false,
+            delayMs: 50
+        }
     };
 
-    var data = {
-        method: 'GET',
-        mode: 'same-origin',
-        credentials: 'same-origin'
-    };
+    function nextPage() {
+        setOrderPage(APP.currentOrder + 1);
+    }
+
+    function prevPage() {
+        setOrderPage(APP.currentOrder - 1);
+    }
+
+    function titleCase(str) {
+        str = str.toLowerCase().split(' ');
+        for (var i = 0; i < str.length; i++) {
+            str[i] = str[i].charAt(0).toUpperCase() + str[i].slice(1);
+        }
+        return str.join(' ');
+    }
 
     function setOrderPage(orderNum) {
-        let orderCount = route.wayPoints.length;
-        let order = route.wayPoints[orderNum].order;
+        var orderCount = APP.route.wayPoints.length;
+        if (orderNum >= orderCount || orderNum < 0) {
+            return;
+        }
+        var order = APP.route.wayPoints[orderNum].order;
+        var status = APP.route.wayPoints[orderNum].status;
+        var pageNum = orderNum + 1;
 
-        document.getElementById("order-number").textContent = `Order: ${orderNum}/${orderCount}`;
-        document.getElementById("address").textContent = order.address.name;
-        document.getElementById("contact").textContent = `${order.contact.firstName} + ${order.contact.lastName}`;
-        document.getElementById("phone").textContent = order.contact.phoneNumber;
+        var orderNumberEl = document.getElementById("order-number");
+        if (status === "DELIVERING") {
+            orderNumberEl.textContent = "Order " + pageNum + "/" + orderCount;
+            document.getElementById('btn-confirm').removeAttribute("disabled");
+            document.getElementById('btn-cancel').removeAttribute("disabled");
+        } else {
+            orderNumberEl.textContent = "Order " + pageNum + "/" + orderCount + " (" + titleCase(status) + ")";
+            document.getElementById('btn-confirm').setAttribute("disabled", "disabled");
+            document.getElementById('btn-cancel').setAttribute("disabled", "disabled");
+        }
+
+        var prevPageEl = orderNumberEl.parentElement.previousElementSibling;
+        prevPageEl.classList.remove("non-visible");
+        if (orderNum === 0) {
+            prevPageEl.firstElementChild.classList.add("non-visible");
+        } else {
+            prevPageEl.firstElementChild.classList.remove("non-visible");
+        }
+
+        var nextPageEl = orderNumberEl.parentElement.nextElementSibling;
+        nextPageEl.classList.remove("non-visible");
+        if (orderNum === orderCount - 1) {
+            nextPageEl.firstElementChild.classList.add("non-visible");
+        } else {
+            nextPageEl.firstElementChild.classList.remove("non-visible");
+        }
+
+        document.getElementById("address").textContent = order.receiverAddress.name;
+        document.getElementById("contact").textContent = order.receiverContact.firstName + " " + order.receiverContact.lastName;
+        document.getElementById("phone").textContent = order.receiverContact.phoneNumber;
         document.getElementById("order-id").textContent = order.id;
-        document.getElementById("order-type").textContent = order.orderType.name;
+        document.getElementById("order-type").textContent = order.orderType;
+
+        document.getElementById("map").setAttribute("src", APP.route.mapUrl);
+
+        APP.currentOrder = orderNum;
     }
 
-    fetch('/courier/route/orders', data)
-        .then(res => res.json())
-        .then(data => {
-            route = data;
-            if (!route.orders) return;
-            if (route.wayPoints.length > 0)
-                setOrderPage(1);
-        });
-
-    function confirmOrder(orderId) {
-        fetch(`/courier/route/orders/${orderId}/confirm`)
-            .then(res => {
-                if (res.status === 200) {
-
+    function confirmOrder() {
+        var orderId = APP.route.wayPoints[APP.currentOrder].order.id;
+        var spinnerTimeout = null;
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/courier/route/orders/" + orderId + "/confirm");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState !== XMLHttpRequest.DONE) return;
+            if (xhr.status === 200) {
+                APP.route.wayPoints[APP.currentOrder].status = "DELIVERED";
+                var routeCompleted = APP.route.wayPoints.every(function (point) {
+                    return point.status !== "DELIVERING";
+                });
+                if (routeCompleted) {
+                    setEmptyPage();
                 } else {
-
+                    setOrderPage(APP.currentOrder);
                 }
-            })
+                clearTimeout(spinnerTimeout);
+                hideSpinner();
+            }
+        };
+        spinnerTimeout = setTimeout(showSpinner, APP.spinner.delayMs);
+        xhr.send();
     }
+
+    function cancelOrder() {
+        var orderId = APP.route.wayPoints[APP.currentOrder].order.id;
+        var spinnerTimeout = null;
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/courier/route/orders/" + orderId + "/fail");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState !== XMLHttpRequest.DONE) return;
+            if (xhr.status === 200) {
+                APP.wayPoints[APP.currentOrder].status = "CANCELLED";
+                var routeCompleted = APP.route.wayPoints.every(function (point) {
+                    return point.status !== "DELIVERING";
+                });
+                if (routeCompleted) {
+                    setEmptyPage();
+                } else {
+                    setOrderPage(APP.currentOrder);
+                }
+                clearTimeout(spinnerTimeout);
+                hideSpinner();
+            }
+        };
+        spinnerTimeout = setTimeout(showSpinner, APP.spinner.delayMs);
+        xhr.send();
+    }
+
+    document.getElementById('courier_route').className = 'active';
+    document.getElementById('prev-order').addEventListener('click', function (ev) {
+        ev.preventDefault();
+        prevPage();
+    });
+    document.getElementById('next-order').addEventListener('click', function (ev) {
+        ev.preventDefault();
+        nextPage();
+    });
+    document.getElementById('btn-confirm').addEventListener('click', confirmOrder);
+    document.getElementById('btn-cancel').addEventListener('click', cancelOrder);
+
+    function setEmptyPage() {
+        document.getElementById("order-number").textContent = "No orders for now!";
+        document.getElementById("address").textContent = "";
+        document.getElementById("contact").textContent = "";
+        document.getElementById("phone").textContent = "";
+        document.getElementById("order-id").textContent = "";
+        document.getElementById("order-type").textContent = "";
+
+        document.getElementById('btn-confirm').setAttribute("disabled", "disabled");
+        document.getElementById('btn-cancel').setAttribute("disabled", "disabled");
+
+        prevPageEl.firstElementChild.classList.add("non-visible");
+        prevPageEl.firstElementChild.classList.add("non-visible");
+
+        document.getElementById('map').src = "/images/mapplaceholder.png";
+    }
+
+    function getRoute() {
+        var spinnerTimeout = null;
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "/courier/route/orders");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                APP.route = JSON.parse(xhr.responseText);
+                if (APP.route.wayPoints.length > 0) {
+                    var routeCompleted = APP.route.wayPoints.every(function (point) {
+                        return point.status !== "DELIVERING";
+                    });
+                    if (routeCompleted) {
+                        setEmptyPage();
+                    } else {
+                        setOrderPage(0);
+                    }
+                } else {
+                    setEmptyPage();
+                }
+                clearTimeout(spinnerTimeout);
+                hideSpinner();
+            }
+        };
+        spinnerTimeout = setTimeout(showSpinner, APP.spinner.delayMs);
+        xhr.send();
+    }
+
+    var spinnerEl = document.getElementById("spinner");
+
+    function showSpinner() {
+        spinnerEl.classList.remove("empty");
+        APP.spinner.visible = true;
+    }
+
+    function hideSpinner() {
+        spinnerEl.classList.add("empty");
+        APP.spinner.visible = false;
+    }
+
+    getRoute();
+    connect({
+        "route": function () {
+            getRoute();
+        }
+    });
+    /*]]>*/
 </script>
 
 </body>

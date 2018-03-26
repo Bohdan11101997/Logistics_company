@@ -70,7 +70,7 @@
                                     <div class="form-group">
                                         <label for="destination_typeIds" class="control-label">Destination type</label>
                                         <br/>
-                                        <select id="destination_typeIds" multiple="multiple"
+                                        <select id="destination_typeIds" multiple="multiple" class="selectpicker"
                                                 th:field="*{destination_typeIds}">
                                             <option th:each="orderType: ${destination_typeOrders}"
                                                     th:value="${orderType.id}"
@@ -103,7 +103,7 @@
                                     <div class="form-group">
                                         <label for="order_statusIds" class="control-label">Order status</label>
                                         <br/>
-                                        <select id="order_statusIds" multiple="multiple"
+                                        <select id="order_statusIds" multiple="multiple" class="selectpicker"
                                                 th:field="*{order_statusIds}">
                                             <option th:each="orderStatus: ${status_OrdersList}"
                                                     th:value="${orderStatus.id}"
@@ -130,18 +130,23 @@
 
                     <div class="table-responsive">
                         <h2 >Date range:</h2> <label  th:text="${{fromDate}}"></label> <label th:text="${{toDate}}"></label>
-                        <table class="table">
+                        <table class="table table-striped">
                             <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Username</th>
+                                <th>ID</th>
+                                <th>Receiver contact</th>
+                                <th>Sender contact</th>
+                                <th>Order type</th>
+                                <th>Employee id</th>
+                                <th>Handler employee name</th>
                                 <th>Role</th>
-                                <th>Count</th>
+
 
                     <!--&lt;!&ndash; For month. Maybe there will be diagram &ndash;&gt;-->
                     <!--<h2>Year: 2018 Month: February</h2>-->
                     <!--<div class="table-responsive">-->
-                        <!--<table class="table">-->
+                        <!--<table class="table table-striped">-->
                             <!--<thead>-->
                             <!--<tr>-->
                                 <!--<th>Day number</th>-->
@@ -152,11 +157,15 @@
                             </thead>
                             <tbody>
 
-                            <tr th:each="person, iter : ${personList}">
+                            <tr th:each="statistic_task, iter : ${personList}">
                                 <td th:text="${iter.index + 1}"></td>
-                                <td th:text="${person.userName}"></td>
-                                <td th:text="${person.roles}"></td>
-                                <td th:text="${person.id}"></td>
+                                <td th:text="${statistic_task.order.id}"></td>
+                                <td th:text="${statistic_task.order.receiverContact}"></td>
+                                <td th:text="${statistic_task.order.senderContact}"></td>
+                                <td th:text="${statistic_task.order.orderType}"></td>
+                                <td th:text="${statistic_task.person.id}"></td>
+                                <td th:text="${statistic_task.person.userName}"></td>
+                                <td th:text="${statistic_task.person.roles}"></td>
                             </tr>
                             </tbody>
                         </table>

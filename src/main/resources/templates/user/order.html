@@ -182,8 +182,9 @@
                                                 <div class="form-group required"
                                                      th:classappend="${#fields.hasErrors('receiverContact.phoneNumber')}? 'has-error'">
                                                     <label for="phone" class="control-label">Phone</label>
-                                                    <input type="text" class="form-control" id="phone" placeholder=""
-                                                           required="required" pattern="(\+380)?[\d\s-()]+"
+                                                    <input type="text" class="form-control" id="phone"
+                                                           minlength="9" maxlength="15"
+                                                           required="required" pattern="(\+380)*([\-\s]*\d[\-\s]*){9}" title="9 digit phone number without country code"
                                                            oninput="clearErrorStyles(this)"
                                                            th:field="*{receiverContact.phoneNumber}"/>
                                                     <div class="has-error help-block"

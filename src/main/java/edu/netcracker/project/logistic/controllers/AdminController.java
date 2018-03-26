@@ -1,6 +1,8 @@
 package edu.netcracker.project.logistic.controllers;
 
 import com.google.maps.model.GeocodingResult;
+import edu.netcracker.project.logistic.dao.OfficeDao;
+import edu.netcracker.project.logistic.dao.impl.OfficeDaoImpl;
 import edu.netcracker.project.logistic.model.*;
 import edu.netcracker.project.logistic.service.*;
 
@@ -57,6 +59,9 @@ public class AdminController {
     private SearchFormValidator searchFormValidator;
     private UserDetailsService userDetailsService;
     private ImageValidator imageValidator;
+
+    @Autowired
+    OfficeDaoImpl officeDao;
 
 
     @Autowired
@@ -208,11 +213,6 @@ public class AdminController {
     }
 
 
-    @GetMapping("/offices")
-    public String getAllOffice(Model model) {
-        model.addAttribute("offices", officeService.allOffices());
-        return "/admin/admin_offices";
-    }
 
     @GetMapping("/employees")
     public String getAllEmployees(Model model) {
@@ -379,17 +379,20 @@ public class AdminController {
         }
         addressService.save(office.getAddress());
         addressService.findOne(office.getAddress().getName()).get();
-        System.out.println(office);
-        for(GeocodingResult gr : Address.getListOfAddresses(office.getAddress().getLocation()))
-            System.out.println(gr.formattedAddress);
         officeService.save(office);
         return "redirect:/admin/offices";
     }
 
+    @GetMapping("/offices")
+    public String getAllOffice(Model model) {
+        model.addAttribute("offices", officeService.allOffices());
+        model.addAttribute("officeSearchForm", new OfficeSearchForm());
+        return "/admin/admin_offices";
+    }
 
-    @PostMapping("/FindOfficeByDepartment")
-    public String findByDepartment(@RequestParam String department, Model model) {
-        model.addAttribute("offices", officeService.findByDepartment(department));
+    @PostMapping("/offices")
+    public String findByDepartmentOrAddress( @ModelAttribute("officeSearchForm") OfficeSearchForm officeSearchForm,  Model model) {
+        model.addAttribute("offices", officeDao.findByDepartmentOrAddress(officeSearchForm));
         return "/admin/admin_offices";
 
     }

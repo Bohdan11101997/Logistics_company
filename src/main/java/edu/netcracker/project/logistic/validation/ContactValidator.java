@@ -5,7 +5,6 @@ import edu.netcracker.project.logistic.model.Contact;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
-import org.springframework.validation.SmartValidator;
 import org.springframework.validation.Validator;
 
 import java.util.List;
@@ -38,12 +37,12 @@ public class ContactValidator implements Validator {
         Contact contact = (Contact) o;
 
         checkCorrectPhoneNumber(contact, errors, prefix);
-        checkDuplicatesForPhoneNumberOrEmail(contact, errors, prefix);
+        checkDuplicatesForEmail(contact, errors, prefix);
     }
 
-    private void checkDuplicatesForPhoneNumberOrEmail(Contact contact, Errors errors, String prefix) {
+    private void checkDuplicatesForEmail(Contact contact, Errors errors, String prefix) {
         List<Contact> duplicates =
-                contactDao.findByPhoneNumberOrEmail(contact.getPhoneNumber(), contact.getEmail());
+                contactDao.findByEmail(contact.getEmail());
         for (Contact d : duplicates) {
             if (!d.getContactId().equals(contact.getContactId()) && d.getEmail().equals(contact.getEmail())) {
                 errors.rejectValue(prefix + "email", "Duplicate.mail");
