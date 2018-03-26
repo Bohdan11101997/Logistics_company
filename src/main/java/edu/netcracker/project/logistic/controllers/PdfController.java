@@ -3,6 +3,7 @@ package edu.netcracker.project.logistic.controllers;
 import com.google.gson.internal.bind.MapTypeAdapterFactory;
 import com.itextpdf.text.List;
 import com.itextpdf.text.ListItem;
+import edu.netcracker.project.logistic.dao.ManagerStatisticsDao;
 import edu.netcracker.project.logistic.dao.PersonCrudDao;
 import edu.netcracker.project.logistic.dao.impl.ManagerStatisticsDaoImpl;
 import edu.netcracker.project.logistic.dao.impl.OfficeDaoImpl;
@@ -35,10 +36,10 @@ import java.util.Optional;
 
 
 @Controller
-public class MyController {
+public class PdfController {
 
     @Autowired
-    ManagerStatisticsDaoImpl managerStatisticsDao;
+    ManagerStatisticsDao managerStatisticsDao;
 
     @Autowired
     PersonCrudDaoImpl personService;
@@ -50,8 +51,8 @@ public class MyController {
     UserService userService;
 
 
-    @RequestMapping(value = "/pdfreport", produces = MediaType.APPLICATION_PDF_VALUE)
-    public ResponseEntity<InputStreamResource> citiesReport(Principal principal, @ModelAttribute("searchFormOrderStatistic") SearchFormOrderStatistic searchFormOrderStatistic) throws IOException {
+    @RequestMapping(value = "/pdfreport", method = RequestMethod.GET, produces = MediaType.APPLICATION_PDF_VALUE)
+    public ResponseEntity<InputStreamResource> managerReport(Principal principal, @ModelAttribute("searchFormOrderStatistic") SearchFormOrderStatistic searchFormOrderStatistic) {
 
         String username = principal.getName();
         Optional<Person> optionalPerson = userService.findOne(username);
@@ -59,7 +60,7 @@ public class MyController {
         Person person = optionalPerson.get();
 
 
-        ArrayList<Person> employee = (ArrayList<Person>) managerStatisticsDao.EmployeesByCourierOrCall_Center();
+        ArrayList<Person> employee = (ArrayList<Person>) managerStatisticsDao.employeesByCourierOrCall_Center();
         ArrayList<Office> offices = (ArrayList<Office>) officeService.allOffices();
 
         List listEmployees = new com.itextpdf.text.List(List.ORDERED);

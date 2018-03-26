@@ -7,12 +7,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public interface RoleService {
-    void save(Role role);
+public interface RoleService extends CrudService<Role, Long> {
 
-    void delete(Long aLong);
 
-    Optional<Role> findOne(Long aLong);
+    List<Role> getByPersonId(Long personId);
+
+    Optional<Role> getByName(String name);
 
     boolean exists(Long aLong);
 
@@ -23,4 +23,6 @@ public interface RoleService {
     List<Role> findEmployeeRoles();
 
     List<Role> findClientRoles();
+
+
 }

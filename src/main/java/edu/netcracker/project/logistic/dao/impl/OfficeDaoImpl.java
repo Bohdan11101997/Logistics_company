@@ -44,18 +44,18 @@ public class OfficeDaoImpl implements OfficeDao, QueryDao, RowMapper<Office> {
     @Override
     public Office mapRow(ResultSet resultSet, int i) throws SQLException {
 
-            Office office = new Office();
-            office.setOfficeId(resultSet.getLong("office_id"));
-            office.setName(resultSet.getString("name"));
+        Office office = new Office();
+        office.setOfficeId(resultSet.getLong("office_id"));
+        office.setName(resultSet.getString("name"));
 
-            Address address = addressRowMapper.mapRow(resultSet, i);
-            office.setAddress(address);
+        Address address = addressRowMapper.mapRow(resultSet, i);
+        office.setAddress(address);
 
-            return office;
-        }
+        return office;
+    }
 
 
-    public Office mapRowOrder(ResultSet resultSet, int i) throws SQLException {
+    private Office mapRowOrder(ResultSet resultSet, int i) throws SQLException {
 
         Office office = new Office();
         office.setOfficeId(resultSet.getLong("office_id"));
@@ -127,6 +127,7 @@ public class OfficeDaoImpl implements OfficeDao, QueryDao, RowMapper<Office> {
         return "%" + input.replace("%", "\\%") + "%";
     }
 
+    @Override
     public List<Office> findByDepartmentOrAddress(OfficeSearchForm officeSearchForm) {
 
         String department = officeSearchForm.getDepartment();
@@ -150,8 +151,7 @@ public class OfficeDaoImpl implements OfficeDao, QueryDao, RowMapper<Office> {
             } catch (EmptyResultDataAccessException ex) {
                 return Collections.emptyList();
             }
-        }
-            else if (officeSearchForm.getSort_ids() == 2){
+        } else if (officeSearchForm.getSort_ids() == 2) {
 
             try {
                 return namedParameterJdbcTemplate.query(
@@ -162,9 +162,7 @@ public class OfficeDaoImpl implements OfficeDao, QueryDao, RowMapper<Office> {
             } catch (EmptyResultDataAccessException ex) {
                 return Collections.emptyList();
             }
-        }
-
-        else {
+        } else {
 
             try {
                 return namedParameterJdbcTemplate.query(
@@ -208,8 +206,7 @@ public class OfficeDaoImpl implements OfficeDao, QueryDao, RowMapper<Office> {
         return queryService.getQuery("all.office");
     }
 
-    private String getAllOfficesByDepartmentOrAddress() {
-        return queryService.getQuery("all.office.by.department.or.address");
+    private String getAllOfficesByDepartmentOrAddress() { return queryService.getQuery("all.office.by.department.or.address");
     }
 
     private String getAllOfficesSortByOrdersSent() {
