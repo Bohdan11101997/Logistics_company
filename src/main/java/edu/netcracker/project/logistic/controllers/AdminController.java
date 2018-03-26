@@ -96,7 +96,7 @@ public class AdminController {
         }
 
         if (!imageValidator.isImage(file)){
-            model.addAttribute("notImage", "Please, upload only image there!");
+            model.addAttribute("notImage", "Please, upload image there!");
             return "/admin/admin_crud_advertisement";
         }
 
@@ -145,6 +145,8 @@ public class AdminController {
                                       BindingResult bindingResult) throws IOException {
 
         advertisementValidator.validate(advertisementForm, bindingResult);
+
+        model.addAttribute("update", true);
         if (bindingResult.hasErrors()) {
             return "/admin/admin_crud_advertisement";
         }
@@ -154,8 +156,9 @@ public class AdminController {
             return "redirect:/error/404";
         }
 
-        if (!imageValidator.isImage(file)){
-            model.addAttribute("notImage", "Please, upload only image there!");
+        if (!file.getOriginalFilename().equals("") && !imageValidator.isImage(file)){
+            System.out.println(file.getOriginalFilename());
+            model.addAttribute("notImage", "Please, upload image there!");
             return "/admin/admin_crud_advertisement";
         }
 
@@ -164,8 +167,10 @@ public class AdminController {
         advertisement.setDescription(advertisementForm.getDescription());
         advertisement.setShowFirstDate(advertisementForm.getShowFirstDate());
         advertisement.setShowEndDate(advertisementForm.getShowEndDate());
-        byte[] image = file.getBytes();
-        advertisement.setImage(image);
+        if (!file.getOriginalFilename().equals("")){
+            byte[] image = file.getBytes();
+            advertisement.setImage(image);
+        }
         advertisement.getType().setName(advertisementForm.getType());
         advertisementService.save(advertisement);
 
