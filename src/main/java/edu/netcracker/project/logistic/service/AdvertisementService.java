@@ -9,8 +9,6 @@ public interface AdvertisementService {
 
     void save(Advertisement advertisement);
 
-    void update(Advertisement advertisement);
-
     void delete(Long id);
 
     Optional<Advertisement> findOne(Long id);
@@ -20,4 +18,6 @@ public interface AdvertisementService {
     List<Advertisement> findAmountOfAdvertisementsForCurrentPage(int itemsOnPage, int currentPage);
 
     int getCountOfAllAdvertisements();
+
+    List<Advertisement> findAllForToday();
 }

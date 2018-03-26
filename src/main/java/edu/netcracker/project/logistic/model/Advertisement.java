@@ -9,6 +9,7 @@ public class Advertisement {
     private String description;
     private LocalDate showFirstDate;
     private LocalDate showEndDate;
+    private byte[] image;
     private AdvertisementType type;
 
     public Long getId() {
@@ -57,5 +58,13 @@ public class Advertisement {
 
     public void setShowEndDate(LocalDate showEndDate) {
         this.showEndDate = showEndDate;
+    }
+
+    public byte[] getImage() {
+        return image;
+    }
+
+    public void setImage(byte[] image) {
+        this.image = image;
     }
 }
