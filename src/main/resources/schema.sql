@@ -184,6 +184,12 @@ CREATE TABLE logistic_company.day_off
   employee_id INT4 NOT NULL
 );
 
+CREATE TABLE logistic_company.order_draft
+(
+  order_draft_id INT4 DEFAULT nextval('main_seq_id' :: REGCLASS) NOT NULL,
+  person_id INT4 NOT NULL,
+  draft JSONB NOT NULL
+);
 
 ALTER TABLE "logistic_company"."person"
   ADD UNIQUE ("user_name");
@@ -229,7 +235,8 @@ ALTER TABLE logistic_company.day_off
   ADD PRIMARY KEY (day_off_id);
 ALTER TABLE logistic_company.courier_data
   ADD PRIMARY KEY (person_id);
-
+ALTER TABLE logistic_company.order_draft
+  ADD PRIMARY KEY (order_draft_id);
 
 ALTER TABLE "logistic_company"."courier_data"
   ADD FOREIGN KEY ("person_id") REFERENCES "logistic_company"."person" (person_id) ON DELETE CASCADE;
@@ -304,6 +311,9 @@ ALTER TABLE logistic_company.task
   ADD FOREIGN KEY ("employee_id") REFERENCES "logistic_company"."person" ("person_id");
 ALTER TABLE logistic_company.day_off
   ADD FOREIGN KEY (employee_id) REFERENCES logistic_company.person (person_id);
+
+ALTER TABLE logistic_company.order_draft
+  ADD FOREIGN KEY ("person_id") REFERENCES logistic_company.person (person_id);
 
 CREATE FUNCTION delete_old_rows()
   RETURNS TRIGGER

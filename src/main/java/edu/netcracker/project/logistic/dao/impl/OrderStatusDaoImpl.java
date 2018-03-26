@@ -70,18 +70,16 @@ public class OrderStatusDaoImpl implements OrderStatusDao, RowMapper<OrderStatus
         }
     }
 
-
-    public List<OrderStatus> findAll()
-    {
+    @Override
+    public List<OrderStatus> findAll() {
         try {
-        return jdbcTemplate.query(getAllStatusQuery(),this);
+            return jdbcTemplate.query(getAllStatusQuery(), this);
         } catch (EmptyResultDataAccessException ex) {
             return Collections.emptyList();
         }
     }
 
-    private String getAllStatusQuery()
-    {
+    private String getAllStatusQuery() {
         return queryService.getQuery("all.status");
     }
 

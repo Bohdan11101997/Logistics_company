@@ -1,6 +1,7 @@
 package edu.netcracker.project.logistic.dao.impl;
 
 import edu.netcracker.project.logistic.dao.OrderDao;
+import edu.netcracker.project.logistic.dao.OrderStatusDao;
 import edu.netcracker.project.logistic.model.*;
 import edu.netcracker.project.logistic.service.QueryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,23 +23,12 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
     private QueryService queryService;
     private JdbcTemplate jdbcTemplate;
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-    private RowMapper<Contact> contactMapper;
-    private RowMapper<Address> addressRowMapper;
-    private RowMapper<OrderStatus> orderStatusRowMapper;
-    private RowMapper<OrderType> orderTypeRowMapper;
 
     @Autowired
-    private OrderStatusDaoImpl orderStatusDao;
-
-    @Autowired
-    public OrderDaoImpl(QueryService queryService, JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate, RowMapper<Contact> contactMapper, RowMapper<Address> addressRowMapper, RowMapper<OrderStatus> orderStatusRowMapper, RowMapper<OrderType> orderTypeRowMapper) {
+    public OrderDaoImpl(QueryService queryService, JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.queryService = queryService;
         this.jdbcTemplate = jdbcTemplate;
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
-        this.contactMapper = contactMapper;
-        this.addressRowMapper = addressRowMapper;
-        this.orderStatusRowMapper = orderStatusRowMapper;
-        this.orderTypeRowMapper = orderTypeRowMapper;
     }
 
 
@@ -228,6 +218,7 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
         return "%" + input.replace("%", "\\%") + "%";
     }
 
+    @Override
     public List<Order> search(SearchFormOrder searchFormOrder, Long id) {
 
         String firstName = searchFormOrder.getFirstName();
@@ -324,6 +315,7 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
         );
     }
 
+    @Override
     public List<Order> orderBySenderOrReceiver(Long aLong) {
         try {
             return jdbcTemplate.query(
@@ -338,7 +330,6 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
 
 
     private String getOrderByUser() {
-
         return queryService.getQuery("select.order.by.user");
     }
 
@@ -378,8 +369,6 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
         return queryService.getQuery("select.order.search.from.office");
     }
 
-
-
     private String getFindNotProcessedQuery() {
         return queryService.getQuery("select.order.not_processed");
     }
@@ -387,5 +376,4 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
     private String getFindConfirmedQuery() {
         return queryService.getQuery("select.order.confirmed");
     }
-
 }

@@ -8,6 +8,7 @@ import edu.netcracker.project.logistic.service.OrderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -23,24 +24,30 @@ public class OrderServiceImpl implements OrderService {
     private ContactDao contactDao;
     private OrderDao orderDao;
     private OrderStatusDao orderStatusDao;
+    private OrderDraftDao orderDraftDao;
     private TaskDao taskDao;
     private TaskProcessor taskProcessor;
     private RouteProcessor routeProcessor;
     private CourierDataDao courierDataDao;
+    private PersonCrudDao personDao;
 
     public OrderServiceImpl(AddressDao addressDao, ContactDao contactDao, OrderDao orderDao,
-                            OrderStatusDao orderStatusDao, TaskDao taskDao, TaskProcessor taskProcessor,
-                            RouteProcessor routeProcessor, CourierDataDao courierDataDao) {
+                            OrderStatusDao orderStatusDao, OrderDraftDao orderDraftDao,
+                            TaskDao taskDao, TaskProcessor taskProcessor,
+                            RouteProcessor routeProcessor, CourierDataDao courierDataDao, PersonCrudDao personDao) {
         this.addressDao = addressDao;
         this.contactDao = contactDao;
         this.orderDao = orderDao;
         this.orderStatusDao = orderStatusDao;
+        this.orderDraftDao = orderDraftDao;
         this.taskDao = taskDao;
         this.taskProcessor = taskProcessor;
         this.routeProcessor = routeProcessor;
         this.courierDataDao = courierDataDao;
+        this.personDao = personDao;
     }
 
+    @Transactional
     @Override
     public void createOrder(Order order) {
         Address senderAddress = order.getSenderAddress();
@@ -61,6 +68,32 @@ public class OrderServiceImpl implements OrderService {
         taskProcessor.createTask(order);
     }
 
+    @Transactional
+    @Override
+    public void createFromDraft(OrderDraft orderDraft, Order order) {
+        Order oldDraft = orderDraft.getDraft();
+        order.setOrderStatusTime(oldDraft.getOrderStatusTime());
+        order.setCreationTime(oldDraft.getCreationTime());
+        Address senderAddress = order.getSenderAddress();
+        Address receiverAddress = order.getReceiverAddress();
+        addressDao.save(senderAddress);
+        addressDao.save(receiverAddress);
+        contactDao.save(order.getReceiverContact());
+        if (order.getWeight() == null) {
+            order.setWeight(new BigDecimal(1));
+        }
+        LocalDateTime now = LocalDateTime.now();
+        order.setOrderStatusTime(now);
+        OrderStatus processing = orderStatusDao.findByName("PROCESSING")
+                .orElseThrow(() -> new IllegalStateException("Can't find order status 'PROCESSING'"));
+        order.setOrderStatus(processing);
+        order.setId(null);
+        orderDao.save(order);
+        orderDraftDao.delete(orderDraft.getId());
+        taskProcessor.createTask(order);
+    }
+
+    @Transactional
     @Override
     public void confirmOrder(Long employeeId, Long orderId) {
         Optional<Order> opt = orderDao.findOne(orderId);
@@ -85,6 +118,7 @@ public class OrderServiceImpl implements OrderService {
         routeProcessor.addOrder(order);
     }
 
+    @Transactional
     @Override
     public void rejectOrder(Long employeeId, Long orderId) {
         Optional<Order> opt = orderDao.findOne(orderId);
@@ -99,13 +133,16 @@ public class OrderServiceImpl implements OrderService {
         if (!employeeId.equals(task.getEmployeeId())) {
             throw new IllegalArgumentException("Can't reject not assigned order");
         }
-        order.setOrderStatus(orderStatusDao.findByName("DRAFT")
-                .orElseThrow(
-                        () -> new IllegalStateException("Can't find order status 'DRAFT'")
-                ));
-        orderDao.save(order);
-        task.setCompleted(true);
-        taskDao.save(task);
+        orderDao.delete(order.getId());
+
+        Person person = personDao.findByContactId(order.getSenderContact().getContactId())
+                .orElseThrow(() -> new IllegalStateException("Sender contact doesn't have account"));
+        OrderDraft orderDraft = new OrderDraft();
+        orderDraft.setDraft(order);
+        orderDraft.setPersonId(person.getId());
+
+        orderDraftDao.save(orderDraft);
+        taskDao.delete(task.getId());
     }
 
     private void updateRoutePoint(CourierData data, Long orderId, DeliveryStatus status) {
@@ -139,6 +176,7 @@ public class OrderServiceImpl implements OrderService {
         courierDataDao.save(data);
     }
 
+    @Transactional
     @Override
     public void confirmDelivered(CourierData data, Long orderId) {
         Long employeeId = data.getCourier().getId();
@@ -158,6 +196,7 @@ public class OrderServiceImpl implements OrderService {
         orderDao.save(order);
     }
 
+    @Transactional
     @Override
     public void confirmFailed(CourierData data, Long orderId) {
         Long employeeId = data.getCourier().getId();
@@ -179,13 +218,19 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void draft(Order order) {
-        LocalDateTime now = LocalDateTime.now();
-        order.setCreationTime(now);
-        order.setOrderStatusTime(now);
-        OrderStatus draft = orderStatusDao.findByName("DRAFT")
-                .orElseThrow(() -> new IllegalStateException("Can't find order status 'PROCESSING'"));
-        order.setOrderStatus(draft);
-        orderDao.save(order);
+    public void draft(OrderDraft orderDraft) {
+        Optional<OrderDraft> opt = orderDraftDao.findOne(orderDraft.getId());
+        if (opt.isPresent()) {
+            OrderDraft record = opt.get();
+            record.setDraft(orderDraft.getDraft());
+            record.getDraft().setOrderStatusTime(LocalDateTime.now());
+            orderDraftDao.save(record);
+        } else {
+            LocalDateTime now = LocalDateTime.now();
+            Order order = orderDraft.getDraft();
+            order.setCreationTime(now);
+            order.setOrderStatusTime(now);
+            orderDraftDao.save(orderDraft);
+        }
     }
 }

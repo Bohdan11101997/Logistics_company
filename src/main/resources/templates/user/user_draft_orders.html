@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="fragments/header :: header-bootstrap-config" />
+    <th:block th:replace="fragments/header :: header-bootstrap-config-IE" />
+
+    <link rel="stylesheet" th:href="@{/css/left_menu.css}" type="text/css" href="../../static/css/left_menu.css" />
+    <link rel="stylesheet" th:href="@{/css/main_content.css}" type="text/css" href="../static/css/main_content.css" />
+    <link rel="stylesheet" th:href="@{/css/well.css}" type="text/css" href="../static/css/well.css" />
+    <link rel="stylesheet" th:href="@{/css/table.css}" type="text/css" href="../static/css/table.css" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css" />
+
+    <script th:src="@{/js/forms.js}" src="../../static/js/forms.js"></script>
+    <style>
+        @media (min-width: 768px)  {
+            #from-date {
+                margin-right: 5px;
+            }
+        }
+
+        @media (max-width: 767px) {
+            #from-date {
+                margin-bottom: 5px;
+            }
+        }
+
+        .form-horizontal {
+            padding: 0 15px;
+        }
+    </style>
+</head>
+
+<body class="body-color">
+
+<div class="row">
+
+    <div th:replace="fragments/left_menu :: left-menu-header">
+    </div>
+
+    <!-- Main Content -->
+    <div class="container-fluid">
+        <div class="side-body">
+            <div class="row">
+                <div class="col-lg-10 col-md-10 col-md-offset-1 col-lg-offset-1">
+
+                    <h1>Draft Orders</h1>
+
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Sender Name</th>
+                                <th>Sender Address</th>
+                                <th>Receiver Name</th>
+                                <th>Receiver Address</th>
+                                <th>Office Address</th>
+                                <th>Creation Time</th>
+                                <th>Delivery Time</th>
+                                <th>Order Type</th>
+                                <th>Order Status</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="order : ${orders}">
+                                <td th:text="${order.senderContact}"></td>
+                                <td th:text="${order.senderAddress}"></td>
+                                <td th:text="${order.receiverContact}"></td>
+                                <td th:text="${order.receiverAddress}"></td>
+                                <td th:text="${order.office}"></td>
+                                <td th:text="${{order.creationTime}}"></td>
+                                <td th:text="${order.deliveryTime}"></td>
+                                <td th:text="${order.orderType}"></td>
+                                <td th:text="${order.orderStatus}"></td>
+                                <td>
+                                    <form method="GET" th:action="@{/user/order}">
+                                        <input type="hidden" name="drafted" value="true" />
+                                        <input type="hidden" name="id" th:value="${order.id}" value="" />
+                                        <button class="btn btn-link update">Confirm</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<th:block th:replace="fragments/footer :: footer"/>
+<th:block th:replace="fragments/left_menu :: left-menu-footer" />
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
+
+<script type="text/javascript">
+    document.getElementById('user_my_orders').className='active';
+    createMultiSelect("#role", true);
+    createDatePicker(".input-daterange");
+</script>
+
+</body>
+</html>
