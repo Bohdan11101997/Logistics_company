@@ -18,4 +18,6 @@ public interface AdvertisementService {
     List<Advertisement> findAmountOfAdvertisementsForCurrentPage(int itemsOnPage, int currentPage);
 
     int getCountOfAllAdvertisements();
+
+    List<Advertisement> findAllForToday();
 }

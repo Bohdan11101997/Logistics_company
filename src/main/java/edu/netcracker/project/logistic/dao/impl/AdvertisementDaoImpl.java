@@ -18,6 +18,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -139,6 +140,15 @@ public class AdvertisementDaoImpl implements AdvertisementDao, QueryDao {
     }
 
     @Override
+    public List<Advertisement> allAdvertisementsForToday() {
+        LocalDate today = LocalDate.now();
+        return jdbcTemplate.query(
+                getAllAdvertisementsForToday(),
+                new  Object[] {Date.valueOf(today), Date.valueOf(today)},
+                getMapper());
+    }
+
+    @Override
     public List<Advertisement> allAdvertisements() {
         return jdbcTemplate.query(getAllAdvertisements(), getMapper());
     }
@@ -173,5 +183,9 @@ public class AdvertisementDaoImpl implements AdvertisementDao, QueryDao {
 
     public String getFindAmountOfAdvertisementsForCurrentPage(){
         return queryService.getQuery("select.advertisement.amount.for.page");
+    }
+
+    public String getAllAdvertisementsForToday() {
+        return queryService.getQuery("all.advertisements.for.today");
     }
 }
