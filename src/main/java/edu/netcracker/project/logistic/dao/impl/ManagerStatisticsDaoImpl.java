@@ -1,7 +1,5 @@
 package edu.netcracker.project.logistic.dao.impl;
 
-import edu.netcracker.project.logistic.dao.PersonRoleDao;
-import edu.netcracker.project.logistic.dao.WorkDayDao;
 import edu.netcracker.project.logistic.model.*;
 import edu.netcracker.project.logistic.service.QueryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +11,6 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
@@ -64,9 +61,9 @@ public class ManagerStatisticsDaoImpl {
     }
 
 
-    private List<Statistic_task> extractOrderForStatistic(ResultSet rs) throws SQLException {
+    private List<StatisticTask> extractOrderForStatistic(ResultSet rs) throws SQLException {
 
-        List<Statistic_task> result = new ArrayList<>();
+        List<StatisticTask> result = new ArrayList<>();
         boolean rowsLeft = rs.next();
         for (int i = 0; rowsLeft; i++) {
             Person person = new Person();
@@ -92,7 +89,7 @@ public class ManagerStatisticsDaoImpl {
             } while (rowsLeft && rs.getLong("person_id") == person.getId());
             person.setRoles(roles);
 
-            Statistic_task statistic_task = new Statistic_task();
+            StatisticTask statistic_task = new StatisticTask();
             statistic_task.setPerson(person);
             statistic_task.setOrder(order);
             result.add(statistic_task);
@@ -101,7 +98,7 @@ public class ManagerStatisticsDaoImpl {
 
     }
 
-    public List<Statistic_task> searchStatisticOrders(SearchFormOrderStatistic searchFormOrderStatistic) {
+    public List<StatisticTask> searchStatisticOrders(SearchFormOrderStatistic searchFormOrderStatistic) {
         LocalDateTime from = searchFormOrderStatistic.getFrom();
         if (from == null) {
             from = LocalDateTime.MIN;

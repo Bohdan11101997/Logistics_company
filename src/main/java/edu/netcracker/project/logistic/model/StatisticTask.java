@@ -1,9 +1,8 @@
 package edu.netcracker.project.logistic.model;
 
-public class Statistic_task {
-    Person person;
-    Order order;
-
+public class StatisticTask {
+    private Person person;
+    private Order order;
 
     public Person getPerson() {
         return person;

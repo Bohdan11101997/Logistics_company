@@ -1,25 +1,15 @@
 package edu.netcracker.project.logistic.controllers;
 
 import edu.netcracker.project.logistic.dao.OrderTypeDao;
-import edu.netcracker.project.logistic.dao.PersonCrudDao;
 import edu.netcracker.project.logistic.dao.impl.*;
 import edu.netcracker.project.logistic.model.*;
 import edu.netcracker.project.logistic.service.*;
-import edu.netcracker.project.logistic.validation.CurrentPasswordValidator;
-import edu.netcracker.project.logistic.validation.NewOrderValidator;
-import edu.netcracker.project.logistic.validation.UpdateUserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.SmartValidator;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("/manager")
@@ -96,7 +86,7 @@ public class ManagerController {
 
     @PostMapping("/statistics/orders")
     public String SearchOrdersByManager(@ModelAttribute("searchFormOrderStatistic") SearchFormOrderStatistic searchFormOrderStatistic, Model model) {
-        List<Statistic_task> personList = managerStatisticsDao.searchStatisticOrders(searchFormOrderStatistic);
+        List<StatisticTask> personList = managerStatisticsDao.searchStatisticOrders(searchFormOrderStatistic);
         model.addAttribute("countOrder", managerStatisticsDao.countOrders());
         model.addAttribute("destination_typeOrders", orderTypeDao.findAll());
         model.addAttribute("status_OrdersList", orderStatusDao.findAll());
