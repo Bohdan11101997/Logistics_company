@@ -4,6 +4,9 @@ public class Office {
     private Long officeId;
     private String  name;
     private Address address;
+    private Long  count;
+
+
 
     public Office(String name, Address address) {
 
@@ -21,6 +24,14 @@ public class Office {
     {
 
 
+    }
+
+    public Long getCount() {
+        return count;
+    }
+
+    public void setCount(Long count) {
+        this.count = count;
     }
 
     public Long getOfficeId() {

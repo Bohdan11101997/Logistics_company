@@ -70,7 +70,7 @@
                                     <div class="form-group">
                                         <label for="destination_typeIds" class="control-label">Destination type</label>
                                         <br/>
-                                        <select id="destination_typeIds" multiple="multiple"
+                                        <select id="destination_typeIds" multiple="multiple" class="selectpicker"
                                                 th:field="*{destination_typeIds}">
                                             <option th:each="orderType: ${destination_typeOrders}"
                                                     th:value="${orderType.id}"
@@ -103,7 +103,7 @@
                                     <div class="form-group">
                                         <label for="order_statusIds" class="control-label">Order status</label>
                                         <br/>
-                                        <select id="order_statusIds" multiple="multiple"
+                                        <select id="order_statusIds" multiple="multiple" class="selectpicker"
                                                 th:field="*{order_statusIds}">
                                             <option th:each="orderStatus: ${status_OrdersList}"
                                                     th:value="${orderStatus.id}"
@@ -134,16 +134,12 @@
                             <thead>
                             <tr>
                                 <th>#</th>
-
+                                <th>ID</th>
                                 <th>Receiver contact</th>
                                 <th>Sender contact</th>
                                 <th>Order type</th>
-                                <th>Estimated delivery time</th>
                                 <th>Employee id</th>
                                 <th>Handler employee name</th>
-
-                                <th>Username</th>
-
                                 <th>Role</th>
 
 
@@ -163,10 +159,10 @@
 
                             <tr th:each="statistic_task, iter : ${personList}">
                                 <td th:text="${iter.index + 1}"></td>
+                                <td th:text="${statistic_task.order.id}"></td>
                                 <td th:text="${statistic_task.order.receiverContact}"></td>
                                 <td th:text="${statistic_task.order.senderContact}"></td>
                                 <td th:text="${statistic_task.order.orderType}"></td>
-                                <td th:text="${statistic_task.order.deliveryTime}"></td>
                                 <td th:text="${statistic_task.person.id}"></td>
                                 <td th:text="${statistic_task.person.userName}"></td>
                                 <td th:text="${statistic_task.person.roles}"></td>

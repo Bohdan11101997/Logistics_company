@@ -249,7 +249,7 @@ ALTER TABLE "logistic_company"."person"
   ADD FOREIGN KEY ("contact_id") REFERENCES "logistic_company"."contact" (contact_id);
 
 ALTER TABLE "logistic_company"."order"
-  ADD FOREIGN KEY ("office_id") REFERENCES "logistic_company"."office" ("office_id");
+  ADD FOREIGN KEY ("office_id") REFERENCES "logistic_company"."office" ("office_id") ON DELETE CASCADE ;
 ALTER TABLE "logistic_company"."order"
   ADD FOREIGN KEY ("order_status_id") REFERENCES "logistic_company"."order_status" ("order_status_id");
 
@@ -299,7 +299,7 @@ ALTER TABLE logistic_company.reset_password
   ON DELETE CASCADE;
 
 ALTER TABLE logistic_company.task
-  ADD FOREIGN KEY ("order_id") REFERENCES "logistic_company"."order" ("order_id");
+  ADD FOREIGN KEY ("order_id") REFERENCES "logistic_company"."order" ("order_id") ON DELETE CASCADE ;
 ALTER TABLE logistic_company.task
   ADD FOREIGN KEY ("employee_id") REFERENCES "logistic_company"."person" ("person_id");
 ALTER TABLE logistic_company.day_off
