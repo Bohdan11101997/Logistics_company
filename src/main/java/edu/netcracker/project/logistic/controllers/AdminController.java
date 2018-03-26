@@ -184,11 +184,6 @@ public class AdminController {
     }
 
 
-    @GetMapping("/offices")
-    public String getAllOffice(Model model) {
-        model.addAttribute("offices", officeService.allOffices());
-        return "/admin/admin_offices";
-    }
 
     @GetMapping("/employees")
     public String getAllEmployees(Model model) {
@@ -355,17 +350,20 @@ public class AdminController {
         }
         addressService.save(office.getAddress());
         addressService.findOne(office.getAddress().getName()).get();
-        System.out.println(office);
-        for(GeocodingResult gr : Address.getListOfAddresses(office.getAddress().getLocation()))
-            System.out.println(gr.formattedAddress);
         officeService.save(office);
         return "redirect:/admin/offices";
     }
 
+    @GetMapping("/offices")
+    public String getAllOffice(Model model) {
+        model.addAttribute("offices", officeService.allOffices());
+        model.addAttribute("officeSearchForm", new OfficeSearchForm());
+        return "/admin/admin_offices";
+    }
 
-    @PostMapping("/FindOfficeByDepartmentOrAddress")
-    public String findByDepartment(@RequestParam String department, @RequestParam String address, Model model) {
-        model.addAttribute("offices", officeDao.findByDepartmentOrAddress(department, address));
+    @PostMapping("/offices")
+    public String findByDepartmentOrAddress( @ModelAttribute("officeSearchForm") OfficeSearchForm officeSearchForm,  Model model) {
+        model.addAttribute("offices", officeDao.findByDepartmentOrAddress(officeSearchForm));
         return "/admin/admin_offices";
 
     }

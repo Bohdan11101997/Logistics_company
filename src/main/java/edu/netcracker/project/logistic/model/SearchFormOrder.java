@@ -11,6 +11,15 @@ public class SearchFormOrder {
     private LocalDateTime to;
     private List<Long> destination_typeIds;
     private List<Long> order_statusIds;
+    private Long contact_side;
+
+    public Long getContact_side() {
+        return contact_side;
+    }
+
+    public void setContact_side(Long contact_side) {
+        this.contact_side = contact_side;
+    }
 
     public String getFirstName() {
         return firstName;
