@@ -6,7 +6,6 @@ import edu.netcracker.project.logistic.dao.QueryDao;
 import edu.netcracker.project.logistic.model.Address;
 import edu.netcracker.project.logistic.service.QueryService;
 
-import org.omg.CORBA.OBJECT_NOT_EXIST;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

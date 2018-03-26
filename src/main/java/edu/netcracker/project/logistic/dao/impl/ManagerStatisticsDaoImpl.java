@@ -89,10 +89,10 @@ public class ManagerStatisticsDaoImpl {
             } while (rowsLeft && rs.getLong("person_id") == person.getId());
             person.setRoles(roles);
 
-            StatisticTask statistic_task = new StatisticTask();
-            statistic_task.setPerson(person);
-            statistic_task.setOrder(order);
-            result.add(statistic_task);
+            StatisticTask statisticTask = new StatisticTask();
+            statisticTask.setPerson(person);
+            statisticTask.setOrder(order);
+            result.add(statisticTask);
         }
         return result;
 

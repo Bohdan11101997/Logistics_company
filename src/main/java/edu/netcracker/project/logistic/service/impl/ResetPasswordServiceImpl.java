@@ -3,7 +3,6 @@ package edu.netcracker.project.logistic.service.impl;
 import edu.netcracker.project.logistic.dao.PersonCrudDao;
 import edu.netcracker.project.logistic.dao.ResetPasswordTokenDao;
 import edu.netcracker.project.logistic.model.Person;
-import edu.netcracker.project.logistic.model.ResetPasswordForm;
 import edu.netcracker.project.logistic.model.ResetPasswordToken;
 import edu.netcracker.project.logistic.service.ResetPasswordService;
 import org.springframework.beans.factory.annotation.Autowired;

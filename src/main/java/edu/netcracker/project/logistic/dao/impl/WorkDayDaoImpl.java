@@ -4,7 +4,6 @@ import edu.netcracker.project.logistic.dao.WorkDayDao;
 import edu.netcracker.project.logistic.model.WeekDay;
 import edu.netcracker.project.logistic.model.WorkDay;
 import edu.netcracker.project.logistic.service.QueryService;
-import org.apache.tomcat.jni.Local;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;

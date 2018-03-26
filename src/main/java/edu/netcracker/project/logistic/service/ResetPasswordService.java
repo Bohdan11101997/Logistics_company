@@ -1,6 +1,5 @@
 package edu.netcracker.project.logistic.service;
 
-import edu.netcracker.project.logistic.model.ResetPasswordForm;
 import edu.netcracker.project.logistic.model.ResetPasswordToken;
 
 import javax.mail.MessagingException;

@@ -1,6 +1,5 @@
 package edu.netcracker.project.logistic.service;
 
-import edu.netcracker.project.logistic.model.Order;
 import edu.netcracker.project.logistic.model.Person;
 
 import java.util.Optional;

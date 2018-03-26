@@ -1,6 +1,5 @@
 package edu.netcracker.project.logistic.validation;
 
-import edu.netcracker.project.logistic.dao.ContactDao;
 import edu.netcracker.project.logistic.dao.PersonCrudDao;
 import edu.netcracker.project.logistic.dao.RoleCrudDao;
 import edu.netcracker.project.logistic.model.Person;
@@ -10,7 +9,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 @Component

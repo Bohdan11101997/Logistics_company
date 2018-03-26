@@ -1,17 +1,13 @@
 package edu.netcracker.project.logistic.controllers;
 
-import com.google.gson.internal.bind.MapTypeAdapterFactory;
 import com.itextpdf.text.List;
 import com.itextpdf.text.ListItem;
-import edu.netcracker.project.logistic.dao.PersonCrudDao;
 import edu.netcracker.project.logistic.dao.impl.ManagerStatisticsDaoImpl;
-import edu.netcracker.project.logistic.dao.impl.OfficeDaoImpl;
 import edu.netcracker.project.logistic.dao.impl.PersonCrudDaoImpl;
 import edu.netcracker.project.logistic.model.Office;
 import edu.netcracker.project.logistic.model.Person;
 import edu.netcracker.project.logistic.model.SearchFormOrderStatistic;
 import edu.netcracker.project.logistic.service.OfficeService;
-import edu.netcracker.project.logistic.service.PersonService;
 import edu.netcracker.project.logistic.service.UserService;
 import edu.netcracker.project.logistic.service.impl.GeneratePdfReport;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,18 +15,14 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.Optional;
 
 

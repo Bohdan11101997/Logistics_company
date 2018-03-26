@@ -7,9 +7,6 @@ import com.itextpdf.text.pdf.PdfWriter;
 import edu.netcracker.project.logistic.model.Office;
 import edu.netcracker.project.logistic.model.Person;
 import org.apache.tomcat.util.http.fileupload.ByteArrayOutputStream;
-import com.itextpdf.text.Document;
-import com.itextpdf.text.DocumentException;
-
 
 
 import java.io.ByteArrayInputStream;

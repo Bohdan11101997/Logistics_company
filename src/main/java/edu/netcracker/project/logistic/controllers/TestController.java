@@ -1,17 +1,13 @@
 package edu.netcracker.project.logistic.controllers;
 
-import com.google.maps.model.GeocodingResult;
 import edu.netcracker.project.logistic.dao.ContactDao;
 import edu.netcracker.project.logistic.dao.OfficeDao;
-import edu.netcracker.project.logistic.dao.OrderDao;
-import edu.netcracker.project.logistic.dao.PersonCrudDao;
 import edu.netcracker.project.logistic.dao.impl.AddressDaoImpl;
 import edu.netcracker.project.logistic.dao.impl.ManagerStatisticsDaoImpl;
 import edu.netcracker.project.logistic.dao.impl.OrderDaoImpl;
 import edu.netcracker.project.logistic.dao.impl.PersonCrudDaoImpl;
 import edu.netcracker.project.logistic.model.*;
 import edu.netcracker.project.logistic.service.AddressService;
-import edu.netcracker.project.logistic.service.AdvertisementService;
 import edu.netcracker.project.logistic.service.PersonService;
 import edu.netcracker.project.logistic.service.RoleService;
 
@@ -22,15 +18,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.util.Arrays;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Optional;
 
 
 @Controller

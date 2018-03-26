@@ -2,14 +2,11 @@ package edu.netcracker.project.logistic.service.impl;
 
 import edu.netcracker.project.logistic.dao.*;
 import edu.netcracker.project.logistic.model.*;
-import edu.netcracker.project.logistic.processing.TaskProcessor;
 import edu.netcracker.project.logistic.service.PersonService;
 import edu.netcracker.project.logistic.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service

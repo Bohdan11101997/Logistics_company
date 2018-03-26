@@ -5,7 +5,6 @@ import edu.netcracker.project.logistic.model.SearchForm;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 public interface PersonCrudDao extends CrudDao<Person, Long> {
     Optional<Person> findOne(String username);

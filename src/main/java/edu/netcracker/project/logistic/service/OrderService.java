@@ -4,8 +4,6 @@ import edu.netcracker.project.logistic.model.CourierData;
 import edu.netcracker.project.logistic.model.Order;
 import edu.netcracker.project.logistic.model.OrderDraft;
 
-import java.util.List;
-
 public interface OrderService {
     void draft(OrderDraft orderDraft);
 

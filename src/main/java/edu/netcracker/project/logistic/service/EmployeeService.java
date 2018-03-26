@@ -1,12 +1,7 @@
 package edu.netcracker.project.logistic.service;
 
-import edu.netcracker.project.logistic.exception.NonUniqueRecordException;
-import edu.netcracker.project.logistic.model.Contact;
 import edu.netcracker.project.logistic.model.Person;
-import edu.netcracker.project.logistic.model.Role;
 import edu.netcracker.project.logistic.model.SearchForm;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.MessagingException;
 import java.util.List;

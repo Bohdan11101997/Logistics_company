@@ -1,7 +1,6 @@
 package edu.netcracker.project.logistic.dao.impl;
 
 import edu.netcracker.project.logistic.dao.OrderDao;
-import edu.netcracker.project.logistic.dao.OrderStatusDao;
 import edu.netcracker.project.logistic.model.*;
 import edu.netcracker.project.logistic.service.QueryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +12,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Component;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;

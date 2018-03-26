@@ -1,16 +1,8 @@
 package edu.netcracker.project.logistic.controllers;
 
-import com.google.maps.model.GeocodingResult;
-import edu.netcracker.project.logistic.dao.OfficeDao;
 import edu.netcracker.project.logistic.dao.impl.OfficeDaoImpl;
 import edu.netcracker.project.logistic.model.*;
 import edu.netcracker.project.logistic.service.*;
-
-import edu.netcracker.project.logistic.model.Advertisement;
-import edu.netcracker.project.logistic.model.AdvertisementType;
-import edu.netcracker.project.logistic.model.Office;
-
-import edu.netcracker.project.logistic.service.AdvertisementService;
 
 import edu.netcracker.project.logistic.validation.AdvertisementValidator;
 import edu.netcracker.project.logistic.validation.EmployeeValidator;
@@ -34,8 +26,6 @@ import java.security.SecureRandom;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-
-import static java.util.concurrent.ForkJoinPool.commonPool;
 
 
 @Controller
