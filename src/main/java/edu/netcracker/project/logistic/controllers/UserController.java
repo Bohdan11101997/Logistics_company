@@ -237,7 +237,8 @@ public class UserController {
     {
         Optional<Person> opt = userService.findOne(principal.getName());
         Person user = opt.get();
-        model.addAttribute("orders", orderDao.HistoryCompleteOrderSender(user.getId()));
+
+        model.addAttribute("orders", orderDao.orderBySenderOrReceiver(user.getId()));
         model.addAttribute("destination_typeOrders", orderTypeDao.findAll());
         model.addAttribute("status_OrdersList", orderStatusDao.findAll());
         model.addAttribute("searchFormOrder", new SearchFormOrder());
@@ -250,7 +251,10 @@ public class UserController {
     {
         Optional<Person> opt = userService.findOne(principal.getName());
         Person user = opt.get();
+        System.out.println(orderDao.orderBySenderOrReceiver(user.getId()));
         List<Order> orders = orderDao.search(searchFormOrder, user.getId());
+        System.out.println(user.getId());
+        System.out.println(orders);
         model.addAttribute("orders", orders);
         model.addAttribute("destination_typeOrders", orderTypeDao.findAll());
         model.addAttribute("status_OrdersList", orderStatusDao.findAll());

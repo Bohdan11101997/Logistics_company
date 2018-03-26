@@ -29,41 +29,34 @@
 
                         <h3 align="center">Search Filter</h3>
 
-                        <form class="form-horizontal"  method="post" action="/manager/FindOfficeByDepartmentOrAddressStatistic">
-                            <div class="form-group">
-                                <label for="address" class="control-label">Address</label>
-                                <input type="text" class="form-control" id="address" name="address" />
-                            </div>
-                            <div class="form-group">
-                                <label for="department_number" class="control-label">Department Number</label>
-                                <input type="text" class="form-control" id="department_number"  name="department"  />
-
 
                     <h1>Office Statistics</h1>
 
                     <div class="well">
                         <h3 class="caption">Search Criteria</h3>
 
-                        <form method="post" class="form-horizontal">
-
+                        <form class="form-horizontal" th:object="${officeSearchForm}" method="post">
                             <div class="row">
                                 <div class="col-lg-8 col-lg-offset-2">
 
                                     <div class="form-group">
                                         <label for="address" class="control-label">Address</label>
-                                        <input type="text" class="form-control" id="address"/>
+                                        <input type="text" class="form-control" id="address"  th:field="*{address}"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="department_number" class="control-label">Department Number</label>
+                                        <input type="text" class="form-control" id="department_number"   th:field="*{department}"  />
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="department-number" class="control-label">Department Number</label>
-                                        <input type="text" class="form-control" id="department-number"/>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="sort-offices" class="control-label">Sort by</label>
-                                        <select class="form-control" id="sort-offices">
-                                            <option>Department Number</option>
-                                            <option>Orders Sent</option>
+                                        <label for="Select_side" class="control-label">Sort by</label>
+                                        <select class="form-control" id="Select_side"
+                                                th:field="*{sort_ids}">
+                                            <!--<option>Last Name</option>-->
+                                            <option th:value="${1}">Department number</option>
+                                            <option th:value="${2}">Orders Sent</option>
+                                            <option th:value="${3}">Nothing</option>
+                                            <!--<option>Usefulness</option>-->
                                         </select>
                                     </div>
 
@@ -73,12 +66,10 @@
                                             Search
                                         </button>
                                     </div>
-
                                 </div>
-
                             </div>
-                        </form>
 
+                        </form>
                     </div>
 
                     <div class="table-responsive">
@@ -86,29 +77,31 @@
                             <thead>
                             <tr>
                                 <th>#</th>
+                                <th>ID</th>
+
                                 <th>Address</th>
                                 <th>Department Number</th>
+                                <th>Count orders</th>
                             </tr>
                             </thead>
                             <tbody>
-                            <tr th:each="office : ${offices}">
+                            <tr th:each="office,iter : ${offices}">
+                                <td th:text="${iter.index + 1}">1</td>
                                 <td th:text="${office.officeId}"></td>
                                 <td th:text="${office.address}"></td>
                                 <td th:text="${office.name}"></td>
-                                <td>
-                                    <a class="material-icons button delete" th:href="${'/admin/office/delete/' + office.officeId}">delete</a>
-                                    <a class="material-icons button delete" th:href="${'/admin/office/update/' + office.officeId}">edit</a>
-                                </td>
+                                <td th:text="${office.count}"></td>
                             </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
-            </div>
+                </div>
         </div>
     </div>
-</div>
 
+    </div>
+</div>
 <th:block th:replace="fragments/footer :: footer"/>
 <th:block th:replace="fragments/left_menu :: left-menu-footer" />
 
