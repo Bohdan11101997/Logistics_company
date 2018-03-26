@@ -232,7 +232,7 @@ ALTER TABLE logistic_company.courier_data
 
 
 ALTER TABLE "logistic_company"."courier_data"
-  ADD FOREIGN KEY ("person_id") REFERENCES "logistic_company"."person" (person_id);
+  ADD FOREIGN KEY ("person_id") REFERENCES "logistic_company"."person" (person_id) ON DELETE CASCADE;
 
 ALTER TABLE "logistic_company"."person_role"
   ADD FOREIGN KEY ("role_id") REFERENCES "logistic_company"."role" ("role_id");
