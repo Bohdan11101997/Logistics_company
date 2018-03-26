@@ -268,6 +268,14 @@ public class RouteProcessor {
         }
         logger.info("Assigned order #{} to courier #{}", order.getId(), employeeId);
 
+        Optional<CourierData> opt = courierDataDao.findOne(employee.getUserName());
+        if (!opt.isPresent()) {
+            logger.error("Can't find data for courier #{}", employee.getId());
+            addOrder(orderEntry);
+            addCourier(employeeId);
+            return false;
+        }
+        courierEntry.courierData = opt.get();
         Route route = courierEntry.courierData.getRoute();
         if (route == null) {
             courierEntry.courierData.setRoute(new Route(null, new ArrayList<>()));

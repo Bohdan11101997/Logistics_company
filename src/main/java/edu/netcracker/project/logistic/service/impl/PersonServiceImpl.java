@@ -1,7 +1,12 @@
 package edu.netcracker.project.logistic.service.impl;
 
+import com.google.maps.model.TravelMode;
+import edu.netcracker.project.logistic.dao.CourierDataDao;
 import edu.netcracker.project.logistic.dao.PersonCrudDao;
+import edu.netcracker.project.logistic.model.CourierData;
+import edu.netcracker.project.logistic.model.CourierStatus;
 import edu.netcracker.project.logistic.model.Person;
+import edu.netcracker.project.logistic.model.Route;
 import edu.netcracker.project.logistic.service.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,10 +18,12 @@ import java.util.Optional;
 public class PersonServiceImpl implements PersonService {
     private PasswordEncoder passwordEncoder;
     private PersonCrudDao personCrudDao;
+    private CourierDataDao courierDataDao;
 
     @Autowired
-    public PersonServiceImpl(PersonCrudDao personCrudDao) {
+    public PersonServiceImpl(PersonCrudDao personCrudDao, CourierDataDao courierDataDao) {
         this.personCrudDao = personCrudDao;
+        this.courierDataDao = courierDataDao;
     }
 
     @Autowired
@@ -28,6 +35,17 @@ public class PersonServiceImpl implements PersonService {
     public void savePerson(Person person) {
         person.setPassword(passwordEncoder.encode(person.getPassword()));
         personCrudDao.save(person);
+        boolean hasCourierRole =
+                person.getRoles().stream()
+                        .anyMatch(r -> r.getRoleName().equals("ROLE_COURIER"));
+        if (hasCourierRole) {
+            CourierData data = new CourierData();
+            data.setCourierStatus(CourierStatus.FREE);
+            data.setCourier(person);
+            data.setRoute(new Route());
+            data.setTravelMode(TravelMode.WALKING);
+            courierDataDao.save(data);
+        }
     }
 
     @Override

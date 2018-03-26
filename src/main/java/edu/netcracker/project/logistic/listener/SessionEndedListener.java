@@ -2,8 +2,8 @@ package edu.netcracker.project.logistic.listener;
 
 
 import edu.netcracker.project.logistic.model.Person;
+import edu.netcracker.project.logistic.processing.RouteProcessor;
 import edu.netcracker.project.logistic.processing.TaskProcessor;
-import edu.netcracker.project.logistic.processing.TaskProcessorCourier;
 import edu.netcracker.project.logistic.service.PersonService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,13 +20,13 @@ public class SessionEndedListener implements ApplicationListener<SessionDestroye
     private final static Logger logger = LoggerFactory.getLogger(SessionEndedListener.class);
 
     private TaskProcessor taskProcessor;
-    private TaskProcessorCourier taskProcessorCourier;
+    private RouteProcessor routeProcessor;
     private PersonService personService;
 
-    public SessionEndedListener(TaskProcessor taskProcessor, TaskProcessorCourier taskProcessorCourier,
+    public SessionEndedListener(TaskProcessor taskProcessor, RouteProcessor routeProcessor,
                                 PersonService personService) {
         this.taskProcessor = taskProcessor;
-        this.taskProcessorCourier = taskProcessorCourier;
+        this.routeProcessor = routeProcessor;
         this.personService = personService;
     }
 
@@ -44,7 +44,7 @@ public class SessionEndedListener implements ApplicationListener<SessionDestroye
                 String username = ((User) auth.getPrincipal()).getUsername();
                 Long employeeId = personService.findOne(username).map(Person::getId)
                         .orElse(null);
-                taskProcessorCourier.removeCourier(employeeId);
+                routeProcessor.removeCourier(employeeId);
             }
         }
     }

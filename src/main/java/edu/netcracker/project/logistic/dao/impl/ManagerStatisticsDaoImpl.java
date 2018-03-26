@@ -1,6 +1,7 @@
 package edu.netcracker.project.logistic.dao.impl;
 
 
+
 import edu.netcracker.project.logistic.dao.ManagerStatisticsDao;
 import edu.netcracker.project.logistic.model.*;
 import edu.netcracker.project.logistic.service.QueryService;
@@ -64,9 +65,9 @@ public class ManagerStatisticsDaoImpl implements ManagerStatisticsDao {
     }
 
 
-    private List<Statistic_task> extractOrderForStatistic(ResultSet rs) throws SQLException {
+    private List<StatisticTask> extractOrderForStatistic(ResultSet rs) throws SQLException {
 
-        List<Statistic_task> result = new ArrayList<>();
+        List<StatisticTask> result = new ArrayList<>();
         boolean rowsLeft = rs.next();
         for (int i = 0; rowsLeft; i++) {
             Person person = new Person();
@@ -92,7 +93,7 @@ public class ManagerStatisticsDaoImpl implements ManagerStatisticsDao {
             } while (rowsLeft && rs.getLong("person_id") == person.getId());
             person.setRoles(roles);
 
-            Statistic_task statistic_task = new Statistic_task();
+            StatisticTask statistic_task = new StatisticTask();
             statistic_task.setPerson(person);
             statistic_task.setOrder(order);
             result.add(statistic_task);
@@ -101,8 +102,10 @@ public class ManagerStatisticsDaoImpl implements ManagerStatisticsDao {
 
     }
 
+
     @Override
     public List<Statistic_task> searchStatisticOrders(SearchFormOrderStatistic searchFormOrderStatistic) {
+
         LocalDateTime from = searchFormOrderStatistic.getFrom();
         if (from == null) {
             from = LocalDateTime.MIN;

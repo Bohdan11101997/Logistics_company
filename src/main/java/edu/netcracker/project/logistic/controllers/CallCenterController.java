@@ -45,7 +45,13 @@ public class CallCenterController {
     }
 
     @GetMapping("/orders/history")
-    public String viewTasksHistory() {
+    public String viewTasksHistory(Principal principal, Model model) {
+        Optional<Person> opt = personService.findOne(principal.getName());
+        if (!opt.isPresent()) {
+            return "error/500";
+        }
+        Person emp = opt.get();
+        model.addAttribute("orders", orderDao.findConfirmedByEmployeeId(emp.getId()));
         return "call_center/call_center_orders_history";
     }
 

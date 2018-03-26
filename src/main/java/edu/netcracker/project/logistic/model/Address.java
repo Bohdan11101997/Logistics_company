@@ -1,5 +1,6 @@
 package edu.netcracker.project.logistic.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.maps.DirectionsApi;
 import com.google.maps.errors.ApiException;
 import com.google.maps.model.*;
@@ -8,6 +9,7 @@ import edu.netcracker.project.logistic.mapswrapper.GoogleApiRequest;
 import java.io.IOException;
 import java.util.Objects;
 
+@JsonIgnoreProperties(value = { "location" })
 public class Address {
     private Long id;
     private String name;

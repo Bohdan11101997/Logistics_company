@@ -6,8 +6,9 @@ import java.util.List;
 
 public interface AdvertisementDao extends CrudDao<Advertisement, Long> {
 
-    List<Advertisement> allOffices();
-    void update(Advertisement advertisement);
+    List<Advertisement> allAdvertisements();
     int getCountOfAllAdvertisements();
     List<Advertisement> findAmountOfAdvertisementsForCurrentPage(int itemsOnPage, int currentPage);
+
+    List<Advertisement> allAdvertisementsForToday();
 }
