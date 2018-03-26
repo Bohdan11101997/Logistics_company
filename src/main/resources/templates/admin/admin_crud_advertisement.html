@@ -12,6 +12,12 @@
     <link rel="stylesheet" th:href="@{/css/main_content.css}" type="text/css" href="../static/css/main_content.css" />
     <link rel="stylesheet" th:href="@{/css/well.css}" type="text/css" href="../static/css/well.css" />
 
+    <style>
+        img {
+            max-height:100px;
+            max-width: 200px;
+        }
+    </style>
 
 </head>
 <body class="body-color">
@@ -92,7 +98,14 @@
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="file" class="control-label">Upload image</label>
+                                        <div th:if="${update}">
+                                            <label for="file" class="control-label">Upload another image</label>
+                                            <img style="display: block;margin-top:3px; margin-bottom: 3px;" th:src = "@{'/image/view?id=' + ${advertisement.id}}" alt="photo" />
+                                        </div>
+                                        <div th:unless="${update}">
+                                            <label for="file" class="control-label">Upload image</label>
+                                        </div>
+
                                         <input id="file" type="file" class="form-control" name="file"/>
                                         <div class="has-error help-block">
                                             <div th:if="${notImage}">

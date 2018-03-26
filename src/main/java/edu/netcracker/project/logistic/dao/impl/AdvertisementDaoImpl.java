@@ -77,7 +77,8 @@ public class AdvertisementDaoImpl implements AdvertisementDao, QueryDao {
                 ps.setObject(3, advertisement.getDescription());
                 ps.setObject(4, Date.valueOf(advertisement.getShowFirstDate()));
                 ps.setObject(5, Date.valueOf(advertisement.getShowEndDate()));
-                ps.setObject(6, advertisement.getType().getId());
+                ps.setObject(6, advertisement.getImage());
+                ps.setObject(7, advertisement.getType().getId());
             });
         } else {
             GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();

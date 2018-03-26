@@ -140,7 +140,9 @@ public class AdminController {
     @PostMapping("/crud/advertisement/update/{id}")
     public String updateAdvertisement(@PathVariable long id,
                                       @ModelAttribute(value = "advertisement") AdvertisementForm advertisementForm,
-                                      BindingResult bindingResult) {
+                                      @RequestParam("file")MultipartFile file,
+                                      Model model,
+                                      BindingResult bindingResult) throws IOException {
 
         advertisementValidator.validate(advertisementForm, bindingResult);
         if (bindingResult.hasErrors()) {
@@ -152,11 +154,18 @@ public class AdminController {
             return "redirect:/error/404";
         }
 
+        if (!imageValidator.isImage(file)){
+            model.addAttribute("notImage", "Please, upload only image there!");
+            return "/admin/admin_crud_advertisement";
+        }
+
         Advertisement advertisement = advertisementOptional.get();
         advertisement.setCaption(advertisementForm.getCaption());
         advertisement.setDescription(advertisementForm.getDescription());
         advertisement.setShowFirstDate(advertisementForm.getShowFirstDate());
         advertisement.setShowEndDate(advertisementForm.getShowEndDate());
+        byte[] image = file.getBytes();
+        advertisement.setImage(image);
         advertisement.getType().setName(advertisementForm.getType());
         advertisementService.save(advertisement);
 
