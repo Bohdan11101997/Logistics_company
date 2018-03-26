@@ -14,6 +14,7 @@ import edu.netcracker.project.logistic.service.AdvertisementService;
 
 import edu.netcracker.project.logistic.validation.AdvertisementValidator;
 import edu.netcracker.project.logistic.validation.EmployeeValidator;
+import edu.netcracker.project.logistic.validation.ImageValidator;
 import edu.netcracker.project.logistic.validation.SearchFormValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,9 +24,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.MessagingException;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.security.Principal;
 import java.security.SecureRandom;
 import java.util.HashSet;
@@ -55,6 +58,7 @@ public class AdminController {
     private AdvertisementValidator advertisementValidator;
     private SearchFormValidator searchFormValidator;
     private UserDetailsService userDetailsService;
+    private ImageValidator imageValidator;
 
     @Autowired
     OfficeDaoImpl officeDao;
@@ -65,7 +69,7 @@ public class AdminController {
                            RoleService roleService, AdvertisementService advertisementService,
                            AddressService addressService, EmployeeValidator employeeValidator,
                            AdvertisementValidator advertisementValidator, SearchFormValidator searchFormValidator,
-                           UserDetailsService userDetailsService) {
+                           UserDetailsService userDetailsService, ImageValidator imageValidator) {
         this.officeService = officeService;
         this.employeeService = employeeService;
         this.roleService = roleService;
@@ -75,6 +79,7 @@ public class AdminController {
         this.advertisementValidator = advertisementValidator;
         this.searchFormValidator = searchFormValidator;
         this.userDetailsService = userDetailsService;
+        this.imageValidator = imageValidator;
     }
 
     @GetMapping("/crud/advertisement")
@@ -85,10 +90,18 @@ public class AdminController {
     }
 
     @PostMapping("/crud/advertisement")
-    public String publishAdvertisement(@Valid @ModelAttribute(value = "advertisement") AdvertisementForm advertisementForm, BindingResult bindingResult) {
+    public String publishAdvertisement(@Valid @ModelAttribute(value = "advertisement") AdvertisementForm advertisementForm,
+                                       @RequestParam("file")MultipartFile file,
+                                       Model model,
+                                       BindingResult bindingResult) throws IOException {
 
         advertisementValidator.validate(advertisementForm, bindingResult);
         if (bindingResult.hasErrors()) {
+            return "/admin/admin_crud_advertisement";
+        }
+
+        if (!imageValidator.isImage(file)){
+            model.addAttribute("notImage", "Please, upload image there!");
             return "/admin/admin_crud_advertisement";
         }
 
@@ -97,6 +110,8 @@ public class AdminController {
         advertisement.setDescription(advertisementForm.getDescription());
         advertisement.setShowFirstDate(advertisementForm.getShowFirstDate());
         advertisement.setShowEndDate(advertisementForm.getShowEndDate());
+        byte[] image = file.getBytes();
+        advertisement.setImage(image);
         AdvertisementType advertisementType = new AdvertisementType();
         advertisementType.setName(advertisementForm.getType());
         advertisement.setType(advertisementType);
@@ -130,9 +145,13 @@ public class AdminController {
     @PostMapping("/crud/advertisement/update/{id}")
     public String updateAdvertisement(@PathVariable long id,
                                       @ModelAttribute(value = "advertisement") AdvertisementForm advertisementForm,
-                                      BindingResult bindingResult) {
+                                      @RequestParam("file")MultipartFile file,
+                                      Model model,
+                                      BindingResult bindingResult) throws IOException {
 
         advertisementValidator.validate(advertisementForm, bindingResult);
+
+        model.addAttribute("update", true);
         if (bindingResult.hasErrors()) {
             return "/admin/admin_crud_advertisement";
         }
@@ -142,13 +161,23 @@ public class AdminController {
             return "redirect:/error/404";
         }
 
+        if (!file.getOriginalFilename().equals("") && !imageValidator.isImage(file)){
+            System.out.println(file.getOriginalFilename());
+            model.addAttribute("notImage", "Please, upload image there!");
+            return "/admin/admin_crud_advertisement";
+        }
+
         Advertisement advertisement = advertisementOptional.get();
         advertisement.setCaption(advertisementForm.getCaption());
         advertisement.setDescription(advertisementForm.getDescription());
         advertisement.setShowFirstDate(advertisementForm.getShowFirstDate());
         advertisement.setShowEndDate(advertisementForm.getShowEndDate());
+        if (!file.getOriginalFilename().equals("")){
+            byte[] image = file.getBytes();
+            advertisement.setImage(image);
+        }
         advertisement.getType().setName(advertisementForm.getType());
-        advertisementService.update(advertisement);
+        advertisementService.save(advertisement);
 
         return "redirect:/admin/advertisements?update=success";
     }

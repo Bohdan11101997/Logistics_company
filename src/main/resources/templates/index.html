@@ -160,69 +160,35 @@
 
 <div id="myCarousel" class="carousel slide" data-ride="carousel">
     <!-- Indicators -->
-    <ol class="carousel-indicators">
-        <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-        <li data-target="#myCarousel" data-slide-to="1"></li>
-        <li data-target="#myCarousel" data-slide-to="2"></li>
-        <li data-target="#myCarousel" data-slide-to="3"></li>
-        <li data-target="#myCarousel" data-slide-to="4"></li>
-
-    </ol>
 
     <!-- Wrapper for slides -->
+
     <div class="carousel-inner" role="listbox">
         <div class="item active">
-            <img src="/images/algorithms-chalkboard.jpg" alt="Image" />
+            <img src = "/images/advertising_high.jpg" alt="Image" />
             <div class="carousel-caption">
                 <div class="show-mobile">
-                    <h6>Nulla Facilisi Foundation</h6>
+                    <h6>Swipe right to see all new advertisements</h6>
                 </div>
                 <div class="hide-mobile">
-                    <h3>Nulla Facilisi Foundation</h3>
-                    <p>dolor. Nulla semper tellus id nunc interdum feugiat. Sed nec metus facilisis lorem tristique aliquet. Phasellus fermentum convallis ligula. Donec luctus aliquet odio. Etiam ligula tortor, dictum eu, placerat eget, venenatis a, magna. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Etiam laoreet, libero et tristique pellentesque, tellus sem mollis dui,</p>
+                    <h3>Swipe right to see all new advertisements</h3>
                 </div>
             </div>
         </div>
 
-        <div class="item">
-            <img src="images/delivery_route.jpg" alt="Image" />
+        <div class="item" th:each="advertisement: ${advertisements}">
+            <img th:src = "@{'/image/view?id=' + ${advertisement.id}}" alt="Image" />
             <div class="carousel-caption">
                 <div class="show-mobile">
-                    <h6>Ultrices Vivamus Rhoncus LLC</h6>
+                    <h6 th:text="${advertisement.caption}"></h6>
                 </div>
                 <div class="hide-mobile">
-                    <h3>Ultrices Vivamus Rhoncus LLC</h3>
-                    <p>lorem, sit amet ultricies sem magna nec quam. Curabitur vel lectus. Cum</p>
+                    <h3 th:text="${advertisement.caption}"></h3>
+                    <p th:text="${advertisement.description}"></p>
                 </div>
             </div>
         </div>
 
-
-        <div class="item">
-            <img src="images/box_to_arms.jpg" alt="Image" />
-            <div  class="carousel-caption">
-                <div class="show-mobile">
-                    <h6>Nulla Facilisi Foundation</h6>
-                </div>
-                <div class="hide-mobile">
-                    <h3>Nulla Facilisi Foundation</h3>
-                    <p>dolor. Nulla semper tellus id nunc interdum feugiat. Sed nec metus facilisis lorem tristique aliquet. Phasellus fermentum convallis ligula. Donec luctus aliquet odio. Etiam ligula tortor, dictum eu, placerat eget, venenatis a, magna. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Etiam laoreet, libero et tristique pellentesque, tellus sem mollis dui,</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="item">
-            <img src="images/delivery_route.jpg" alt="Image" />
-            <div  class="carousel-caption">
-                <div class="show-mobile">
-                    <h6>Nulla Facilisi Foundation</h6>
-                </div>
-                <div class="hide-mobile">
-                    <h3>Nulla Facilisi Foundation</h3>
-                    <p>dolor. Nulla semper tellus id nunc interdum feugiat. Sed nec metus facilisis lorem tristique aliquet. Phasellus fermentum convallis ligula. Donec luctus aliquet odio. Etiam ligula tortor, dictum eu, placerat eget, venenatis a, magna. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Etiam laoreet, libero et tristique pellentesque, tellus sem mollis dui,</p>
-                </div>
-            </div>
-        </div>
     </div>
 
 
