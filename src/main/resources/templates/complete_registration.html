@@ -1,34 +1,48 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<meta charset="UTF-8"/>
-<title>Confirm email address</title>
-<style>
-    h1 {
-        font-size: 48px;
-        text-align: center;
-    }
+<head>
+    <meta charset="UTF-8"/>
+    <title>Confirm email address</title>
 
-    .redirect-msg {
-        text-align: center;
-    }
+    <th:block th:replace="fragments/header :: header-bootstrap-config"/>
 
-</style>
-<body>
-    <h1 style="font-size: 48px; text-align: center">Activate your account</h1>
-    <div class="redirect-msg">
-        Message with activation link was sent to provided email.
-        <br/>
-        You will be redirected to <a th:href="@{/index.html}" href="#" id="index">main</a> page after 10 seconds.
-    </div>
+    <link rel="stylesheet" th:href="@{/css/index.css}" href="../static/css/index.css"/>
+    <link rel="stylesheet" th:href="@{/css/main_content.css}" type="text/css" href="../static/css/main_content.css"/>
+    <link rel="stylesheet" th:href="@{/css/well.css}" type="text/css" href="../static/css/well.css"/>
 
+    <th:block th:replace="fragments/header :: header-bootstrap-config-IE"/>
 
-    <script>
-        function redirectToIndex() {
-            var indexHref = document.getElementById("index").getAttribute("href");
-            location.assign(indexHref);
+    <style>
+        .jumbotron {
+            border-bottom: 1px solid red;
         }
 
-        setTimeout(redirectToIndex, 10000);
+        a {
+            color: var(--link-color);
+        }
+
+        a:hover {
+            color: var(--link-hover-color);
+        }
+    </style>
+</head>
+<body class="body-color">
+    <div class="jumbotron">
+        <div class="text-center">
+            <h1>Activate your account</h1>
+            <br/>
+            <p>Message with activation link was sent to provided email.</p>
+            <p>You will be redirected to <a th:href="@{/index.html}" href="#" id="index">main</a> page after 10 seconds.
+            </p>
+        </div>
+    </div>
+    <script>
+        // function redirectToIndex() {
+        //     var indexHref = document.getElementById("index").getAttribute("href");
+        //     location.assign(indexHref);
+        // }
+        //
+        // setTimeout(redirectToIndex, 10000);
     </script>
 </body>
 </html>

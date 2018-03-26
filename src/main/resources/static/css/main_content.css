@@ -4,6 +4,8 @@
     --third-color: #363D69;
     --text-color: #fdfeff;
     --error-color: #F1F227;
+    --link-color: #A1CC55;
+    --link-hover-color: pink;
 }
 
 h1 {
