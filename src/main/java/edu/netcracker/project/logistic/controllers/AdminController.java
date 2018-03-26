@@ -26,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.MessagingException;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.security.Principal;
 import java.security.SecureRandom;
 import java.util.HashSet;
@@ -87,7 +88,7 @@ public class AdminController {
     public String publishAdvertisement(@Valid @ModelAttribute(value = "advertisement") AdvertisementForm advertisementForm,
                                        @RequestParam("file")MultipartFile file,
                                        Model model,
-                                       BindingResult bindingResult) {
+                                       BindingResult bindingResult) throws IOException {
 
         advertisementValidator.validate(advertisementForm, bindingResult);
         if (bindingResult.hasErrors()) {
@@ -104,6 +105,8 @@ public class AdminController {
         advertisement.setDescription(advertisementForm.getDescription());
         advertisement.setShowFirstDate(advertisementForm.getShowFirstDate());
         advertisement.setShowEndDate(advertisementForm.getShowEndDate());
+        byte[] image = file.getBytes();
+        advertisement.setImage(image);
         AdvertisementType advertisementType = new AdvertisementType();
         advertisementType.setName(advertisementForm.getType());
         advertisement.setType(advertisementType);

@@ -94,6 +94,7 @@ CREATE TABLE "logistic_company"."advertisement"
   "description"           VARCHAR(1000) COLLATE "default"                     NOT NULL,
   "show_first_date"       DATE                                                NOT NULL DEFAULT NOW(),
   "show_end_date"         DATE                                                NOT NULL,
+  "image"                 BYTEA                                               ,
   "type_advertisement_id" INT4                                                NOT NULL
 );
 
