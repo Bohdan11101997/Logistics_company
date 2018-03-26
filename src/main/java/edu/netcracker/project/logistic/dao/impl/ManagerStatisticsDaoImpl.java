@@ -1,7 +1,6 @@
 package edu.netcracker.project.logistic.dao.impl;
 
 
-
 import edu.netcracker.project.logistic.dao.ManagerStatisticsDao;
 import edu.netcracker.project.logistic.model.*;
 import edu.netcracker.project.logistic.service.QueryService;
@@ -11,7 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
+
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -104,7 +103,7 @@ public class ManagerStatisticsDaoImpl implements ManagerStatisticsDao {
 
 
     @Override
-    public List<Statistic_task> searchStatisticOrders(SearchFormOrderStatistic searchFormOrderStatistic) {
+    public List<StatisticTask> searchStatisticOrders(SearchFormOrderStatistic searchFormOrderStatistic) {
 
         LocalDateTime from = searchFormOrderStatistic.getFrom();
         if (from == null) {

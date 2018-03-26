@@ -3,7 +3,7 @@ package edu.netcracker.project.logistic.dao;
 import edu.netcracker.project.logistic.model.Person;
 import edu.netcracker.project.logistic.model.SearchFormOrderStatistic;
 import edu.netcracker.project.logistic.model.SearchFormStatisticEmployee;
-import edu.netcracker.project.logistic.model.Statistic_task;
+import edu.netcracker.project.logistic.model.StatisticTask;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -13,7 +13,7 @@ import java.util.List;
 @Repository
 public interface ManagerStatisticsDao {
 
-    List<Statistic_task> searchStatisticOrders(SearchFormOrderStatistic searchFormOrderStatistic);
+    List<StatisticTask> searchStatisticOrders(SearchFormOrderStatistic searchFormOrderStatistic);
 
     List<Person> searchStatisticForManager(SearchFormStatisticEmployee searchFormStatisticEmployee);
 
