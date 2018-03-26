@@ -155,7 +155,7 @@ public class AdminController {
         advertisement.setShowFirstDate(advertisementForm.getShowFirstDate());
         advertisement.setShowEndDate(advertisementForm.getShowEndDate());
         advertisement.getType().setName(advertisementForm.getType());
-        advertisementService.update(advertisement);
+        advertisementService.save(advertisement);
 
         return "redirect:/admin/advertisements?update=success";
     }

@@ -9,8 +9,6 @@ public interface AdvertisementService {
 
     void save(Advertisement advertisement);
 
-    void update(Advertisement advertisement);
-
     void delete(Long id);
 
     Optional<Advertisement> findOne(Long id);

@@ -61,45 +61,38 @@ public class AdvertisementDaoImpl implements AdvertisementDao, QueryDao {
     @Override
     public Advertisement save(Advertisement advertisement) {
 
-        GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
+        boolean hasPrimaryKey = advertisement.getId() != null;
+
         AdvertisementType advertisementType = advertisement.getType();
         String advertisementTypeName = advertisementType.getName();
         Optional<AdvertisementType> type = advertisementTypeDao.getByName(advertisementTypeName);
-        if (type.isPresent()) {
-            advertisement.setType(type.get());
-        }
-        jdbcTemplate.update(psc -> {
-            String query = getInsertQuery();
-            PreparedStatement ps = psc.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-            ps.setObject(1, advertisement.getCaption());
-            ps.setObject(2, advertisement.getDescription());
-            ps.setObject(3, Date.valueOf(advertisement.getShowFirstDate()));
-            ps.setObject(4, Date.valueOf(advertisement.getShowEndDate()));
-            ps.setObject(5, advertisement.getType().getId());
-            return ps;
-        }, keyHolder);
-        Number key = (Number) keyHolder.getKeys().get("advertisement_id");
-        advertisement.setId(key.longValue());
+        type.ifPresent(advertisement::setType);
 
+        if (hasPrimaryKey){
+            jdbcTemplate.update(getUpsertQuery(), ps -> {
+                ps.setObject(1, advertisement.getId());
+                ps.setObject(2, advertisement.getCaption());
+                ps.setObject(3, advertisement.getDescription());
+                ps.setObject(4, Date.valueOf(advertisement.getShowFirstDate()));
+                ps.setObject(5, Date.valueOf(advertisement.getShowEndDate()));
+                ps.setObject(6, advertisement.getType().getId());
+            });
+        } else {
+            GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
+            jdbcTemplate.update(psc -> {
+                String query = getInsertQuery();
+                PreparedStatement ps = psc.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+                ps.setObject(1, advertisement.getCaption());
+                ps.setObject(2, advertisement.getDescription());
+                ps.setObject(3, Date.valueOf(advertisement.getShowFirstDate()));
+                ps.setObject(4, Date.valueOf(advertisement.getShowEndDate()));
+                ps.setObject(5, advertisement.getType().getId());
+                return ps;
+            }, keyHolder);
+            Number key = (Number) keyHolder.getKeys().get("advertisement_id");
+            advertisement.setId(key.longValue());
+        }
         return advertisement;
-    }
-
-    @Override
-    public void update(Advertisement advertisement){
-
-        AdvertisementType advertisementType = advertisement.getType();
-        String advertisementTypeName = advertisementType.getName();
-        Optional<AdvertisementType> type = advertisementTypeDao.getByName(advertisementTypeName);
-        if (type.isPresent()) {
-            advertisement.setType(type.get());
-        }
-        jdbcTemplate.update(getUpdateQuery(),
-                advertisement.getCaption(),
-                advertisement.getDescription(),
-                Date.valueOf(advertisement.getShowFirstDate()),
-                Date.valueOf(advertisement.getShowEndDate()),
-                advertisement.getType().getId(),
-                advertisement.getId());
     }
 
     @Override
@@ -144,7 +137,7 @@ public class AdvertisementDaoImpl implements AdvertisementDao, QueryDao {
     }
 
     @Override
-    public List<Advertisement> allOffices() {
+    public List<Advertisement> allAdvertisements() {
         return jdbcTemplate.query(getAllAdvertisements(), getMapper());
     }
 
@@ -155,11 +148,7 @@ public class AdvertisementDaoImpl implements AdvertisementDao, QueryDao {
 
     @Override
     public String getUpsertQuery() {
-        return null;
-    }
-
-    String getUpdateQuery() {
-        return queryService.getQuery("update.advertisement");
+        return queryService.getQuery("upsert.advertisement");
     }
 
     @Override

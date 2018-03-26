@@ -25,11 +25,6 @@ public class AdvertisementServiceImpl implements AdvertisementService {
     }
 
     @Override
-    public void update(Advertisement advertisement) {
-        advertisementDao.update(advertisement);
-    }
-
-    @Override
     public void delete(Long id) {
         advertisementDao.delete(id);
     }
@@ -41,7 +36,7 @@ public class AdvertisementServiceImpl implements AdvertisementService {
 
     @Override
     public List<Advertisement> findAll() {
-        return advertisementDao.allOffices();
+        return advertisementDao.allAdvertisements();
     }
 
     @Override
