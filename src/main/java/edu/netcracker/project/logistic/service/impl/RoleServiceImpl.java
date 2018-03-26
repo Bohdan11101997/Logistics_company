@@ -11,6 +11,7 @@ import java.util.Optional;
 
 @Service
 public class RoleServiceImpl implements RoleService {
+
     private RoleCrudDao roleCrudDao;
 
     @Autowired
@@ -31,6 +32,16 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public Optional<Role> findOne(Long aLong) {
         return roleCrudDao.findOne(aLong);
+    }
+
+    @Override
+    public List<Role> getByPersonId(Long personId) {
+        return roleCrudDao.getByPersonId(personId);
+    }
+
+    @Override
+    public Optional<Role> getByName(String name) {
+        return roleCrudDao.getByName(name);
     }
 
     @Override

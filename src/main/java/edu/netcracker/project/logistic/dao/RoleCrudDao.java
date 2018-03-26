@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface RoleCrudDao extends CrudDao<Role, Long> {
+
     List<Role> getAllRole();
 
     List<Role> getByPersonId(Long personId);
@@ -13,6 +14,8 @@ public interface RoleCrudDao extends CrudDao<Role, Long> {
     Optional<Role> getByName(String name);
 
     List<Role> findEmployeeRoles();
+
+    List<Role> findEmployeeRolesForManager();
 
     List<Role> findClientRoles();
 }

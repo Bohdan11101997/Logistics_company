@@ -2,15 +2,13 @@ package edu.netcracker.project.logistic.controllers;
 
 import com.itextpdf.text.List;
 import com.itextpdf.text.ListItem;
-import edu.netcracker.project.logistic.dao.impl.ManagerStatisticsDaoImpl;
-import edu.netcracker.project.logistic.dao.impl.PersonCrudDaoImpl;
+import edu.netcracker.project.logistic.dao.ManagerStatisticsDao;
 import edu.netcracker.project.logistic.model.Office;
 import edu.netcracker.project.logistic.model.Person;
 import edu.netcracker.project.logistic.model.SearchFormOrderStatistic;
 import edu.netcracker.project.logistic.service.OfficeService;
 import edu.netcracker.project.logistic.service.UserService;
 import edu.netcracker.project.logistic.service.impl.GeneratePdfReport;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -18,32 +16,28 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Optional;
 
 
 @Controller
-public class MyController {
+public class PdfController {
+    private ManagerStatisticsDao managerStatisticsDao;
+    private OfficeService officeService;
+    private UserService userService;
 
-    @Autowired
-    ManagerStatisticsDaoImpl managerStatisticsDao;
+    public PdfController(ManagerStatisticsDao managerStatisticsDao, OfficeService officeService, UserService userService) {
+        this.managerStatisticsDao = managerStatisticsDao;
+        this.officeService = officeService;
+        this.userService = userService;
+    }
 
-    @Autowired
-    PersonCrudDaoImpl personService;
-
-    @Autowired
-    OfficeService officeService;
-
-    @Autowired
-    UserService userService;
-
-
-    @RequestMapping(value = "/pdfreport", produces = MediaType.APPLICATION_PDF_VALUE)
-    public ResponseEntity<InputStreamResource> citiesReport(Principal principal, @ModelAttribute("searchFormOrderStatistic") SearchFormOrderStatistic searchFormOrderStatistic) throws IOException {
+    @RequestMapping(value = "/pdfreport", method = RequestMethod.GET, produces = MediaType.APPLICATION_PDF_VALUE)
+    public ResponseEntity<InputStreamResource> managerReport(Principal principal, @ModelAttribute("searchFormOrderStatistic") SearchFormOrderStatistic searchFormOrderStatistic) {
 
         String username = principal.getName();
         Optional<Person> optionalPerson = userService.findOne(username);
@@ -51,7 +45,7 @@ public class MyController {
         Person person = optionalPerson.get();
 
 
-        ArrayList<Person> employee = (ArrayList<Person>) managerStatisticsDao.EmployeesByCourierOrCall_Center();
+        ArrayList<Person> employee = (ArrayList<Person>) managerStatisticsDao.employeesByCourierOrCall_Center();
         ArrayList<Office> offices = (ArrayList<Office>) officeService.allOffices();
 
         List listEmployees = new com.itextpdf.text.List(List.ORDERED);

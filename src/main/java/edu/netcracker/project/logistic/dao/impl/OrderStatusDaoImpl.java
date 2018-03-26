@@ -70,8 +70,9 @@ public class OrderStatusDaoImpl implements OrderStatusDao, RowMapper<OrderStatus
         }
     }
 
-    @Override
+
     public List<OrderStatus> findAll() {
+
         try {
             return jdbcTemplate.query(getAllStatusQuery(), this);
         } catch (EmptyResultDataAccessException ex) {

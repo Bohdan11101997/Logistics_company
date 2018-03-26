@@ -19,7 +19,7 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public void saveContact(Contact contact) {
+    public void save(Contact contact) {
         contactDao.save(contact);
     }
 

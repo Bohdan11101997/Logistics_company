@@ -145,7 +145,7 @@ public class RoleCrudDaoImpl implements RoleCrudDao, QueryDao, RowMapper<Role> {
         }
     }
 
-
+       @Override
     public List<Role> findEmployeeRolesForManager() {
         try {
             return jdbcTemplate.query(

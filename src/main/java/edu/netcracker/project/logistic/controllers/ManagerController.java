@@ -1,9 +1,9 @@
 package edu.netcracker.project.logistic.controllers;
 
-import edu.netcracker.project.logistic.dao.OrderTypeDao;
-import edu.netcracker.project.logistic.dao.impl.*;
+
+import edu.netcracker.project.logistic.dao.*;
+
 import edu.netcracker.project.logistic.model.*;
-import edu.netcracker.project.logistic.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,45 +16,26 @@ import java.util.List;
 public class ManagerController {
 
 
-    private PersonCrudDaoImpl personCrudDao;
 
-
-    private RoleService roleService;
-
-
-    private EmployeeService employeeService;
-
-
-
-    private ManagerStatisticsDaoImpl managerStatisticsDao;
-
-    private RoleCrudDaoImpl roleCrudDao;
-
-
-    private OrderTypeDao orderTypeDao;
-
-
-    private  OrderStatusDaoImpl orderStatusDao;
-
-
-    OfficeDaoImpl officeDao;
+    private ManagerStatisticsDao managerStatisticsDao;
+    private RoleCrudDao roleCrudDao;
+    private OrderStatusDao orderStatusDao;
+    private  OrderTypeDao orderTypeDao;
+    private OfficeDao officeDao;
 
 
     @Autowired
-    public ManagerController(PersonCrudDaoImpl personCrudDao, RoleService roleService, EmployeeService employeeService, ManagerStatisticsDaoImpl managerStatisticsDao, RoleCrudDaoImpl roleCrudDao, OrderTypeDao orderTypeDao, OrderStatusDaoImpl orderStatusDao, OfficeDaoImpl officeDao) {
-        this.personCrudDao = personCrudDao;
-        this.roleService = roleService;
-        this.employeeService = employeeService;
+    public ManagerController(ManagerStatisticsDao managerStatisticsDao, RoleCrudDao roleCrudDao, OrderStatusDao orderStatusDao, OrderTypeDao orderTypeDao, OfficeDao officeDao) {
         this.managerStatisticsDao = managerStatisticsDao;
         this.roleCrudDao = roleCrudDao;
-        this.orderTypeDao = orderTypeDao;
         this.orderStatusDao = orderStatusDao;
+        this.orderTypeDao = orderTypeDao;
         this.officeDao = officeDao;
     }
 
     @GetMapping("/statistics/employees")
     public String viewEmployeesStatistics(Model model) {
-        List<Person> employees = managerStatisticsDao.EmployeesByCourierOrCall_Center();
+        List<Person> employees = managerStatisticsDao.employeesByCourierOrCall_Center();
         model.addAttribute("employees", employees);
         model.addAttribute("availableRoles", roleCrudDao.findEmployeeRolesForManager());
         model.addAttribute("searchFormStatisticEmployee", new SearchFormStatisticEmployee());
