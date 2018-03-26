@@ -6,7 +6,7 @@ import java.util.Optional;
 
 public interface ContactService {
 
-    void saveContact(Contact contact);
+    void save(Contact contact);
 
     void delete(Long aLong);
 

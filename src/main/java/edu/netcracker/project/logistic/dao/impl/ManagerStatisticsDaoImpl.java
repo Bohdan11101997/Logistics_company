@@ -1,7 +1,7 @@
 package edu.netcracker.project.logistic.dao.impl;
 
-import edu.netcracker.project.logistic.dao.PersonRoleDao;
-import edu.netcracker.project.logistic.dao.WorkDayDao;
+
+import edu.netcracker.project.logistic.dao.ManagerStatisticsDao;
 import edu.netcracker.project.logistic.model.*;
 import edu.netcracker.project.logistic.service.QueryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,17 +10,17 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 
 
 @Repository
-public class ManagerStatisticsDaoImpl {
+public class ManagerStatisticsDaoImpl implements ManagerStatisticsDao {
 
     private JdbcTemplate jdbcTemplate;
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
@@ -101,6 +101,7 @@ public class ManagerStatisticsDaoImpl {
 
     }
 
+    @Override
     public List<Statistic_task> searchStatisticOrders(SearchFormOrderStatistic searchFormOrderStatistic) {
         LocalDateTime from = searchFormOrderStatistic.getFrom();
         if (from == null) {
@@ -136,6 +137,7 @@ public class ManagerStatisticsDaoImpl {
         return "%" + input.replace("%", "\\%") + "%";
     }
 
+    @Override
     public List<Person> searchStatisticForManager(SearchFormStatisticEmployee searchFormStatisticEmployee) {
 
 
@@ -185,6 +187,7 @@ public class ManagerStatisticsDaoImpl {
             }
     }
 
+    @Override
     public Integer countOrdersBetweenDate(LocalDateTime from, LocalDateTime to) {
         Map<String, Object> paramMap = new HashMap<>(3);
         paramMap.put("start_date", from);
@@ -193,14 +196,15 @@ public class ManagerStatisticsDaoImpl {
                 paramMap, Integer.class);
     }
 
-
-    public List<Person> EmployeesByCourierOrCall_Center() {
+    @Override
+    public List<Person> employeesByCourierOrCall_Center() {
 
         return jdbcTemplate.query(
                 getQueryEmployeesByCourierOrCall_Center(),
                 this::extractMany);
     }
 
+    @Override
     public Integer countOrdersHandToHand(LocalDateTime from, LocalDateTime to) {
 
         Map<String, Object> paramMap = new HashMap<>(3);
@@ -212,7 +216,7 @@ public class ManagerStatisticsDaoImpl {
 
     }
 
-
+    @Override
     public Integer countOrdersFromOffice(LocalDateTime from, LocalDateTime to) {
         Map<String, Object> paramMap = new HashMap<>(3);
         paramMap.put("start_date", from);
@@ -222,6 +226,7 @@ public class ManagerStatisticsDaoImpl {
 
     }
 
+    @Override
     public Integer countEmployees(LocalDateTime from, LocalDateTime to) {
         Map<String, Object> paramMap = new HashMap<>(3);
         paramMap.put("start_date", from);
@@ -231,6 +236,7 @@ public class ManagerStatisticsDaoImpl {
 
     }
 
+    @Override
     public Integer countEmployeesAdmins(LocalDateTime from, LocalDateTime to) {
         Map<String, Object> paramMap = new HashMap<>(3);
         paramMap.put("start_date", from);
@@ -239,7 +245,7 @@ public class ManagerStatisticsDaoImpl {
                 paramMap, Integer.class);
 
     }
-
+    @Override
     public Integer countEmployeesCouriers(LocalDateTime from, LocalDateTime to) {
         Map<String, Object> paramMap = new HashMap<>(3);
         paramMap.put("start_date", from);
@@ -248,6 +254,7 @@ public class ManagerStatisticsDaoImpl {
                 paramMap, Integer.class);
     }
 
+    @Override
     public Integer countEmployeesCouriersDriving(LocalDateTime from, LocalDateTime to) {
 
         Map<String, Object> paramMap = new HashMap<>(3);
@@ -257,7 +264,7 @@ public class ManagerStatisticsDaoImpl {
                 paramMap, Integer.class);
 
     }
-
+    @Override
     public Integer countEmployeesCouriersWalking(LocalDateTime from, LocalDateTime to) {
         Map<String, Object> paramMap = new HashMap<>(3);
         paramMap.put("start_date", from);
@@ -267,7 +274,7 @@ public class ManagerStatisticsDaoImpl {
 
 
     }
-
+    @Override
     public Integer countEmployeesManagers(LocalDateTime from, LocalDateTime to) {
         Map<String, Object> paramMap = new HashMap<>(3);
         paramMap.put("start_date", from);
@@ -276,7 +283,7 @@ public class ManagerStatisticsDaoImpl {
                 paramMap, Integer.class);
 
     }
-
+    @Override
     public Integer countEmployeesAgentCallCenter(LocalDateTime from, LocalDateTime to) {
         Map<String, Object> paramMap = new HashMap<>(3);
         paramMap.put("start_date", from);
@@ -286,14 +293,14 @@ public class ManagerStatisticsDaoImpl {
 
 
     }
-
+    @Override
     public Integer countOffices() {
 
         return jdbcTemplate.queryForObject(
                 getCountOfficeQuery(), new Object[]{}, Integer.class);
 
     }
-
+    @Override
     public Integer countUsers(LocalDateTime from, LocalDateTime to) {
 
         Map<String, Object> paramMap = new HashMap<>(3);
@@ -304,7 +311,7 @@ public class ManagerStatisticsDaoImpl {
 
 
     }
-
+    @Override
     public Integer countUsersNormal(LocalDateTime from, LocalDateTime to) {
         Map<String, Object> paramMap = new HashMap<>(3);
         paramMap.put("start_date", from);
@@ -313,7 +320,7 @@ public class ManagerStatisticsDaoImpl {
                 paramMap, Integer.class);
 
     }
-
+    @Override
     public Integer countUsersVip(LocalDateTime from, LocalDateTime to) {
         Map<String, Object> paramMap = new HashMap<>(3);
         paramMap.put("start_date", from);
@@ -323,7 +330,7 @@ public class ManagerStatisticsDaoImpl {
 
     }
 
-
+    @Override
     public Integer countUnregisteredContacts(LocalDateTime from, LocalDateTime to) {
         Map<String, Object> paramMap = new HashMap<>(3);
         paramMap.put("start_date", from);
@@ -331,7 +338,7 @@ public class ManagerStatisticsDaoImpl {
         return namedParameterJdbcTemplate.queryForObject(getCountUnregisteredContactsQuery(),
                 paramMap, Integer.class);
     }
-
+    @Override
     public Integer countOrders() {
 
         return jdbcTemplate.queryForObject(
@@ -351,6 +358,7 @@ public class ManagerStatisticsDaoImpl {
 
         return queryService.getQuery("count.users");
     }
+
 
     private String getCountNormalUsersQuery() {
 
@@ -382,12 +390,12 @@ public class ManagerStatisticsDaoImpl {
         return queryService.getQuery("count.employees.couriers");
     }
 
-    public String getCountEmployeesQuery() {
+    private String getCountEmployeesQuery() {
 
         return queryService.getQuery("count.all.employee");
     }
 
-    public String getCountEmployeesAdminsQuery() {
+    private String getCountEmployeesAdminsQuery() {
 
         return queryService.getQuery("count.employees.admins");
     }

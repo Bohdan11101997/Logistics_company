@@ -123,12 +123,12 @@ INSERT INTO logistic_company."order"(order_id, estimated_delivery_time,  courier
 VALUES (3, '14:05:06', 7, 5, 1,3,  6,1, 12,12,12,12);
 INSERT INTO logistic_company."order"(order_id, estimated_delivery_time,  courier_id, receiver_contact_id, receiver_address_id, office_id, order_status_id, order_type_id, weight, width, height, length)
 VALUES (2, '04:05:06', 7, 2, 1,2,  6,2, 112,132,1322,12);
-INSERT INTO logistic_company."order"(order_id, estimated_delivery_time,  courier_id, receiver_contact_id, receiver_address_id, sender_contact_id, sender_address_id,  order_status_id, order_type_id, weight, width, height, length)
-VALUES (4, '04:05:06', 7, 7, 1,6,2,  6,1, 12,12,12,12);
+INSERT INTO logistic_company."order"(order_id, estimated_delivery_time,  courier_id, receiver_contact_id, receiver_address_id, sender_contact_id, sender_address_id, order_status_id, order_type_id, weight, width, height, length)
+VALUES (4, '14:05:06', 7, 8, 1,9,2,  6,1, 12,12,12,12);
 INSERT INTO logistic_company."order"(order_id, estimated_delivery_time,  courier_id, receiver_contact_id, receiver_address_id, sender_contact_id, sender_address_id, order_status_id, order_type_id, weight, width, height, length)
 VALUES (5, '14:05:06', 7, 8, 1,9,2,  6,1, 12,12,12,12);
-INSERT INTO logistic_company."order"(order_id, estimated_delivery_time,  courier_id, receiver_contact_id, receiver_address_id,  office_id, order_status_id, order_type_id, weight, width, height, length)
-VALUES (6, '14:05:06', 7, 8, 1, 1, 6,1, 12,12,12,12);
+INSERT INTO logistic_company."order"(order_id, estimated_delivery_time,  courier_id, receiver_contact_id, receiver_address_id, sender_contact_id, sender_address_id, order_status_id, order_type_id, weight, width, height, length)
+VALUES (6, '14:05:06', 7, 8, 1,9,2,  6,1, 12,12,12,12);
 INSERT INTO logistic_company."order"(order_id, estimated_delivery_time,  courier_id, receiver_contact_id, receiver_address_id, sender_contact_id, sender_address_id, order_status_id, order_type_id, weight, width, height, length)
 VALUES (7, '14:05:06', 7, 5, 1,2,8,  6,1, 12,12,12,12);
 INSERT INTO logistic_company."order"(order_id, estimated_delivery_time,  courier_id, receiver_contact_id, receiver_address_id, sender_contact_id, sender_address_id, order_status_id, order_type_id, weight, width, height, length)
@@ -144,17 +144,17 @@ VALUES (12, '14:05:06', 7, 3, 1,5,5,  6,1, 12,12,12,12);
 INSERT INTO logistic_company."order"(order_id, estimated_delivery_time,  courier_id, receiver_contact_id, receiver_address_id, sender_contact_id, sender_address_id, order_status_id, order_type_id, weight, width, height, length)
 VALUES (13, '14:05:06', 7, 5, 1,5,6,  6,1, 12,12,12,12);
 
-INSERT INTO logistic_company.task(employee_id, order_id, is_completed) VALUES (6,1,TRUE );
+INSERT INTO logistic_company.task(employee_id, order_id, is_completed) VALUES (5,1,TRUE );
+INSERT INTO logistic_company.task(employee_id, order_id, is_completed) VALUES (7,2,TRUE );
 INSERT INTO logistic_company.task(employee_id, order_id, is_completed) VALUES (8,3,TRUE );
-INSERT INTO logistic_company.task(employee_id, order_id, is_completed) VALUES (8,3,TRUE );
-INSERT INTO logistic_company.task(employee_id, order_id, is_completed) VALUES (8,3,TRUE );
-INSERT INTO logistic_company.task(employee_id, order_id, is_completed) VALUES (11,3,TRUE );
-INSERT INTO logistic_company.task(employee_id, order_id, is_completed) VALUES (11,1,TRUE );
-INSERT INTO logistic_company.task(employee_id, order_id, is_completed) VALUES (6,3,TRUE );
-INSERT INTO logistic_company.task(employee_id, order_id, is_completed) VALUES (11,2,TRUE );
-INSERT INTO logistic_company.task(employee_id, order_id, is_completed) VALUES (6,5,TRUE );
-INSERT INTO logistic_company.task(employee_id, order_id, is_completed) VALUES (6,5,TRUE );
-INSERT INTO logistic_company.task(employee_id, order_id, is_completed) VALUES (8,3,TRUE );
+INSERT INTO logistic_company.task(employee_id, order_id, is_completed) VALUES (7,4,TRUE );
+INSERT INTO logistic_company.task(employee_id, order_id, is_completed) VALUES (11,5,TRUE );
+INSERT INTO logistic_company.task(employee_id, order_id, is_completed) VALUES (7,6,TRUE );
+INSERT INTO logistic_company.task(employee_id, order_id, is_completed) VALUES (5,7,TRUE );
+INSERT INTO logistic_company.task(employee_id, order_id, is_completed) VALUES (11,8,TRUE );
+INSERT INTO logistic_company.task(employee_id, order_id, is_completed) VALUES (7,9,TRUE );
+INSERT INTO logistic_company.task(employee_id, order_id, is_completed) VALUES (11,10,TRUE );
+INSERT INTO logistic_company.task(employee_id, order_id, is_completed) VALUES (8,11,TRUE );
 
 INSERT INTO advertisement_type(type_advertisement_id, advertisement_name) VALUES (1, 'Advertisement');
 INSERT INTO advertisement_type(type_advertisement_id, advertisement_name) VALUES (2, 'Announcement');

@@ -11,7 +11,6 @@ import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 
 
-
 import java.io.ByteArrayInputStream;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -21,7 +20,7 @@ import java.util.logging.Logger;
 public class GeneratePdfReport {
 
 
-    public static ByteArrayInputStream citiesReport(ArrayList<Person> employees, ArrayList<Office> offices, List listEmployees, List listOffices, List listOrders , String firstName, String lastName) {
+    public static ByteArrayInputStream citiesReport(ArrayList<Person> employees, ArrayList<Office> offices, List listEmployees, List listOffices, List listOrders, String firstName, String lastName) {
 
         Document document = new Document(PageSize.A4.rotate(), 36, 36, 54, 36);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -55,12 +54,12 @@ public class GeneratePdfReport {
             hcell.setVerticalAlignment(Element.ALIGN_BOTTOM);
             tableEmployees.addCell(hcell);
 
-            hcell= new PdfPCell(new Phrase("Telephone", headFont));
+            hcell = new PdfPCell(new Phrase("Telephone", headFont));
             hcell.setBackgroundColor(BaseColor.DARK_GRAY);
             hcell.setVerticalAlignment(Element.ALIGN_BOTTOM);
             tableEmployees.addCell(hcell);
 
-            hcell= new PdfPCell(new Phrase("Roles", headFont));
+            hcell = new PdfPCell(new Phrase("Roles", headFont));
             hcell.setBackgroundColor(BaseColor.DARK_GRAY);
             hcell.setVerticalAlignment(Element.ALIGN_BOTTOM);
             tableEmployees.addCell(hcell);
@@ -71,8 +70,7 @@ public class GeneratePdfReport {
             tableEmployees.addCell(hcell);
 
 
-
-            for (Person  employee : employees) {
+            for (Person employee : employees) {
 
                 PdfPCell cell;
 
@@ -142,9 +140,7 @@ public class GeneratePdfReport {
             tableOffices.addCell(hcell);
 
 
-
-            for (Office office: offices)
-            {
+            for (Office office : offices) {
                 PdfPCell cell;
 
                 cell = new PdfPCell(new Phrase(office.getOfficeId().toString()));
@@ -172,24 +168,24 @@ public class GeneratePdfReport {
 
             PdfWriter.getInstance(document, out);
             document.open();
-            document.add(new Paragraph("Generated Manager  -  "  + firstName + " " + lastName + " at  " + LocalDate.now()));
-            document.add(new Paragraph( "  "));
-            document.add(new Paragraph( "Employees table"));
-            document.add(new Paragraph( "  "));
+            document.add(new Paragraph("Generated Manager  -  " + firstName + " " + lastName + " at  " + LocalDate.now()));
+            document.add(new Paragraph("  "));
+            document.add(new Paragraph("Employees table"));
+            document.add(new Paragraph("  "));
             document.add(tableEmployees);
-            document.add(new Paragraph( "  "));
+            document.add(new Paragraph("  "));
             document.add(new Paragraph("Statistics employees"));
             document.add(listEmployees);
-            document.add(new Paragraph( "  "));
+            document.add(new Paragraph("  "));
             document.add(new Paragraph("Offices table"));
-            document.add(new Paragraph( "  "));
+            document.add(new Paragraph("  "));
             document.add(tableOffices);
-            document.add(new Paragraph( "  "));
+            document.add(new Paragraph("  "));
             document.add(new Paragraph("Statistics offices"));
             document.add(listOffices);
-            document.add(new Paragraph( "  "));
+            document.add(new Paragraph("  "));
             document.add(new Paragraph("Statistics orders"));
-            document.add(new Paragraph( "  "));
+            document.add(new Paragraph("  "));
             document.add(listOrders);
 
             document.close();
