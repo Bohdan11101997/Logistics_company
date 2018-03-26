@@ -10,6 +10,13 @@
     <link rel="stylesheet" th:href="@{/css/paginator.css}" type="text/css" href="../static/css/paginator.css" />
     <link rel="stylesheet" th:href="@{/css/table.css}" type="text/css" href="../static/css/table.css" />
 
+    <style>
+        img {
+            max-height:100px;
+            max-width: 200px;
+        }
+    </style>
+
 
 </head>
 <body class="body-color">
@@ -37,6 +44,7 @@
                                 <th>First Show Date</th>
                                 <th>End Show Date</th>
                                 <th>Type</th>
+                                <th>Image</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -47,6 +55,7 @@
                                 <td th:text="${advertisement.showFirstDate}"></td>
                                 <td th:text="${advertisement.showEndDate}"></td>
                                 <td th:text="${advertisement.type.name}"></td>
+                                <td ><img th:src = "@{'/image/view?id=' + ${advertisement.id}}" alt="photo" /></td>
                                 <td>
                                     <form th:action="@{'/admin/crud/advertisement/update/' + ${advertisement.id}}" th:method="GET">
                                         <button class="btn btn-link update">update</button>

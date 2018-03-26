@@ -50,6 +50,7 @@ public class AdvertisementDaoImpl implements AdvertisementDao, QueryDao {
             advertisement.setDescription(resultSet.getString("description"));
             advertisement.setShowFirstDate(resultSet.getDate("show_first_date").toLocalDate());
             advertisement.setShowEndDate(resultSet.getDate("show_end_date").toLocalDate());
+            advertisement.setImage(resultSet.getBytes("image"));
 
             AdvertisementType advertisementType = advertisementTypeRowMapper.mapRow(resultSet, i);
             advertisement.setType(advertisementType);
