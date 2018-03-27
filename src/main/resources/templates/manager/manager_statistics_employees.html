@@ -163,6 +163,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
 
 <script>
+    document.getElementById('manager_statistics_employees').className='active';
+
     function showCourierMove(){
         if(document.getElementById('selectEmployee').value === "couriers"){
             document.getElementById('radio-courier-move').style.display = "block";
@@ -170,6 +172,7 @@
             document.getElementById('radio-courier-move').style.display = "none";
         }
     }
+
 </script>
 
 </body>

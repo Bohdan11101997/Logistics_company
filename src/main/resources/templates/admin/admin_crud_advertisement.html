@@ -143,9 +143,25 @@
     <th:block th:replace="fragments/left_menu :: left-menu-footer" />
 
     <script type="text/javascript">
-        document.getElementById('crud_advertisement').className='active';
         createDatePicker("#show-start-date");
         createDatePicker("#show-end-date");
+    </script>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+
+        var flag = [[${update}]];
+        window.onload = function() {
+            if(flag)
+                return;
+            doIfNew();
+        };
+        /*]]>*/
+
+        function doIfNew() {
+            document.getElementById('crud_advertisement').className='active';
+        }
+
     </script>
 
 </body>

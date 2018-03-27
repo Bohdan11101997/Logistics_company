@@ -225,8 +225,23 @@
     <script>
         createMultiSelect("#role");
     </script>
-    <script type="text/javascript" th:if="${newEmployee}">
-        document.getElementById('crud_employee').className='active';
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+
+        var flag = [[${newEmployee}]];
+        window.onload = function() {
+            if(!flag)
+                return;
+            doIfNew();
+        };
+        /*]]>*/
+
+        function doIfNew() {
+            document.getElementById('crud_employee').className='active';
+        }
+
     </script>
+
 </body>
 </html>

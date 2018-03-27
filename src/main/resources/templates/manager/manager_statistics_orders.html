@@ -199,8 +199,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
 
 <script>
-    function showChosenRangeInputs(){
+    document.getElementById('manager_statistics_orders').className='active';
 
+    function showChosenRangeInputs(){
         var selectValue = document.getElementById('select-interval').value;
 
         if(selectValue === "year"){
