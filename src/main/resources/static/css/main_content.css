@@ -42,3 +42,7 @@ h1 {
 .panel {
     border: 2px solid transparent;
 }
+
+.datepicker {
+    color: black;
+}

@@ -28,14 +28,13 @@
 </head>
 
 <body class="body-color">
-<div class="container">
     <div class="jumbotron">
         <div class="text-center">
             <h1>Congratulations!</h1>
             <br />
             <p>Account is activated now!</p>
             <br />
-            <p>You will be redirected to <a th:href="@{/index.html}" href="#" id="index">main</a> page after 10 seconds.
+            <p>You will be redirected to <a th:href="@{/index.html}" href="#" id="index">login</a> page after 10 seconds.</p>
         </div>
     </div>
 
@@ -47,6 +46,5 @@
 
         setTimeout(redirectToIndex, 10000);
     </script>
-</div>
 </body>
 </html>
