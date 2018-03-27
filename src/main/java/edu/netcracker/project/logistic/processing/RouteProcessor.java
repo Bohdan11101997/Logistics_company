@@ -362,7 +362,11 @@ public class RouteProcessor {
                 logger.info("Begin - new route building for ({})", worker);
 
                 office = order.getOrder().getOffice() == null ? getRandomOffice() : order.getOrder().getOffice();
-                flowBuilder.setOffice(office);
+                if (office == null) {
+                    logger.error("There are no offices created");
+                } else {
+                    flowBuilder.setOffice(office);
+                }
 
                 if (!flowBuilder.process(order, worker)) {
                     logger.error(flowBuilder.getError());
