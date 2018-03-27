@@ -132,7 +132,7 @@ public class AdvertisementDaoImpl implements AdvertisementDao, QueryDao {
     @Override
     public List<Advertisement> findAmountOfAdvertisementsForCurrentPage(int itemsOnPage, int currentPage) {
         return jdbcTemplate.query(
-                getFindAmountOfAdvertisementsForCurrentPage(),
+                getAllAdvertisementsForCurrentPage(),
                 new Object[] { itemsOnPage, currentPage * itemsOnPage},
                 getMapper());
     }
@@ -179,8 +179,8 @@ public class AdvertisementDaoImpl implements AdvertisementDao, QueryDao {
         return queryService.getQuery("count.advertisements");
     }
 
-    public String getFindAmountOfAdvertisementsForCurrentPage(){
-        return queryService.getQuery("select.advertisement.amount.for.page");
+    public String getAllAdvertisementsForCurrentPage(){
+        return queryService.getQuery("all.advertisements.for.page");
     }
 
     public String getAllAdvertisementsForToday() {

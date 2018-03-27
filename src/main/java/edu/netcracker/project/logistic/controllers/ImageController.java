@@ -2,12 +2,15 @@ package edu.netcracker.project.logistic.controllers;
 
 import edu.netcracker.project.logistic.model.Advertisement;
 import edu.netcracker.project.logistic.service.AdvertisementService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
@@ -16,8 +19,14 @@ import java.util.Optional;
 @RequestMapping("/image")
 public class ImageController {
 
+    private final Logger logger = LoggerFactory.getLogger(ImageController.class);
+
+    private AdvertisementService advertisementService;
+
     @Autowired
-    AdvertisementService advertisementService;
+    public ImageController(AdvertisementService advertisementService) {
+        this.advertisementService = advertisementService;
+    }
 
     @RequestMapping(value = "/view", method = RequestMethod.GET)
     public void viewImage(@RequestParam("id") Long advertisementId,
@@ -36,7 +45,9 @@ public class ImageController {
 
             response.setContentType("image/jpeg");
             response.getOutputStream().write(advertisement.getImage());
-        } finally {
+        } catch (NullPointerException e){
+            logger.error("No image for advertisement with id: " + advertisementId);
+        }finally {
             response.getOutputStream().close();
         }
 

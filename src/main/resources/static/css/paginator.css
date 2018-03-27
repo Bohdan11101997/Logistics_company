@@ -10,3 +10,7 @@
 .pointer-disabled {
     pointer-events: none;
 }
+
+.row.pagination-block{
+    margin-top: 5em;
+}
