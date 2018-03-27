@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
@@ -18,7 +19,7 @@ import java.util.Optional;
 @RequestMapping("/image")
 public class ImageController {
 
-    private final Logger logger = LoggerFactory.getLogger(RegistrationController.class);
+    private final Logger logger = LoggerFactory.getLogger(ImageController.class);
 
     private AdvertisementService advertisementService;
 
@@ -45,7 +46,7 @@ public class ImageController {
             response.setContentType("image/jpeg");
             response.getOutputStream().write(advertisement.getImage());
         } catch (NullPointerException e){
-            logger.info("No image for advertisement with id: " + advertisementId);
+            logger.error("No image for advertisement with id: " + advertisementId);
         }finally {
             response.getOutputStream().close();
         }
