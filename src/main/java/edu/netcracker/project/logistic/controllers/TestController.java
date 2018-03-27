@@ -67,10 +67,10 @@ public class TestController {
 
     //        PdfView pdfView;
 
-//        Address address = new Address("Київ, Академіка Янгеля, 5");
-//        Address address1 = new Address((long) 3, "Академіка Янгеля, 5");
-////        addressService.save(address);
-//        addressService.save(address1);
+        Address address = new Address((long) 3,"Київ, Академіка Янгеля, 5");
+        Address address1 = new Address((long) 3, "Академіка Янгеля, 5");
+       addressService.save(address);
+        addressService.save(address1);
 ////
 ////        System.out.println(address.check("qwqw"));
 ////

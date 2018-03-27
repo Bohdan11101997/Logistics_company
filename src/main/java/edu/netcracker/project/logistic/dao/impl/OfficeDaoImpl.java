@@ -178,8 +178,13 @@ public class OfficeDaoImpl implements OfficeDao, QueryDao, RowMapper<Office> {
 
 
     @Override
+    public List<Office> allOfficesForManager() {
+        return jdbcTemplate.query(getAllOfficesForManager(), this::mapRowOrder);
+    }
+
+    @Override
     public List<Office> allOffices() {
-        return jdbcTemplate.query(getAllOffices(), this::mapRowOrder);
+        return jdbcTemplate.query(getAllOffices(), this::mapRow);
     }
 
     @Override
@@ -204,6 +209,10 @@ public class OfficeDaoImpl implements OfficeDao, QueryDao, RowMapper<Office> {
 
     private String getAllOffices() {
         return queryService.getQuery("all.office");
+    }
+
+    private String getAllOfficesForManager() {
+        return queryService.getQuery("all.office.for.manager");
     }
 
     private String getAllOfficesByDepartmentOrAddress() { return queryService.getQuery("all.office.by.department.or.address");

@@ -344,11 +344,21 @@ public class AdminController {
         return "/admin/admin_crud_office";
     }
 
-
     @GetMapping("/office/update/{id}")
-    public String updateOffice(@PathVariable long id, Model model) {
+    public String getUpdateOffice(@PathVariable long id, Model model) {
         model.addAttribute("office", officeService.findOne(id));
-        return "/admin/admin_crud_office";
+        return "/admin/admin_update_office";
+    }
+
+    @PostMapping("/office/update/{id}")
+    public String updateOffice(@PathVariable long id, Model model, @ModelAttribute("office") Office office ) {
+        model.addAttribute("office", officeService.findOne(id));
+        System.out.println(id);
+        office.setOfficeId(id);
+        System.out.println(office.getOfficeId());
+        addressService.save(office.getAddress());
+        officeService.save(office);
+        return "redirect:/admin/offices ";
     }
 
     @GetMapping("/office/delete/{id}")
@@ -360,12 +370,8 @@ public class AdminController {
 
     @PostMapping("/crud/office")
     public String saveOffice(@ModelAttribute("office") Office office) {
-        Optional<Address> opt = addressService.findOne(office.getAddress().getName());
-        if (opt.isPresent()) {
-            return "error/500";
-        }
+        //        Optional<Address> opt = addressService.findOne(office.getAddress().getName());
         addressService.save(office.getAddress());
-        addressService.findOne(office.getAddress().getName()).get();
         officeService.save(office);
         return "redirect:/admin/offices";
     }

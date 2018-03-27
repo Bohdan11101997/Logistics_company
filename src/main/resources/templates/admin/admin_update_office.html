@@ -29,7 +29,7 @@
                     <div class="well">
                         <h3 class="caption">New</h3>
 
-                        <form class="form-horizontal" th:object="${office}" th:action="@{/admin/crud/office}" method = "post">
+                        <form class="form-horizontal" th:object="${office}" th:action="@{'/admin/office/update/' + ${id}}" method = "post">
                             <div class="row">
                                 <div class="col-lg-8 col-lg-offset-2">
 
@@ -60,13 +60,13 @@
     </div>
 </div>
 
-    <th:block th:replace="fragments/footer :: footer"/>
+<th:block th:replace="fragments/footer :: footer"/>
 
 
-    <th:block th:replace="fragments/left_menu :: left-menu-footer" />
-    <script type="text/javascript">
-        document.getElementById('crud_office').className='active';
-    </script>
+<th:block th:replace="fragments/left_menu :: left-menu-footer" />
+<script type="text/javascript">
+    document.getElementById('crud_office').className='active';
+</script>
 
 </body>
 </html>

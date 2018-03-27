@@ -108,7 +108,7 @@ public class ManagerController {
 
     @GetMapping("/statistics/offices")
     public String getAllOffice(Model model) {
-        model.addAttribute("offices", officeDao.allOffices());
+        model.addAttribute("offices", officeDao.allOfficesForManager());
         model.addAttribute("officeSearchForm", new OfficeSearchForm());
         return "/manager/manager_statistics_offices";
     }

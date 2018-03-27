@@ -27,13 +27,13 @@ VALUES (12, 'manager', 'manager', '888461636', 'manager.manager@example.com');
 INSERT INTO person(person_id,  user_name, password, contact_id)
 VALUES (1, 'Bohdan', '12121212', 1);
 INSERT INTO person (person_id, user_name, password, contact_id)
-VALUES (2, 'Bohdan1', '$2a$10$FaTZAFUbG7UmfDCkAjepf.CY5bHap7wjSsKU02AT6Q7MxB6pgSy1u', 5);
+VALUES (2, 'Bohdan1', '$2a$10$FaTZAFUbG7UmfDCkAjepf.CY5bHap7wjSsKU02AT6Q7MxB6pgSy1u', 2);
 INSERT INTO person (person_id, user_name, password, contact_id)
 VALUES (3, 'Bohdan2', '12121212', 3);
 INSERT INTO person (person_id, user_name, password, contact_id)
 VALUES (4, 'stanis', '$2a$10$d5LXfYNl7n7DxjL8Ci42lOBiPiSd50400IjWU0AGuUYO8TeF/14de', 4);
 INSERT INTO person (person_id, user_name, password, contact_id)
-VALUES (5, 'stanis1', '$2a$10$x8wKe1tpGVJTE4zkHRbDj.OXXblGefWRjjdWw82e5s.m3OjHXGgM6', 2);
+VALUES (5, 'stanis1', '$2a$10$x8wKe1tpGVJTE4zkHRbDj.OXXblGefWRjjdWw82e5s.m3OjHXGgM6', 5);
 INSERT INTO person (person_id, user_name, password, contact_id)
 VALUES (6, 'agent-smith', '$2a$10$wTuyKwJX2hUhhuy5Po/lVeKWppG0H3fH0x4UmX4ketu/PHzhghS12', 6);
 INSERT INTO person (person_id, user_name, password, contact_id)
