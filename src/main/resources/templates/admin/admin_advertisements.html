@@ -49,7 +49,7 @@
                             </thead>
                             <tbody>
                             <tr th:each="advertisement, iter : ${advertisements}">
-                                <td th:text="${iter.index + 1}"></td>
+                                <td th:text="${(pager.currentPage * pager.itemsOnPage) + iter.index + 1}"></td>
                                 <td th:text="${advertisement.caption}"></td>
                                 <td th:text="${advertisement.description}"></td>
                                 <td th:text="${advertisement.showFirstDate}"></td>
@@ -71,38 +71,48 @@
                         </table>
                     </div>
 
-                    <!-- Paginator -->
-                    <div class="form-group col-md-1">
-                        <select class="form-control pagination" id="pageSizeSelect">
-                            <option th:each="pageSize : ${pageSizes}" th:text="${pageSize}" th:value="${pageSize}"
-                                    th:selected="${pageSize} == ${selectedPageSize}"></option>
-                        </select>
-                    </div>
+                    <div class="row pagination-block">
+                        <!-- Paginator -->
+                        <div class="form-group col-md-2">
+                            <label for= "itemsOnPageSelect" class="control-label">On page</label>
+                            <select class="form-control" id="itemsOnPageSelect">
+                                <option th:each="itemsOnPageValue : ${T(edu.netcracker.project.logistic.model.Pager).ITEMS_ON_PAGE_VALUES}" th:text="${itemsOnPageValue}" th:value="${itemsOnPageValue}"
+                                        th:selected="${itemsOnPageValue} == ${pager.itemsOnPage}"></option>
+                            </select>
+                        </div>
 
-                    <div th:if="${totalPages != 1}" class="form-group col-md-11 pagination-centered">
-                        <ul class="pagination">
-                            <li th:class="${currentPage == 0} ? disabled">
-                                <a class="pageLink" th:href="@{/admin/advertisements/(pageSize=${selectedPageSize}, page=1)}">&laquo;</a>
-                            </li>
-                            <li th:class="${currentPage == 0} ? disabled">
-                                <a class="pageLink" th:href="@{/admin/advertisements/(pageSize=${selectedPageSize}, page=${currentPage})}">&larr;</a>
-                            </li>
-                            <li th:class="${currentPage == (page - 1)} ? 'active pointer-disabled'"
-                                th:each="page : ${#numbers.sequence(pager.startPage, pager.endPage)}">
-                                <a class="pageLink" th:href="@{/admin/advertisements/(pageSize=${selectedPageSize}, page=${page})}"
-                                   th:text="${page}"></a>
-                            </li>
-                            <li th:class="${currentPage + 1 == totalPages} ? disabled">
-                                <a class="pageLink"
-                                   th:href="@{/admin/advertisements/(pageSize=${selectedPageSize}, page=${currentPage + 2})}">&rarr;</a>
-                            </li>
-                            <li th:class="${currentPage + 1 == totalPages} ? disabled">
-                                <a class="pageLink"
-                                   th:href="@{/admin/advertisements/(pageSize=${selectedPageSize}, page=${totalPages})}">&raquo;</a>
-                            </li>
-                        </ul>
-                    </div>
+                        <div class="form-group col-md-2">
+                            <label for= "buttonsToShowSelect" class="control-label">Buttons</label>
+                            <select class="form-control" id="buttonsToShowSelect">
+                                <option th:each="buttonToShowValue : ${T(edu.netcracker.project.logistic.model.Pager).BUTTONS_TO_SHOW_VALUES}" th:text="${buttonToShowValue}" th:value="${buttonToShowValue}"
+                                        th:selected="${buttonToShowValue} == ${pager.buttonsToShow}"></option>
+                            </select>
+                        </div>
 
+                        <div th:if="${pager.totalPages != 1}" class="form-group col-md-8 pagination-centered">
+                            <ul class="pagination">
+                                <li th:class="${pager.currentPage == 0} ? disabled">
+                                    <a class="pageLink" th:href="@{/admin/advertisements/(itemsOnPage=${pager.itemsOnPage}, currentPage=1, buttonsToShow=${pager.buttonsToShow})}">&laquo;</a>
+                                </li>
+                                <li th:class="${pager.currentPage == 0} ? disabled">
+                                    <a class="pageLink" th:href="@{/admin/advertisements/(itemsOnPage=${pager.itemsOnPage}, currentPage=${pager.currentPage}, buttonsToShow=${pager.buttonsToShow})}">&larr;</a>
+                                </li>
+                                <li th:class="${pager.currentPage == (page - 1)} ? 'active pointer-disabled'"
+                                    th:each="page : ${#numbers.sequence(pager.startPage, pager.endPage)}">
+                                    <a class="pageLink" th:href="@{/admin/advertisements/(itemsOnPage=${pager.itemsOnPage}, currentPage=${page}, buttonsToShow=${pager.buttonsToShow})}"
+                                       th:text="${page}"></a>
+                                </li>
+                                <li th:class="${pager.currentPage + 1 == pager.totalPages} ? disabled">
+                                    <a class="pageLink"
+                                       th:href="@{/admin/advertisements/(itemsOnPage=${pager.itemsOnPage}, currentPage=${pager.currentPage + 2}, buttonsToShow=${pager.buttonsToShow})}">&rarr;</a>
+                                </li>
+                                <li th:class="${pager.currentPage + 1 == pager.totalPages} ? disabled">
+                                    <a class="pageLink"
+                                       th:href="@{/admin/advertisements/(itemsOnPage=${pager.itemsOnPage}, currentPage=${pager.totalPages}, buttonsToShow=${pager.buttonsToShow})}">&raquo;</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

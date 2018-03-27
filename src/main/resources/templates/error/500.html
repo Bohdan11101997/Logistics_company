@@ -1,30 +1,46 @@
-<!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org">
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta charset="UTF-8"/>
+    <title>Confirm email address</title>
 
-    <!-- Bootstrap -->
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" />
+    <th:block th:replace="fragments/header :: header-bootstrap-config"/>
+
+    <link rel="stylesheet" th:href="@{/css/index.css}" href="../../static/css/index.css"/>
+    <link rel="stylesheet" th:href="@{/css/main_content.css}" type="text/css" href="../../static/css/main_content.css"/>
+    <link rel="stylesheet" th:href="@{/css/well.css}" type="text/css" href="../../static/css/well.css"/>
+
+    <th:block th:replace="fragments/header :: header-bootstrap-config-IE"/>
+
+    <style>
+        body {
+            background-color: #FBFBFB;
+        }
+
+        .jumbotron {
+            border-bottom: 1px solid red;
+            padding: 5px;
+        }
+
+        .wrapper img {
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
 </head>
 <body>
-
-
-<div class="container">
-
-    <div class="starter-template">
-        <h1>500 - Internal server error</h1>
+<div class="jumbotron">
+    <div class="text-center">
+        <h1>500 - Internal Server Error</h1>
+        <br/>
+        <p>Looks like you've found a bug! Our best engineers are already working on it.</p>
+        <p>Try again after a couple of minutes.</p>
+        <p>Right now you can enjoy watching this beautiful animation.</p>
     </div>
-
 </div>
-<!-- /.container -->
-
-<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<!-- Include all compiled plugins (below), or include individual files as needed -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-
+<div class="wrapper">
+    <img src="../../static/images/500.gif" th:src="@{/images/500.gif}"
+         width="320" height="320"/>
+</div>
 </body>
 </html>
