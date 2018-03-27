@@ -37,7 +37,9 @@
                     <div class="side-menu-container">
                         <ul id="side-menu-items" class="nav navbar-nav">
 
-                            <li><a th:href="@{/logout}" th:method="post" href="#"><span class="glyphicon glyphicon-off"></span>Log out</a></li>
+                            <li class="one"><a id="logout" th:href="@{/logout}" th:method="post" href="#"><span class="glyphicon glyphicon-off"></span>Log out</a></li>
+
+                            <li class="one"><a id="main" th:href="@{/main}" th:method="get" href="#"><span class="glyphicon glyphicon-exclamation-sign"></span>Main</a></li>
 
                             <li id="user_list" sec:authorize="hasRole('ROLE_USER')" class="dropdown panel panel-default">
                                 <a data-toggle="collapse" href="#dropdown-user">
@@ -134,7 +136,7 @@
     </div>
 
     <div th:fragment="left-menu-footer">
-        <script language="JavaScript" type="text/javascript" th:src="@{/js/admin.js}" src="../static/js/admin.js"></script>
+        <script language="JavaScript" type="text/javascript" th:src="@{/js/left_menu.js}" src="../static/js/left_menu.js"></script>
     </div>
 </body>
 
