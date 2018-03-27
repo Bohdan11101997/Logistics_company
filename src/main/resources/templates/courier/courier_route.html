@@ -6,6 +6,11 @@
     <link rel="stylesheet" th:href="@{/css/left_menu.css}" type="text/css" href="../../static/css/left_menu.css"/>
     <link rel="stylesheet" th:href="@{/css/main_content.css}" type="text/css" href="../../static/css/main_content.css"/>
     <link rel="stylesheet" th:href="@{/css/courier.css}" type="text/css" href="../../static/css/courier.css"/>
+    <style>
+        .error {
+            color: var(--error-color);
+        }
+    </style>
 </head>
 <body class="body-color">
 
@@ -133,6 +138,7 @@
             document.getElementById('btn-confirm').setAttribute("disabled", "disabled");
             document.getElementById('btn-cancel').setAttribute("disabled", "disabled");
         }
+        orderNumberEl.classList.remove("error");
 
         var prevPageEl = orderNumberEl.parentElement.previousElementSibling;
         prevPageEl.classList.remove("non-visible");
@@ -180,6 +186,10 @@
                 }
                 clearTimeout(spinnerTimeout);
                 hideSpinner();
+            } else {
+                setErrorPage();
+                clearTimeout(spinnerTimeout);
+                hideSpinner();
             }
         };
         spinnerTimeout = setTimeout(showSpinner, APP.spinner.delayMs);
@@ -205,6 +215,10 @@
                 }
                 clearTimeout(spinnerTimeout);
                 hideSpinner();
+            } else {
+                setErrorPage();
+                clearTimeout(spinnerTimeout);
+                hideSpinner();
             }
         };
         spinnerTimeout = setTimeout(showSpinner, APP.spinner.delayMs);
@@ -224,7 +238,10 @@
     document.getElementById('btn-cancel').addEventListener('click', cancelOrder);
 
     function setEmptyPage() {
-        document.getElementById("order-number").textContent = "No orders for now!";
+        var orderNumberEl = document.getElementById("order-number");
+        orderNumberEl.textContent = "No orders for now!";
+        orderNumberEl.classList.remove("error");
+
         document.getElementById("address").textContent = "";
         document.getElementById("contact").textContent = "";
         document.getElementById("phone").textContent = "";
@@ -234,8 +251,28 @@
         document.getElementById('btn-confirm').setAttribute("disabled", "disabled");
         document.getElementById('btn-cancel').setAttribute("disabled", "disabled");
 
-        prevPageEl.firstElementChild.classList.add("non-visible");
-        prevPageEl.firstElementChild.classList.add("non-visible");
+        document.getElementById("prev-order").parentElement.classList.add("non-visible");
+        document.getElementById("next-order").parentElement.classList.add("non-visible");
+
+        document.getElementById('map').src = "/images/mapplaceholder.png";
+    }
+
+    function setErrorPage() {
+        var orderNumberEl = document.getElementById("order-number");
+        orderNumberEl.textContent = "Can't receive data from server.";
+        orderNumberEl.classList.add("error");
+
+        document.getElementById("address").textContent = "";
+        document.getElementById("contact").textContent = "";
+        document.getElementById("phone").textContent = "";
+        document.getElementById("order-id").textContent = "";
+        document.getElementById("order-type").textContent = "";
+
+        document.getElementById('btn-confirm').setAttribute("disabled", "disabled");
+        document.getElementById('btn-cancel').setAttribute("disabled", "disabled");
+
+        document.getElementById("prev-order").parentElement.classList.add("non-visible");
+        document.getElementById("next-order").parentElement.classList.add("non-visible");
 
         document.getElementById('map').src = "/images/mapplaceholder.png";
     }
@@ -245,7 +282,9 @@
         var xhr = new XMLHttpRequest();
         xhr.open("GET", "/courier/route/orders");
         xhr.onreadystatechange = function () {
-            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+            if (xhr.readyState !== XMLHttpRequest.DONE) return;
+
+            if (xhr.status === 200) {
                 APP.route = JSON.parse(xhr.responseText);
                 if (APP.route.wayPoints.length > 0) {
                     var routeCompleted = APP.route.wayPoints.every(function (point) {
@@ -259,6 +298,10 @@
                 } else {
                     setEmptyPage();
                 }
+                clearTimeout(spinnerTimeout);
+                hideSpinner();
+            } else {
+                setErrorPage();
                 clearTimeout(spinnerTimeout);
                 hideSpinner();
             }
