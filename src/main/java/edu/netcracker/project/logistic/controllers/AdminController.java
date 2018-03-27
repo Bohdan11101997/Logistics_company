@@ -1,6 +1,6 @@
 package edu.netcracker.project.logistic.controllers;
 
-import edu.netcracker.project.logistic.dao.impl.OfficeDaoImpl;
+import edu.netcracker.project.logistic.dao.OfficeDao;
 import edu.netcracker.project.logistic.model.*;
 import edu.netcracker.project.logistic.service.*;
 
@@ -47,11 +47,8 @@ public class AdminController {
     private EmployeeValidator employeeValidator;
     private AdvertisementValidator advertisementValidator;
     private SearchFormValidator searchFormValidator;
-    private UserDetailsService userDetailsService;
     private ImageValidator imageValidator;
-
-    @Autowired
-    OfficeDaoImpl officeDao;
+    private OfficeDao officeDao;
 
 
     @Autowired
@@ -59,7 +56,7 @@ public class AdminController {
                            RoleService roleService, AdvertisementService advertisementService,
                            AddressService addressService, EmployeeValidator employeeValidator,
                            AdvertisementValidator advertisementValidator, SearchFormValidator searchFormValidator,
-                           UserDetailsService userDetailsService, ImageValidator imageValidator) {
+                           ImageValidator imageValidator, OfficeDao officeDao) {
         this.officeService = officeService;
         this.employeeService = employeeService;
         this.roleService = roleService;
@@ -68,8 +65,8 @@ public class AdminController {
         this.employeeValidator = employeeValidator;
         this.advertisementValidator = advertisementValidator;
         this.searchFormValidator = searchFormValidator;
-        this.userDetailsService = userDetailsService;
         this.imageValidator = imageValidator;
+        this.officeDao = officeDao;
     }
 
     @GetMapping("/crud/advertisement")

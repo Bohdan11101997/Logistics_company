@@ -1,9 +1,6 @@
 package edu.netcracker.project.logistic.service.impl;
 
-import edu.netcracker.project.logistic.dao.ContactDao;
-import edu.netcracker.project.logistic.dao.PersonCrudDao;
-import edu.netcracker.project.logistic.dao.PersonRoleDao;
-import edu.netcracker.project.logistic.dao.RoleCrudDao;
+import edu.netcracker.project.logistic.dao.*;
 import edu.netcracker.project.logistic.exception.NonUniqueRecordException;
 import edu.netcracker.project.logistic.model.*;
 import edu.netcracker.project.logistic.service.EmployeeService;
@@ -22,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -37,17 +35,19 @@ public class EmployeeServiceImpl implements EmployeeService {
     private Environment env;
     private JavaMailSender sender;
     private PersonService personService;
+    private WorkDayDao workDayDao;
 
     @Autowired
     public EmployeeServiceImpl(ContactDao contactDao, PersonCrudDao personDao,
                                PersonRoleDao personRoleDao, RoleCrudDao roleDao,
-                               Environment env, JavaMailSender sender) {
+                               Environment env, JavaMailSender sender, WorkDayDao workDayDao) {
         this.contactDao = contactDao;
         this.personDao = personDao;
         this.personRoleDao = personRoleDao;
         this.roleDao = roleDao;
         this.env = env;
         this.sender = sender;
+        this.workDayDao = workDayDao;
     }
 
     @Autowired
@@ -65,6 +65,14 @@ public class EmployeeServiceImpl implements EmployeeService {
         contactDao.save(employee.getContact());
         String temporaryPassword = employee.getPassword();
         personService.savePerson(employee);
+
+        List<WorkDay> workDays = new ArrayList<>();
+        workDays.add(new WorkDay(employee.getId(), WeekDay.MONDAY, LocalTime.of(10, 0), LocalTime.of(18, 0)));
+        workDays.add(new WorkDay(employee.getId(), WeekDay.TUESDAY, LocalTime.of(10, 0), LocalTime.of(18, 0)));
+        workDays.add(new WorkDay(employee.getId(), WeekDay.WEDNESDAY, LocalTime.of(10, 0), LocalTime.of(18, 0)));
+        workDays.add(new WorkDay(employee.getId(), WeekDay.THURSDAY, LocalTime.of(10, 0), LocalTime.of(18, 0)));
+        workDays.add(new WorkDay(employee.getId(), WeekDay.FRIDAY, LocalTime.of(10, 0), LocalTime.of(18, 0)));
+        workDayDao.saveMany(workDays);
 
         String email = employee.getContact().getEmail();
         String username = employee.getUserName();

@@ -50,7 +50,7 @@ public class EmployeeValidator {
         if (roles == null || roles.size() < 1) {
             errors.rejectValue("roles", "Required.Roles");
         }
-        contactValidator.validate(employee, errors, "contact");
+        contactValidator.validate(employee.getContact(), errors, "contact");
         personValidator.validate(employee, errors);
         checkRoleData(employee, errors);
     }

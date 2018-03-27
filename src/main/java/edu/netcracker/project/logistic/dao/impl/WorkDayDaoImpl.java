@@ -7,15 +7,16 @@ import edu.netcracker.project.logistic.service.QueryService;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Component;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Component
 public class WorkDayDaoImpl implements WorkDayDao, RowMapper<WorkDay> {
@@ -56,26 +57,61 @@ public class WorkDayDaoImpl implements WorkDayDao, RowMapper<WorkDay> {
 
 
     @Override
-    public WorkDay save(WorkDay object) {
-        return null;
+    public WorkDay save(WorkDay workDay) {
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("employee_id", workDay.getEmployeeId());
+        paramMap.put("week_day", workDay.getWeekDay());
+        paramMap.put("start_time", workDay.getStartTime());
+        paramMap.put("end_time", workDay.getEndTime());
+        namedJdbcTemplate.update(getUpsertQuery(), paramMap);
+        return workDay;
     }
 
     @Override
-    public void delete(Long aLong) {
-
+    public void delete(WorkDay workDay) {
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("employee_id", workDay.getEmployeeId());
+        paramMap.put("week_day", workDay.getWeekDay());
+        namedJdbcTemplate.update(getDeleteQuery(), paramMap);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Optional<WorkDay> findOne(Long aLong) {
-        return Optional.empty();
+    public void saveMany(List<WorkDay> workDays) {
+        List<Map<String, Object>> batchParamMap = new ArrayList<>();
+        for (WorkDay workDay: workDays) {
+            Map<String, Object> paramMap = new HashMap<>();
+            paramMap.put("employee_id", workDay.getEmployeeId());
+            paramMap.put("week_day", workDay.getWeekDay().toString());
+            paramMap.put("start_time", workDay.getStartTime());
+            paramMap.put("end_time", workDay.getEndTime());
+            batchParamMap.add(paramMap);
+        }
+        namedJdbcTemplate.batchUpdate(getUpsertQuery(), batchParamMap.toArray(new Map[0]));
+    }
+
+
+    @Override
+    public Optional<WorkDay> findOne(WorkDay workDay) {
+        try {
+            Map<String, Object> paramMap = new HashMap<>();
+            paramMap.put("employee_id", workDay.getEmployeeId());
+            paramMap.put("week_day", workDay.getWeekDay());
+
+            WorkDay res = namedJdbcTemplate.queryForObject(getFindOneQuery(), paramMap,this);
+            return Optional.of(res);
+        } catch (EmptyResultDataAccessException ex) {
+            return Optional.empty();
+        }
     }
 
     private String getFindScheduleForDateQuery() {
         return queryService.getQuery("select.work_day.schedule_for_day");
     }
-//    private  String  getFindScheduleForDateQueryForAllEmployee()
-//    {
-//
-//        return queryService.getQuery("select.work_day.schedule_for_day.all.employees");
-//    }
+
+    private String getUpsertQuery() { return queryService.getQuery("upsert.work_day"); }
+
+    private String getDeleteQuery() { return queryService.getQuery("delete.work_day"); }
+
+    private String getFindOneQuery() { return queryService.getQuery("select.work_day"); }
 }
