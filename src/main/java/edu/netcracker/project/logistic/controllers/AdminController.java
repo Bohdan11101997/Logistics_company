@@ -184,9 +184,6 @@ public class AdminController {
     }
 
     @GetMapping("/advertisements")
-    // pageSize = itemsOnPage = selectedPageSize
-    // page = currentPage
-    // buttonsToShow = buttonsToShow = selectedButtonsToShow
     public String getAllAdvertisementsOnPage(@RequestParam("itemsOnPage")Optional<Integer> itemsOnPage,
                                              @RequestParam("currentPage") Optional<Integer> currentPage,
                                              @RequestParam("buttonsToShow") Optional<Integer> buttonsToShow,
@@ -199,14 +196,6 @@ public class AdminController {
 
         model.addAttribute("advertisements", advertisementsForCurrentPage);
         model.addAttribute("pager", pager);
-
-//        model.addAttribute("selectedPageSize", itemsOnPage);
-//        model.addAttribute("selectedButtonsToShow", buttonsToShow);
-//        model.addAttribute("totalPages", totalPages);
-//        model.addAttribute("currentPage", currentPage);
-//        model.addAttribute("pageSizes", Pager.PAGE_SIZES);
-//        model.addAttribute("buttonsToShow", Pager.BUTTONS_TO_SHOW);
-
 
         return "/admin/admin_advertisements";
 
