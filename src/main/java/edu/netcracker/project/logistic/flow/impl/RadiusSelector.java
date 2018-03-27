@@ -54,9 +54,9 @@ public class RadiusSelector extends FlowBuilderImpl {
     }
 
     public void newPath(@NotNull RouteProcessor.OrderEntry pivot) {
-        if (resultSequence.size() == 0) {
-            resultSequence.add(pivot);
-        }
+        resultSequence.clear();
+        resultSequence.add(pivot);
+
         center = pivot.getOrder().getReceiverAddress().getLocation();
         searchRadius = FlowBuilder.distance(office.getAddress().getLocation(), center, isUseMapRequests(), travelMode);
         candidates = new LinkedList<>();
@@ -232,10 +232,6 @@ public class RadiusSelector extends FlowBuilderImpl {
             return resultSequence;  //early out
         }
 
-        //warehouse marker
-//        staticMap.marker(new StaticMap.Marker.Style.Builder().label('#').color(0x0ff0000).build(),
-//                new StaticMap.GeoPoint(office.getAddress().getLocation().lat, office.getAddress().getLocation().lng));
-
         if (directionsResult.geocodedWaypoints[0].geocoderStatus != GeocodedWaypointStatus.OK) {
             System.err.println("DirectionsApi returned ZERO_RESULTS");
             //sender will always be before receiver
@@ -248,7 +244,7 @@ public class RadiusSelector extends FlowBuilderImpl {
                     //found office-sender
                     for(RouteProcessor.OrderEntry oe: resultSequence){
                         if(oe.getOrder().getOffice() == null){
-                            //found sender-receiver Before! office-sender
+                            //found sender-receiver Before! office-sender fake order
                             needToReverse = true;
                             break;
                         }
@@ -263,11 +259,12 @@ public class RadiusSelector extends FlowBuilderImpl {
 
             path = directionsResult.routes[0].overviewPolyline.decodePath();
             staticMap = GoogleApiRequest.StaticMap()
-                    .center(new StaticMap.GeoPoint(center.lat, center.lng))
-                    .marker(new StaticMap.Marker.Style.Builder().label('#').color(0x0ff0000).build(),
-                            new StaticMap.GeoPoint(office.getAddress().getLocation().lat, office.getAddress().getLocation().lng))
                     .path(new StaticMap.Path(StaticMap.Path.Style.builder().color(0xff4136).build(),
                             path.toArray(new LatLng[]{})));
+            if(office != null)
+                staticMap.marker(new StaticMap.Marker.Style.Builder().label('#').color(0x0ff0000).build(),
+                        new StaticMap.GeoPoint(office.getAddress().getLocation().lat, office.getAddress().getLocation().lng));
+
 
             //duration & distance
             for (DirectionsLeg l : directionsResult.routes[0].legs) {
@@ -292,7 +289,7 @@ public class RadiusSelector extends FlowBuilderImpl {
                         break;
                 }
                 if (o.getPriority().equalsIgnoreCase("VIP")) {
-                    color = color & 0x00ffff + 0xff0000;
+                    color =  (color & 0x00ffff ) | 0x990000;
                 }
                 staticMap.marker(
                         new StaticMap.Marker.Style.Builder().label((char) ((index++) % 10 + '1')).color(color).build(),
