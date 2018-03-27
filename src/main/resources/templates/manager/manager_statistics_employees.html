@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css" />
 
 
+    <script th:src="@{/js/forms.js}" src="../../static/js/forms.js"></script>
 </head>
 <body class="body-color">
 
@@ -50,16 +51,6 @@
                                                    th:field="*{lastName}"/>
                                         </div>
 
-
-                                        <!--<div class="form-group">-->
-                                        <!--<label for="selectWorkDay" class="control-label">Work Days</label>-->
-                                        <!--<select id="selectWorkDay" class="selectpicker" multiple="multiple" title="You can select some">-->
-                                        <!--<option>Monday</option>-->
-                                        <!--<option>Tuesday</option>-->
-                                        <!--<option>Friday</option>-->
-                                        <!--</select>-->
-                                        <!--</div>-->
-
                                         <div class="form-group">
                                             <label for="role" class="control-label">Role</label>
                                             <br />
@@ -70,19 +61,6 @@
                                                         th:text="${{role}}">Role</option>
                                             </select>
                                         </div>
-
-                                        <!--<div class="form-group">-->
-                                        <!--<label for="selectEmployee">Select list</label>-->
-                                        <!--<select class="form-control" id="selectEmployee" onchange="showCourierMove()">-->
-                                        <!--<option value="couriers" id="couriers">Couriers</option>-->
-                                        <!--<option value="call-center-agents" id="call-center-agents">Call center agents</option>-->
-                                        <!--</select>-->
-                                        <!--</div>-->
-
-                                        <!--<div class="form-group" style="display:block" id="radio-courier-move">-->
-                                        <!--<label class="radio-inline"><input type="radio" name="optradio" checked="checked" />Car</label>-->
-                                        <!--<label class="radio-inline"><input type="radio" name="optradio" />On foot</label>-->
-                                        <!--</div>-->
 
                                         <div class="form-group">
                                             <label for="sortEmployees" class="control-label">Sort by</label>
@@ -116,11 +94,8 @@
                                 <th>Last Name</th>
                                 <th>E-mail</th>
                                 <th>Phone</th>
-                                <!--<th>Move</th>-->
-                                <!--<th>Work Days</th>-->
                                 <th>Registration date</th>
                                 <th>Orders handled</th>
-                                <!--<th>Usefulness</th>-->
                             </tr>
                             </thead>
                             <tbody>
@@ -132,14 +107,6 @@
                                 <td th:text="${emp.contact.phoneNumber}">+380777777777</td>
                                 <td th:text="${{emp.registrationDate}}">16-02-2018</td>
                                 <td th:text="${{emp.id}}">16-02-2018</td>
-                                <!--<td>-->
-                                <!--<form th:action="@{/manager/statistics/employee/1}" th:method="GET">-->
-                                <!--<button class="btn btn-link more">more</button>-->
-                                <!--</form>-->
-                                <!--<a href="#"-->
-                                <!--th:href="@{'/admin/crud/employee/' + ${emp.id}}"-->
-                                <!--&gt;Edit</a>-->
-                                <!--</td>-->
                                 <td>
                                     <form th:action="@{'/admin/crud/employee/' + ${emp.id}}" th:method="GET">
                                         <button class="btn btn-link more">more</button>
@@ -160,16 +127,10 @@
 <th:block th:replace="fragments/left_menu :: left-menu-footer" />
 
 <!-- Latest compiled and minified JavaScript -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
-
-<script>
-    function showCourierMove(){
-        if(document.getElementById('selectEmployee').value === "couriers"){
-            document.getElementById('radio-courier-move').style.display = "block";
-        } else{
-            document.getElementById('radio-courier-move').style.display = "none";
-        }
-    }
+<script type="text/javascript">
+    document.getElementById('employees').className = 'active';
+    createMultiSelect("#role", true);
+    createDatePicker(".input-daterange");
 </script>
 
 </body>

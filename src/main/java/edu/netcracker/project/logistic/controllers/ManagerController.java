@@ -23,7 +23,6 @@ public class ManagerController {
     private  OrderTypeDao orderTypeDao;
     private OfficeDao officeDao;
 
-
     @Autowired
     public ManagerController(ManagerStatisticsDao managerStatisticsDao, RoleCrudDao roleCrudDao, OrderStatusDao orderStatusDao, OrderTypeDao orderTypeDao, OfficeDao officeDao) {
         this.managerStatisticsDao = managerStatisticsDao;
@@ -66,7 +65,7 @@ public class ManagerController {
 
 
     @PostMapping("/statistics/orders")
-    public String SearchOrdersByManager(@ModelAttribute("searchFormOrderStatistic") SearchFormOrderStatistic searchFormOrderStatistic, Model model) {
+    public String searchOrdersByManager(@ModelAttribute("searchFormOrderStatistic") SearchFormOrderStatistic searchFormOrderStatistic, Model model) {
         List<StatisticTask> personList = managerStatisticsDao.searchStatisticOrders(searchFormOrderStatistic);
         model.addAttribute("countOrder", managerStatisticsDao.countOrders());
         model.addAttribute("destination_typeOrders", orderTypeDao.findAll());
@@ -114,7 +113,7 @@ public class ManagerController {
     }
 
     @PostMapping("/statistics/offices")
-    public String findByDepartmentOrAddress( @ModelAttribute("officeSearchForm") OfficeSearchForm officeSearchForm,  Model model) {
+    public String findByDepartmentOrAddress(@ModelAttribute("officeSearchForm") OfficeSearchForm officeSearchForm,  Model model) {
         model.addAttribute("offices", officeDao.findByDepartmentOrAddress(officeSearchForm));
         return "/manager/manager_statistics_offices";
 
