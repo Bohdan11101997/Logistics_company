@@ -16,13 +16,11 @@
                 margin-right: 5px;
             }
         }
-
         @media (max-width: 767px) {
             #from-date {
                 margin-bottom: 5px;
             }
         }
-
         .form-horizontal {
             padding: 0 15px;
         }
@@ -54,13 +52,13 @@
                                     <div class="form-group">
                                         <label for="first-name" class="control-label">First Name</label>
                                         <input type="text" class="form-control" id="first-name"
-                                            th:field="*{firstName}" />
+                                               th:field="*{firstName}" />
                                     </div>
 
                                     <div class="form-group">
                                         <label for="last-name" class="control-label">Last Name</label>
                                         <input type="text" class="form-control" id="last-name"
-                                            th:field="*{lastName}"/>
+                                               th:field="*{lastName}"/>
                                     </div>
 
                                     <div class="form-group">
@@ -116,6 +114,7 @@
                                 <th>Registration Date</th>
                                 <th>E-mail</th>
                                 <th>Phone</th>
+                                <!--<th>Role</th>-->
                             </tr>
                             </thead>
                             <tbody>
@@ -142,13 +141,14 @@
     </div>
 </div>
 
-    <th:block th:replace="fragments/footer :: footer"/>
-    <th:block th:replace="fragments/left_menu :: left-menu-footer" />
+<th:block th:replace="fragments/footer :: footer"/>
+<th:block th:replace="fragments/left_menu :: left-menu-footer" />
 
 <script type="text/javascript">
     document.getElementById('employees').className = 'active';
     createMultiSelect("#role", true);
     createDatePicker(".input-daterange");
 </script>
+
 </body>
 </html>
