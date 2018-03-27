@@ -323,11 +323,11 @@ public class UserController {
     @PostMapping("/orders")
     public String searchOrdersByUser(@ModelAttribute("searchFormOrder") SearchFormOrder searchFormOrder, Model model, Principal principal) {
         Optional<Person> opt = userService.findOne(principal.getName());
+        if (!opt.isPresent()) {
+            return "error/500";
+        }
         Person user = opt.get();
-        System.out.println(orderDao.orderBySenderOrReceiver(user.getId()));
         List<Order> orders = orderDao.search(searchFormOrder, user.getId());
-        System.out.println(user.getId());
-        System.out.println(orders);
         model.addAttribute("orders", orders);
         model.addAttribute("destination_typeOrders", orderTypeDao.findAll());
         model.addAttribute("status_OrdersList", orderStatusDao.findAll());
@@ -357,6 +357,9 @@ public class UserController {
     @PostMapping("/order/draft")
     public String draftOrder(@ModelAttribute("order") Order order, Principal principal) {
         Optional<Person> opt = userService.findOne(principal.getName());
+        if (!opt.isPresent()) {
+            return "error/500";
+        }
         Person user = opt.get();
         order.setSenderContact(user.getContact());
 
