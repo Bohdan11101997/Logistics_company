@@ -55,10 +55,15 @@ public class RadiusSelector extends FlowBuilderImpl {
 
     public void newPath(@NotNull RouteProcessor.OrderEntry pivot) {
         resultSequence.clear();
+
         resultSequence.add(pivot);
 
         center = pivot.getOrder().getReceiverAddress().getLocation();
-        searchRadius = FlowBuilder.distance(office.getAddress().getLocation(), center, isUseMapRequests(), travelMode);
+        if(office == null) {
+            searchRadius = FlowBuilder.distance(office.getAddress().getLocation(), center, isUseMapRequests(), travelMode);
+        } else {
+            searchRadius = (isUseMapRequests() ? (travelMode == TravelMode.DRIVING ? maxDrivableDistance : maxWalkableDistance) : (travelMode == TravelMode.DRIVING ? maxDrivableDistance : maxWalkableDistance))/4;
+        }
         candidates = new LinkedList<>();
         count_c2c_orders = 0;
 
@@ -75,7 +80,6 @@ public class RadiusSelector extends FlowBuilderImpl {
         }
 
         staticMap = null;
-        searchRadius = FlowBuilder.distance(office.getAddress().getLocation(), center, isUseMapRequests(), travelMode);
         currentAproxDistance = searchRadius;
         currentWeight = pivot.getOrder().getWeight();
         duration = 0;
@@ -122,11 +126,6 @@ public class RadiusSelector extends FlowBuilderImpl {
                     currentWeight = currentWeight.add(sender.getOrder().getWeight());
                     updateTimeAndDistance(sender);
                     updateTimeAndDistance(next);
-                    /*currentAproxDistance += FlowBuilder.distance(
-                            next.getOrder().getSenderAddress().getLocation(),
-                            next.getOrder().getReceiverAddress().getLocation(),
-                            false,
-                            null);*/
                     count_c2c_orders++;
                 } else //fail at canBePicked
                     returnOrders.add(next);
@@ -147,6 +146,8 @@ public class RadiusSelector extends FlowBuilderImpl {
         if (o == null)
             return false;
         if (resultSequence.size() >= maxOrderCount)
+            return false;
+        if(!o.getOrderStatus().getName().equalsIgnoreCase("CONFIRMED"))
             return false;
 
         double distance = FlowBuilder.distance(office.getAddress().getLocation(), center, isUseMapRequests(), travelMode);
@@ -185,8 +186,6 @@ public class RadiusSelector extends FlowBuilderImpl {
         if (currentWeight.compareTo(o.getOrderType().getMaxWeight()) > 0)
             return false;
 
-
-        //TODO: make bigger after updating other classes
         return true;
     }
 
@@ -211,24 +210,32 @@ public class RadiusSelector extends FlowBuilderImpl {
     public List<RouteProcessor.OrderEntry> calculatePath() {
         duration = 0;
         distance = 0;
-        LatLng[] waypoints = new LatLng[resultSequence.size()];
-        for (int i = 0; i < waypoints.length; i++)
-            waypoints[i] = resultSequence.get(i).getOrder().getReceiverAddress().getLocation();
 
         try {
-            directionsResult = GoogleApiRequest.DirectionsApi()
-                    .origin(office.getAddress().getLocation())
-                    .destination(office.getAddress().getLocation())
+            List<LatLng> waypoints = new ArrayList<>(resultSequence.size()); //usually equal to 1
+            for (int i = 0; i < resultSequence.size(); i++)
+                waypoints.add(resultSequence.get(i).getOrder().getReceiverAddress().getLocation());
+
+            DirectionsApiRequest req = GoogleApiRequest.DirectionsApi()
                     .units(Unit.METRIC)
                     .avoid(DirectionsApi.RouteRestriction.FERRIES)
                     .avoid(DirectionsApi.RouteRestriction.TOLLS)
-                    .waypoints(waypoints)
                     .optimizeWaypoints(optimize)
-                    .mode(travelMode)
-                    .await();
+                    .mode(travelMode);
+
+            if(office != null) {
+                req.origin(office.getAddress().getLocation());
+                req.destination(office.getAddress().getLocation());
+            } else {
+                req.origin(waypoints.remove(0));//first
+                req.destination(waypoints.remove(waypoints.size()-1));//last
+            }
+            req.waypoints(waypoints.toArray(new LatLng[] {}));
+
+            directionsResult =  req.await();
         } catch (ApiException | IOException | InterruptedException e) {
             e.printStackTrace();
-            errorMessage = "StaticMapsError";
+            errorMessage = "StaticMapsError.";
             return resultSequence;  //early out
         }
 
@@ -237,13 +244,13 @@ public class RadiusSelector extends FlowBuilderImpl {
             //sender will always be before receiver
         } else {
             boolean needToReverse = false;
-            List<RouteProcessor.OrderEntry> return_value = new ArrayList<>(waypoints.length);
+            List<RouteProcessor.OrderEntry> return_value = new ArrayList<>(resultSequence.size());
             for (int i : directionsResult.routes[0].waypointOrder) {
                 return_value.add(resultSequence.get(i));
-                if(count_c2c_orders == 1 && resultSequence.get(i).isOrderFromClient()){
+                if(count_c2c_orders == 1 && resultSequence.get(i).isOrderFromClient()) {
                     //found office-sender
-                    for(RouteProcessor.OrderEntry oe: resultSequence){
-                        if(oe.getOrder().getOffice() == null){
+                    for(RouteProcessor.OrderEntry oe: resultSequence) {
+                        if(oe.getOrder().getOffice() == null) {
                             //found sender-receiver Before! office-sender fake order
                             needToReverse = true;
                             break;
@@ -256,7 +263,6 @@ public class RadiusSelector extends FlowBuilderImpl {
                 Collections.reverse(return_value);
             }
 
-
             path = directionsResult.routes[0].overviewPolyline.decodePath();
             staticMap = GoogleApiRequest.StaticMap()
                     .path(new StaticMap.Path(StaticMap.Path.Style.builder().color(0xff4136).build(),
@@ -264,7 +270,6 @@ public class RadiusSelector extends FlowBuilderImpl {
             if(office != null)
                 staticMap.marker(new StaticMap.Marker.Style.Builder().label('#').color(0x0ff0000).build(),
                         new StaticMap.GeoPoint(office.getAddress().getLocation().lat, office.getAddress().getLocation().lng));
-
 
             //duration & distance
             for (DirectionsLeg l : directionsResult.routes[0].legs) {
@@ -344,47 +349,41 @@ public class RadiusSelector extends FlowBuilderImpl {
         if (duration == 0) {
             calculatePath();
         }
-        return duration * resultSequence.size() * clientWaitingTime;
+        return duration + (resultSequence.size() * clientWaitingTime/*per order*/);
     }
 
     @Override
     public boolean process(RouteProcessor.OrderEntry pivot, RouteProcessor.CourierEntry courierEntry) {
-        // remove previous route
-        resultSequence.clear();
+        travelMode = courierEntry.getCourierData().getTravelMode();
+        courier = courierEntry;
 
-        newPath(pivot);
-
-        for (int i = 0; i < MAX_RADIUS_STEPS && candidates.size() == 0; i++) {
-            searchRadius *= radiusModifier;
-            newPath(pivot);
+        if(pivot == null){
+            errorMessage = "IllegalArgument. Pivot are null value.";
+            return false;
         }
+        newPath(pivot);
 
         if (candidates.size() == 0 && resultSequence.size() == 0) {
             errorMessage = "There are no candidates.";
             return false;
         }
 
-        courier = courierEntry;
-        if (courier == null) {
-            errorMessage = "There are no couriers.";
-            return false;
-        }
-
-        travelMode = courier.getCourierData().getTravelMode();
-
-        for (int i = 0; i < MAX_RADIUS_STEPS; i++) {
-            searchRadius *= radiusModifier;
+        for (int radiusSteps = 0; radiusSteps < MAX_RADIUS_STEPS; radiusSteps++) {
             //main loop
             while (null != pickNextOrder());
+
+            searchRadius *= radiusModifier;
         }
 
         resultSequence = calculatePath();
-
-        if (candidates != null) {
-            if (candidates.size() > 0)
-                this.add(candidates);
-            candidates = null;
+        if(resultSequence.size() == 0) {
+            errorMessage = "Algorithm failure.";
+            return false;
         }
+
+        if (candidates.size() > 0)
+            this.add(candidates);
+        candidates = null;
 
         this.add(returnOrders);
         //add back unpicked orders
