@@ -86,11 +86,11 @@ VALUES (7, trim(to_char(CURRENT_DATE, 'DAY')) :: WEEK_DAY, '00:00', '23:59');
 INSERT INTO work_day (employee_id, week_day, start_time, end_time)
 VALUES (8, trim(to_char(CURRENT_DATE, 'DAY')) :: WEEK_DAY, '06:00', '23:00');
 
-INSERT INTO address (address_id, address_name) VALUES (1, 'Zodchykh St, 34А, Kyiv');
+INSERT INTO address (address_id, address_name) VALUES (1, 'Zodchykh St, 34A, Kyiv');
 INSERT INTO address (address_id, address_name) VALUES (2, 'Lesya Kurbasa Ave, 18, Kyiv');
 INSERT INTO address (address_id, address_name) VALUES (3, 'Semashka St, 9, Kyiv');
 INSERT INTO address (address_id, address_name) VALUES (4, 'Mykoly Krasnova St, 29, Kyiv');
-INSERT INTO address (address_id, address_name) VALUES (5, 'Borysa Zhytkova St, 7Б, Kyiv');
+INSERT INTO address (address_id, address_name) VALUES (5, 'Borysa Zhytkova St, 7B, Kyiv');
 INSERT INTO address (address_id, address_name) VALUES (6, 'Bakynska St, 35, 5, Kyiv');
 INSERT INTO address (address_id, address_name) VALUES (7, 'Vvedenska St, 25-21, Kyiv');
 INSERT INTO address (address_id, address_name) VALUES (8, 'Druzhby Narodiv Blvd, 23, Kyiv');
