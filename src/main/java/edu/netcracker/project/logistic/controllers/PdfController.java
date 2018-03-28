@@ -1,18 +1,12 @@
 package edu.netcracker.project.logistic.controllers;
 
-import com.google.gson.internal.bind.MapTypeAdapterFactory;
 import com.itextpdf.text.List;
 import com.itextpdf.text.ListItem;
 import edu.netcracker.project.logistic.dao.ManagerStatisticsDao;
-import edu.netcracker.project.logistic.dao.PersonCrudDao;
-import edu.netcracker.project.logistic.dao.impl.ManagerStatisticsDaoImpl;
-import edu.netcracker.project.logistic.dao.impl.OfficeDaoImpl;
-import edu.netcracker.project.logistic.dao.impl.PersonCrudDaoImpl;
 import edu.netcracker.project.logistic.model.Office;
 import edu.netcracker.project.logistic.model.Person;
 import edu.netcracker.project.logistic.model.SearchFormOrderStatistic;
 import edu.netcracker.project.logistic.service.OfficeService;
-import edu.netcracker.project.logistic.service.PersonService;
 import edu.netcracker.project.logistic.service.UserService;
 import edu.netcracker.project.logistic.service.impl.GeneratePdfReport;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,18 +14,14 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.Optional;
 
 
@@ -40,8 +30,8 @@ public class PdfController {
 
 
     private ManagerStatisticsDao managerStatisticsDao;
-    private   OfficeService officeService;
-    private  UserService userService;
+    private OfficeService officeService;
+    private UserService userService;
 
 
     @Autowired
@@ -57,8 +47,8 @@ public class PdfController {
         String username = principal.getName();
         Optional<Person> optionalPerson = userService.findOne(username);
 
-        Person person = optionalPerson.get();
 
+        Person person = optionalPerson.orElse(null);
 
         ArrayList<Person> employee = (ArrayList<Person>) managerStatisticsDao.employeesByCourierOrCall_Center();
         ArrayList<Office> offices = (ArrayList<Office>) officeService.allOffices();
@@ -87,9 +77,16 @@ public class PdfController {
         listOrders.add(new ListItem("Number orders:   " + managerStatisticsDao.countOrdersBetweenDate(searchFormOrderStatistic.getFrom(), searchFormOrderStatistic.getTo())));
         listOrders.add(new ListItem("Hand to hand:   " + managerStatisticsDao.countOrdersHandToHand(searchFormOrderStatistic.getFrom(), searchFormOrderStatistic.getTo())));
         listOrders.add(new ListItem("From office:   " + managerStatisticsDao.countOrdersFromOffice(searchFormOrderStatistic.getFrom(), searchFormOrderStatistic.getTo())));
+        listOrders.add(new ListItem("Average weight document: " + managerStatisticsDao.avarageWeightDocument()));
+        listOrders.add(new ListItem("Average capacity document:  " + managerStatisticsDao.avarageCapacityDocument()));
+        listOrders.add(new ListItem("Average weight package:   " + managerStatisticsDao.avarageWeightPackage()));
+        listOrders.add(new ListItem("Average capacity package:  " + managerStatisticsDao.avarageCapacityPackage()));
+        listOrders.add(new ListItem("Average weight cargo:   " + managerStatisticsDao.avarageWeightCargo()));
+        listOrders.add(new ListItem("Average capacity cargo:   " + managerStatisticsDao.avarageCapacityCargo()));
 
 
-        ByteArrayInputStream bis = GeneratePdfReport.citiesReport(employee, offices, listEmployees, listOffices, listOrders, person.getContact().getFirstName(), person.getContact().getLastName());
+        assert person != null;
+        ByteArrayInputStream bis = GeneratePdfReport.managerReport(employee, offices, listEmployees, listOffices, listOrders, person.getContact().getFirstName(), person.getContact().getLastName());
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "inline; filename=ManagerStatistic.pdf");

@@ -1,6 +1,8 @@
 package edu.netcracker.project.logistic.dao.impl;
 
 import edu.netcracker.project.logistic.dao.OrderDao;
+import edu.netcracker.project.logistic.dao.OrderStatusDao;
+import edu.netcracker.project.logistic.dao.OrderTypeDao;
 import edu.netcracker.project.logistic.model.*;
 import edu.netcracker.project.logistic.service.QueryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,14 +23,18 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
     private QueryService queryService;
     private JdbcTemplate jdbcTemplate;
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private OrderTypeDao orderTypeDao;
+    private OrderStatusDao orderStatusDao;
+
 
     @Autowired
-    public OrderDaoImpl(QueryService queryService, JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+    public OrderDaoImpl(QueryService queryService, JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate, OrderTypeDao orderTypeDao, OrderStatusDao orderStatusDao) {
         this.queryService = queryService;
         this.jdbcTemplate = jdbcTemplate;
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+        this.orderTypeDao = orderTypeDao;
+        this.orderStatusDao = orderStatusDao;
     }
-
 
     private Contact mapContact(ResultSet rs, String prefix) throws SQLException {
         Contact c = new Contact();
@@ -119,6 +125,12 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
         return order;
     }
 
+    private Long mapRowIds(ResultSet rs, int rowNum) throws SQLException {
+        Order order = new Order();
+        order.setId(rs.getLong("order_id"));
+        return order.getId();
+    }
+
     private void prepareUpdate(PreparedStatement ps, Order order, boolean hasPrimaryKey) throws SQLException {
         ps.setObject(1, order.getCreationTime().toLocalDate());
         ps.setObject(2, order.getDeliveryTime());
@@ -139,6 +151,9 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
             ps.setLong(16, order.getId());
         }
     }
+
+
+
 
     @Override
     public Order save(Order order) {
@@ -211,6 +226,17 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
         }
     }
 
+    @Override
+    public List<Long> getAllOrderIds() {
+        try {
+            return jdbcTemplate.query(
+                    getFindAllOrderIds(),
+                    this::mapRowIds
+            );
+        } catch (EmptyResultDataAccessException ex) {
+            return Collections.emptyList();
+        }
+    }
 
     private String prepareSearchString(String input) {
         return "%" + input.replace("%", "\\%") + "%";
@@ -224,6 +250,21 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
 
         String lastName = searchFormOrder.getLastName();
         lastName = lastName == null ? "%%" : prepareSearchString(lastName.trim());
+
+
+        List<Long> status_OrdersList = new ArrayList<>(searchFormOrder.getOrder_statusIds());
+
+        if (status_OrdersList.isEmpty()) {
+
+            status_OrdersList.addAll(orderStatusDao.findAllIds());
+        }
+
+        List<Long> destination_typeIds = new ArrayList<>(searchFormOrder.getDestination_typeIds());
+
+        if (destination_typeIds.isEmpty()) {
+
+            destination_typeIds.addAll(orderTypeDao.findAllIds());
+        }
 
         LocalDateTime from = searchFormOrder.getFrom();
         if (from == null) {
@@ -239,15 +280,14 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
             to = to.with(LocalTime.MAX);
         }
 
-        List<Long> destination_type = searchFormOrder.getDestination_typeIds();
 
         Map<String, Object> paramMap = new HashMap<>(9);
         paramMap.put("first_name_contact", firstName);
         paramMap.put("last_name_contact", lastName);
         paramMap.put("start_date", from);
         paramMap.put("end_date", to);
-        paramMap.put("destination_type", destination_type);
-        paramMap.put("order_status", searchFormOrder.getOrder_statusIds());
+        paramMap.put("destination_type", destination_typeIds);
+        paramMap.put("order_status", status_OrdersList);
         paramMap.put("sender_contact_id", id);
         paramMap.put("receiver_contact_id", id);
 
@@ -369,6 +409,10 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
 
     private String getFindNotProcessedQuery() {
         return queryService.getQuery("select.order.not_processed");
+    }
+
+    private String getFindAllOrderIds() {
+        return queryService.getQuery("select.all.order.ids");
     }
 
     private String getFindConfirmedQuery() {

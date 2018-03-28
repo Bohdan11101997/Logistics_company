@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-
     <th:block th:replace="fragments/header :: header-bootstrap-config" />
     <th:block th:replace="fragments/header :: header-bootstrap-config-IE" />
 
@@ -9,14 +8,29 @@
     <link rel="stylesheet" th:href="@{/css/main_content.css}" type="text/css" href="../static/css/main_content.css" />
     <link rel="stylesheet" th:href="@{/css/well.css}" type="text/css" href="../static/css/well.css" />
     <link rel="stylesheet" th:href="@{/css/table.css}" type="text/css" href="../static/css/table.css" />
-    <link rel="stylesheet" th:href="@{/css/paginator.css}" type="text/css" href="../static/css/paginator.css" />
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css" />
 
+    <script th:src="@{/js/forms.js}" src="../../static/js/forms.js"></script>
+    <style>
+        @media (min-width: 768px)  {
+            #from-date {
+                margin-right: 5px;
+            }
+        }
 
-    <!--<script th:src="@{/js/forms.js}" src="../../static/js/forms.js"></script>-->
+        @media (max-width: 767px) {
+            #from-date {
+                margin-bottom: 5px;
+            }
+        }
 
+        .form-horizontal {
+            padding: 0 15px;
+        }
+    </style>
 </head>
+
 <body class="body-color">
 
 <div class="row">
@@ -30,22 +44,27 @@
             <div class="row">
                 <div class="col-lg-10 col-md-10 col-md-offset-1 col-lg-offset-1">
 
-                    <h1>Order Statistics</h1>
+                    <h1>Orders Statistics</h1>
 
                     <div class="well">
                         <h3 class="caption">Search Criteria</h3>
 
-                        <form method="post" class="form-horizontal"
-                              th:object="${searchFormOrderStatistic}">
+                        <form method="post" class="form-horizontal" th:object="${searchFormOrderStatistic}">
 
                             <div class="row">
                                 <div class="col-lg-8 col-lg-offset-2">
 
 
                                     <div class="form-group">
+                                        <label for="first-name" class="control-label">Order id</label>
+                                        <input type="number" class="form-control" id="first-name"
+                                               th:field="*{ids}"/>
+                                    </div>
+
+                                    <div class="form-group">
                                         <label for="destination_typeIds" class="control-label">Order type</label>
                                         <br/>
-                                        <select id="destination_typeIds" multiple="multiple" class="selectpicker"
+                                        <select id="destination_typeIds" class="selectpicker" multiple="multiple"
                                                 th:field="*{destination_typeIds}">
                                             <option th:each="orderType: ${destination_typeOrders}"
                                                     th:value="${orderType.id}"
@@ -55,23 +74,26 @@
 
                                     <div class="form-group"
                                          th:classappend="${#fields.hasErrors('from')}? 'has-error'">
-                                        <label class="control-label">Registration date interval</label>
-                                        <div class="form-inline">
+                                        <label class="control-label">Creation Date Interval</label>
+                                        <div class="input-daterange input-group" id="datepicker">
                                             <input class="form-control" id="from-date" title="From"
-                                                   pattern="[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01])" placeholder="yyyy-mm-dd"
-                                                   th:field="*{{from}}" oninput="onSearchDateClick(this)"/>
+                                                   pattern="[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01])"
+                                                   placeholder="yyyy-mm-dd"
+                                                   th:field="*{{from}}"/>
+                                            <span class="input-group-addon">to</span>
                                             <input class="form-control" id="to-date" title="To"
-                                                   pattern="[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01])" placeholder="yyyy-mm-dd"
-                                                   th:field="*{{to}}" oninput="onSearchDateClick(this)"/>
+                                                   pattern="[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01])"
+                                                   placeholder="yyyy-mm-dd"
+                                                   th:field="*{{to}}"/>
                                         </div>
                                     </div>
 
 
 
                                     <div class="form-group">
-                                        <label for="order_statusIds" class="control-label">Order status</label>
+                                        <label for="order_statusIds" class="control-label">Order Status</label>
                                         <br/>
-                                        <select id="order_statusIds" multiple="multiple" class="selectpicker"
+                                        <select id="order_statusIds" class="selectpicker" multiple="multiple"
                                                 th:field="*{order_statusIds}">
                                             <option th:each="orderStatus: ${status_OrdersList}"
                                                     th:value="${orderStatus.id}"
@@ -79,8 +101,18 @@
                                         </select>
                                     </div>
 
-
-
+                                    <div class="form-group">
+                                        <label for="Select_side" class="control-label">Sort by</label>
+                                        <select class="form-control" id="Select_side"
+                                                th:field="*{sortIds}">
+                                            <!--<option>Last Name</option>-->
+                                            <option th:value="${1}">Id</option>
+                                            <option th:value="${2}">Creation date</option>
+                                            <option th:value="${3}">Weight</option>
+                                            <option th:value="${3}">Capacity</option>
+                                            <!--<option>Usefulness</option>-->
+                                        </select>
+                                    </div>
 
                                     <div class="form-group">
                                         <button class="btn btn-primary">
@@ -95,7 +127,6 @@
 
                     </div>
 
-
                     <div class="table-responsive">
                         <h2 >Date range:</h2> <label  th:text="${{fromDate}}"></label> <label th:text="${{toDate}}"></label>
                         <table class="table table-striped">
@@ -103,12 +134,15 @@
                             <tr>
                                 <th>#</th>
                                 <th>ID</th>
-                                <th>Receiver contact</th>
-                                <th>Sender contact</th>
+                                <!--<th>Receiver contact</th>-->
+                                <!--<th>Sender contact</th>-->
                                 <th>Order type</th>
+                                <th>Order status</th>
+                                <th>Creation date</th>
+                                <th>Weight</th>
+                                <th>Capacity</th>
                                 <th>Employee id</th>
                                 <th>Handler employee name</th>
-                                <th>Role</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -116,47 +150,52 @@
                             <tr th:each="statistic_task, iter : ${personList}">
                                 <td th:text="${iter.index + 1}"></td>
                                 <td th:text="${statistic_task.order.id}"></td>
-                                <td th:text="${statistic_task.order.receiverContact}"></td>
-                                <td th:text="${statistic_task.order.senderContact}"></td>
+                                <!--<td th:text="${statistic_task.order.receiverContact}"></td>-->
+                                <!--<td th:text="${statistic_task.order.senderContact}"></td>-->
                                 <td th:text="${statistic_task.order.orderType}"></td>
+                                <td th:text="${statistic_task.order.orderStatus}"></td>
+                                <td th:text="${{statistic_task.order.creationTime}}"></td>
+                                <td th:text="${{statistic_task.order.weight}}"></td>
+                                <td th:text="${{statistic_task.order.capacity}}"></td>
                                 <td th:text="${statistic_task.person.id}"></td>
                                 <td th:text="${statistic_task.person.userName}"></td>
-                                <td th:text="${statistic_task.person.roles}"></td>
                             </tr>
                             </tbody>
                         </table>
-                        <h5>Count orders</h5>
+                        <h5>Count handler orders between data range</h5>
                         <label th:text="${countOrdersBetweenDate}"></label>
                         <h2>Total orders:</h2>
                         <label th:text="${countOrder}"></label>
+                        <h5>Average weight document: </h5>
+                        <label th:text="${averageWeightDocument}"></label>
+                        <h5>Average capacity document: </h5>
+                        <label th:text="${averageCapacityDocument}"></label>
+                        <h5>Average weight package: </h5>
+                        <label th:text="${averageWeightPackage}"></label>
+                        <h5>Average capacity package: </h5>
+                        <label th:text="${averageCapacityPackage}"></label>
+                        <h5>Average weight cargo: </h5>
+                        <label th:text="${averageWeightCargo}"></label>
+                        <h5>Average capacity cargo: </h5>
+                        <label th:text="${averageCapacityCargo}"></label>
                     </div>
 
                 </div>
-
             </div>
         </div>
     </div>
 </div>
 
+
 <th:block th:replace="fragments/footer :: footer"/>
 <th:block th:replace="fragments/left_menu :: left-menu-footer" />
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
 
-<!--<script type="text/javascript">-->
-    <!--document.getElementById('personList').className = 'active';-->
-    <!--createMultiSelect("#orderType", true);-->
-    <!--createDatePicker(".input-daterange");-->
-<!--</script>-->
-
-<!--<script type="text/javascript">-->
-    <!--document.getElementById('personList').className = 'active';-->
-    <!--createMultiSelect("#orderStatus.name", true);-->
-    <!--createDatePicker(".input-daterange");-->
-<!--</script>-->
-
-<script>
-    createDatePicker("#from-date");
-    createDatePicker("#to-date");
+<script type="text/javascript">
+    document.getElementById('user_my_orders').className='active';
+    createMultiSelect("#role", true);
+    createDatePicker(".input-daterange");
 </script>
 
 </body>
