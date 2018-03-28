@@ -41,6 +41,18 @@ public interface ManagerStatisticsDao {
 
     Integer countOffices();
 
+    Double avarageWeightDocument();
+
+    Double avarageCapacityDocument();
+
+    Double  avarageWeightPackage();
+
+    Double avarageCapacityPackage();
+
+    Double  avarageWeightCargo();
+
+    Double avarageCapacityCargo();
+
     Integer countUsers(LocalDateTime from, LocalDateTime to);
 
     Integer countUsersNormal(LocalDateTime from, LocalDateTime to);

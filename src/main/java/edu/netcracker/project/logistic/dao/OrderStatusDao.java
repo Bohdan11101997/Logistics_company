@@ -12,4 +12,6 @@ public interface OrderStatusDao extends CrudDao<OrderStatus, Long> {
     Optional<OrderStatus> findByName(String name);
 
     List<OrderStatus> findAll();
+
+    List<Long> findAllIds();
 }

@@ -118,9 +118,9 @@ INSERT INTO order_status (order_status_id, status_name) VALUES (7, 'DELIVERED');
 
 
 INSERT INTO logistic_company."order"(order_id, estimated_delivery_time,  courier_id, receiver_contact_id, receiver_address_id,  office_id,  order_status_id, order_type_id, weight, width, height, length)
-VALUES (1, '04:05:06', 7, 2, 1,3,  6,1, 12,12,12,12);
+VALUES (1, '04:05:06', 7, 2, 1,3,  6,3, 14,14,14,14);
 INSERT INTO logistic_company."order"(order_id, estimated_delivery_time,  courier_id, receiver_contact_id, receiver_address_id,  office_id, order_status_id, order_type_id, weight, width, height, length)
-VALUES (3, '14:05:06', 7, 5, 1,3,  6,1, 12,12,12,12);
+VALUES (3, '14:05:06', 7, 5, 1,3,  6,3, 13,13,13,13);
 INSERT INTO logistic_company."order"(order_id, estimated_delivery_time,  courier_id, receiver_contact_id, receiver_address_id, office_id, order_status_id, order_type_id, weight, width, height, length)
 VALUES (2, '04:05:06', 7, 2, 1,2,  6,2, 112,132,1322,12);
 INSERT INTO logistic_company."order"(order_id, estimated_delivery_time,  courier_id, receiver_contact_id, receiver_address_id, sender_contact_id, sender_address_id, order_status_id, order_type_id, weight, width, height, length)
