@@ -17,6 +17,10 @@ h1 {
     background-color: var(--main-color);
 }
 
+.side-body {
+    margin-bottom: 15px;
+}
+
 .panel.panel-default .panel-heading {
     background-color: var(--second-color);
     color: var(--text-color);
@@ -49,4 +53,17 @@ h1 {
 
 .datepicker {
     color: black;
+}
+
+.panel.panel-default.btn-panel {
+    border: 0;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+}
+
+@media (max-width: 767px) {
+    .input-daterange.input-group {
+        display: block;
+    }
 }

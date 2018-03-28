@@ -203,7 +203,7 @@ public class UserController {
         order.setOrderType(orderTypes.get(0));
         model.addAttribute("orderTypes", orderTypes);
         model.addAttribute("order", order);
-        return "user/order";
+        return "user/user_order";
     }
 
     @GetMapping(value = "/order", params = {"drafted", "id"})
@@ -227,7 +227,7 @@ public class UserController {
         Order order = draftedOrder.getDraft();
         order.setId(draftedOrder.getId());
         model.addAttribute("order", order);
-        return "user/order";
+        return "user/user_order";
     }
 
     @PostMapping(value = "/order", params = "!drafted")
@@ -243,7 +243,7 @@ public class UserController {
         newOrderValidator.validate(order, result);
         if (result.hasErrors()) {
             model.addAttribute("orderTypes", orderTypeDao.findAll());
-            return "user/order";
+            return "user_order";
         }
 
         orderService.createOrder(order);
@@ -263,7 +263,7 @@ public class UserController {
         newOrderValidator.validate(draftedOrder, result);
         if (result.hasErrors()) {
             model.addAttribute("orderTypes", orderTypeDao.findAll());
-            return "user/order";
+            return "user_order";
         }
         OrderDraft draft;
         try {
