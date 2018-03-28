@@ -243,7 +243,7 @@ public class UserController {
         newOrderValidator.validate(order, result);
         if (result.hasErrors()) {
             model.addAttribute("orderTypes", orderTypeDao.findAll());
-            return "user_order";
+            return "user/user_order";
         }
 
         orderService.createOrder(order);
