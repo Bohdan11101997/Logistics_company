@@ -12,7 +12,7 @@
     <link rel="stylesheet" th:href="@{/css/table.css}" type="text/css" href="../static/css/table.css" />
     <link rel="stylesheet" th:href="@{/css/paginator.css}" type="text/css" href="../static/css/paginator.css" />
 
-    <!--<script th:src="@{/js/forms.js}" src="../../static/js/forms.js"></script>-->
+    <script th:src="@{/js/forms.js}" src="../../static/js/forms.js"></script>
 </head>
 <body class="body-color">
 
@@ -53,13 +53,16 @@
                                     <div class="form-group"
                                          th:classappend="${#fields.hasErrors('from')}? 'has-error'">
                                         <label class="control-label">Registration date interval</label>
-                                        <div class="form-inline">
+                                        <div class="input-daterange input-group" id="datepicker">
                                             <input class="form-control" id="from-date" title="From"
-                                                   pattern="[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01])" placeholder="yyyy-mm-dd"
-                                                   th:field="*{{from}}" oninput="onSearchDateClick(this)"/>
+                                                   pattern="[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01])"
+                                                   placeholder="yyyy-mm-dd"
+                                                   th:field="*{{from}}"/>
+                                            <span class="input-group-addon">to</span>
                                             <input class="form-control" id="to-date" title="To"
-                                                   pattern="[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01])" placeholder="yyyy-mm-dd"
-                                                   th:field="*{{to}}" oninput="onSearchDateClick(this)"/>
+                                                   pattern="[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01])"
+                                                   placeholder="yyyy-mm-dd"
+                                                   th:field="*{{to}}"/>
                                         </div>
                                     </div>
 
@@ -134,8 +137,7 @@
 
 <script>
     createMultiSelect();
-    createDatePicker("#from-date");
-    createDatePicker("#to-date");
+    createDatePicker(".input-daterange");
 </script>
 
 </body>
