@@ -1,6 +1,9 @@
 package edu.netcracker.project.logistic.dao.impl;
 
 import edu.netcracker.project.logistic.dao.ManagerStatisticsDao;
+import edu.netcracker.project.logistic.dao.OrderDao;
+import edu.netcracker.project.logistic.dao.OrderStatusDao;
+import edu.netcracker.project.logistic.dao.OrderTypeDao;
 import edu.netcracker.project.logistic.model.*;
 import edu.netcracker.project.logistic.service.QueryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,17 +28,20 @@ public class ManagerStatisticsDaoImpl implements ManagerStatisticsDao {
     private QueryService queryService;
     private RowMapper<Contact> contactMapper;
     private RowMapper<Role> roleMapper;
-
+    private OrderDao orderDao;
+    private OrderTypeDao orderTypeDao;
+    private OrderStatusDao orderStatusDao;
 
     @Autowired
-    ManagerStatisticsDaoImpl(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate,
-                             QueryService queryService,
-                             RowMapper<Contact> contactMapper, RowMapper<Role> roleMapper) {
+    public ManagerStatisticsDaoImpl(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate, QueryService queryService, RowMapper<Contact> contactMapper, RowMapper<Role> roleMapper, OrderDao orderDao, OrderTypeDao orderTypeDao, OrderStatusDao orderStatusDao) {
         this.jdbcTemplate = jdbcTemplate;
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
         this.queryService = queryService;
         this.contactMapper = contactMapper;
         this.roleMapper = roleMapper;
+        this.orderDao = orderDao;
+        this.orderTypeDao = orderTypeDao;
+        this.orderStatusDao = orderStatusDao;
     }
 
     private List<Person> extractMany(ResultSet rs) throws SQLException {
@@ -61,26 +67,41 @@ public class ManagerStatisticsDaoImpl implements ManagerStatisticsDao {
         return result;
     }
 
+    private Contact mapContact(ResultSet rs, String prefix) throws SQLException {
+        Contact c = new Contact();
+        c.setFirstName(rs.getString(prefix + "first_name"));
+        c.setLastName(rs.getString(prefix + "last_name"));
+        return c;
+    }
+
 
     private List<StatisticTask> extractOrderForStatistic(ResultSet rs) throws SQLException {
         List<StatisticTask> result = new ArrayList<>();
         boolean rowsLeft = rs.next();
         for (int i = 0; rowsLeft; i++) {
             Person person = new Person();
-            person.setId(rs.getLong("person_id"));
-            person.setUserName(rs.getString("user_name"));
-
-            Contact contact = new Contact();
-            contact.setFirstName(rs.getString("first_name"));
-            contact.setFirstName(rs.getString("last_name"));
+            person.setId(rs.getLong("employee_id"));
+            person.setUserName(rs.getString("handler_employee"));
 
             OrderType orderType = new OrderType();
             orderType.setName(rs.getString("name"));
 
+            OrderStatus orderStatus = new OrderStatus();
+            orderStatus.setName(rs.getString("status_name"));
+
+            Office office = new Office();
+            office.setName(rs.getString("office_name"));
+
             Order order = new Order();
             order.setId(rs.getLong("order_id"));
-            order.setReceiverContact(contact);
-            order.setSenderContact(contact);
+            order.setCreationTime(rs.getTimestamp("creation_time").toLocalDateTime());
+            order.setWeight(rs.getBigDecimal("weight"));
+            order.setCapacity(rs.getLong("capacity"));
+            order.setSenderContact(mapContact(rs, "sender_"));
+            order.setReceiverContact(mapContact(rs, "receiver_"));
+            order.setOffice(office);
+            order.setOrderStatus(orderStatus);
+
             order.setOrderType(orderType);
             Set<Role> roles = new HashSet<>();
             do {
@@ -101,6 +122,29 @@ public class ManagerStatisticsDaoImpl implements ManagerStatisticsDao {
 
     @Override
     public List<StatisticTask> searchStatisticOrders(SearchFormOrderStatistic searchFormOrderStatistic) {
+        List<Long> ids = new ArrayList<>();
+
+
+        ids.add(searchFormOrderStatistic.getIds());
+        if (ids.contains(null)) {
+
+            ids.addAll(orderDao.getAllOrderIds());
+        }
+
+
+        List<Long> status_OrdersList = new ArrayList<>(searchFormOrderStatistic.getOrder_statusIds());
+        if (status_OrdersList.isEmpty()) {
+
+            status_OrdersList.addAll(orderStatusDao.findAllIds());
+        }
+
+        List<Long> destination_typeIds = new ArrayList<>(searchFormOrderStatistic.getDestination_typeIds());
+        if (destination_typeIds.isEmpty()) {
+
+            destination_typeIds.addAll(orderTypeDao.findAllIds());
+        }
+
+
         LocalDateTime from = searchFormOrderStatistic.getFrom();
         if (from == null) {
             from = LocalDateTime.MIN;
@@ -114,20 +158,66 @@ public class ManagerStatisticsDaoImpl implements ManagerStatisticsDao {
         } else {
             to = to.with(LocalTime.MAX);
         }
+
         Map<String, Object> paramMap = new HashMap<>(7);
+        paramMap.put("id", ids);
         paramMap.put("start_date", from);
         paramMap.put("end_date", to);
-        paramMap.put("destination_type", searchFormOrderStatistic.getDestination_typeIds());
-        paramMap.put("order_status", searchFormOrderStatistic.getOrder_statusIds());
-        try {
-            return namedParameterJdbcTemplate.query(
-                    getSearchQueryByDateRange(),
-                    paramMap,
-                    this::extractOrderForStatistic
-            );
-        } catch (EmptyResultDataAccessException ex) {
-            return Collections.emptyList();
+        paramMap.put("destination_type", destination_typeIds);
+        paramMap.put("order_status", status_OrdersList);
+
+        if (searchFormOrderStatistic.getSortIds() == 1) {
+            try {
+                return namedParameterJdbcTemplate.query(
+                        getSearchQueryByDateRangeOrderById(),
+                        paramMap,
+                        this::extractOrderForStatistic
+                );
+            } catch (EmptyResultDataAccessException ex) {
+                return Collections.emptyList();
+            }
+        } else if (searchFormOrderStatistic.getSortIds() == 2) {
+            try {
+                return namedParameterJdbcTemplate.query(
+                        getSearchQueryByDateRangeOrderByCreationDate(),
+                        paramMap,
+                        this::extractOrderForStatistic
+                );
+            } catch (EmptyResultDataAccessException ex) {
+                return Collections.emptyList();
+            }
+        } else if (searchFormOrderStatistic.getSortIds() == 3) {
+            try {
+                return namedParameterJdbcTemplate.query(
+                        getSearchQueryByDateRangeOrderByWeight(),
+                        paramMap,
+                        this::extractOrderForStatistic
+                );
+            } catch (EmptyResultDataAccessException ex) {
+                return Collections.emptyList();
+            }
+        } else if (searchFormOrderStatistic.getSortIds() == 4) {
+            try {
+                return namedParameterJdbcTemplate.query(
+                        getSearchQueryByDateRangeOrderByCapacity(),
+                        paramMap,
+                        this::extractOrderForStatistic
+                );
+            } catch (EmptyResultDataAccessException ex) {
+                return Collections.emptyList();
+            }
+        } else {
+            try {
+                return namedParameterJdbcTemplate.query(
+                        getSearchQueryByDateRange(),
+                        paramMap,
+                        this::extractOrderForStatistic
+                );
+            } catch (EmptyResultDataAccessException ex) {
+                return Collections.emptyList();
+            }
         }
+
     }
 
 
@@ -182,6 +272,7 @@ public class ManagerStatisticsDaoImpl implements ManagerStatisticsDao {
 
             }
     }
+
 
     @Override
     public Integer countOrdersBetweenDate(LocalDateTime from, LocalDateTime to) {
@@ -290,11 +381,56 @@ public class ManagerStatisticsDaoImpl implements ManagerStatisticsDao {
     }
 
     @Override
+    public Double avarageWeightDocument() {
+        return jdbcTemplate.queryForObject(
+                avarageWeightDocumentQuery(), new Object[]{}, Double.class);
+
+    }
+
+    @Override
+    public Double avarageCapacityDocument() {
+        return jdbcTemplate.queryForObject(
+                avarageCapacityDocumentQuery(), new Object[]{}, Double.class);
+
+    }
+
+
+    @Override
+    public Double avarageWeightPackage() {
+        return jdbcTemplate.queryForObject(
+                avarageWeightPackageQuery(), new Object[]{}, Double.class);
+
+    }
+
+    @Override
+    public Double avarageCapacityPackage() {
+        return jdbcTemplate.queryForObject(
+                avarageCapacityPackageQuery(), new Object[]{}, Double.class);
+
+    }
+
+    @Override
+    public Double avarageWeightCargo() {
+        return jdbcTemplate.queryForObject(
+                avarageWeightCargoQuery(), new Object[]{}, Double.class);
+
+    }
+
+    @Override
+    public Double avarageCapacityCargo() {
+        return jdbcTemplate.queryForObject(
+                avarageCapacityCargoQuery(), new Object[]{}, Double.class);
+
+    }
+
+
+    @Override
     public Integer countOffices() {
         return jdbcTemplate.queryForObject(
                 getCountOfficeQuery(), new Object[]{}, Integer.class);
 
     }
+
 
     @Override
     public Integer countUsers(LocalDateTime from, LocalDateTime to) {
@@ -395,6 +531,30 @@ public class ManagerStatisticsDaoImpl implements ManagerStatisticsDao {
     }
 
 
+    private String avarageWeightDocumentQuery() {
+        return queryService.getQuery("count.avg.weight.document");
+    }
+
+    private String avarageCapacityDocumentQuery() {
+        return queryService.getQuery("count.avg.capacity.document");
+    }
+
+    private String avarageWeightPackageQuery() {
+        return queryService.getQuery("count.avg.weight.package");
+    }
+
+    private String avarageCapacityPackageQuery() {
+        return queryService.getQuery("count.avg.capacity.package");
+    }
+
+    private String avarageWeightCargoQuery() {
+        return queryService.getQuery("count.avg.weight.cargo");
+    }
+
+    private String avarageCapacityCargoQuery() {
+        return queryService.getQuery("count.avg.capacity.cargo");
+    }
+
     private String getCountOfficeQuery() {
         return queryService.getQuery("count.offices");
     }
@@ -412,6 +572,22 @@ public class ManagerStatisticsDaoImpl implements ManagerStatisticsDao {
         return queryService.getQuery("select.person.search.statistic.order.by.order.handled");
     }
 
+
+    private String getSearchQueryByDateRangeOrderById() {
+        return queryService.getQuery("select.manager.statistic.filter.order.order.by.id");
+    }
+
+    private String getSearchQueryByDateRangeOrderByCreationDate() {
+        return queryService.getQuery("select.manager.statistic.filter.order.order.by.creation.date");
+    }
+
+    private String getSearchQueryByDateRangeOrderByWeight() {
+        return queryService.getQuery("select.manager.statistic.filter.order.order.by.weight");
+    }
+
+    private String getSearchQueryByDateRangeOrderByCapacity() {
+        return queryService.getQuery("select.manager.statistic.filter.order.order.by.capacity");
+    }
 
     private String getSearchQueryByDateRange() {
         return queryService.getQuery("select.manager.statistic.filter.order");

@@ -39,6 +39,12 @@ public class OrderTypeDaoImpl implements OrderTypeDao, RowMapper<OrderType> {
         return orderType;
     }
 
+    private Long mapRowIds(ResultSet rs, int rowNum) throws SQLException {
+        OrderType orderType = new OrderType();
+        orderType.setId(rs.getLong("order_type_id"));
+        return orderType.getId();
+    }
+
     @Override
     public OrderType save(OrderType orderType) {
         boolean hasPrimaryKey = orderType.getId() != null;
@@ -106,6 +112,19 @@ public class OrderTypeDaoImpl implements OrderTypeDao, RowMapper<OrderType> {
         }
     }
 
+
+    @Override
+    public List<Long> findAllIds() {
+        try {
+            return jdbcTemplate.query(
+                    getFindAllIdsQuery(),
+                    this::mapRowIds
+            );
+        } catch (EmptyResultDataAccessException ex) {
+            return Collections.emptyList();
+        }
+    }
+
     private String getUpsertQuery() {
         return queryService.getQuery("upsert.order_type");
     }
@@ -125,4 +144,9 @@ public class OrderTypeDaoImpl implements OrderTypeDao, RowMapper<OrderType> {
     private String getFindAllQuery() {
         return queryService.getQuery("all.order_type");
     }
+
+    private String   getFindAllIdsQuery() {
+        return queryService.getQuery("all.order_type.ids");
+    }
+
 }

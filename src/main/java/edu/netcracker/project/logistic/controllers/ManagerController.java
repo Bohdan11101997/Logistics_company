@@ -76,6 +76,13 @@ public class ManagerController {
         model.addAttribute("personList", personList);
         model.addAttribute("countOrdersBetweenDate", managerStatisticsDao.countOrdersBetweenDate(searchFormOrderStatistic.getFrom(), searchFormOrderStatistic.getTo()));
         model.addAttribute("countOrder", managerStatisticsDao.countOrders());
+        model.addAttribute("averageWeightDocument", managerStatisticsDao.avarageWeightDocument());
+        model.addAttribute("averageCapacityDocument", managerStatisticsDao.avarageCapacityDocument());
+        model.addAttribute("averageWeightPackage", managerStatisticsDao.avarageWeightPackage());
+        model.addAttribute("averageCapacityPackage", managerStatisticsDao.avarageCapacityPackage());
+        model.addAttribute("averageWeightCargo", managerStatisticsDao.avarageWeightCargo());
+        model.addAttribute("averageCapacityCargo", managerStatisticsDao.avarageCapacityCargo());
+
         return "manager/manager_statistics_orders";
     }
 
