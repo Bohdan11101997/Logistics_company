@@ -4,6 +4,7 @@
 
     <th:block th:replace="fragments/header :: header-bootstrap-config" />
     <th:block th:replace="fragments/header :: header-bootstrap-config-IE" />
+    <th:block th:replace="fragments/header :: header-bootstrap-widgets" />
 
     <link rel="stylesheet" th:href="@{/css/left_menu.css}" type="text/css" href="../static/css/left_menu.css" />
     <link rel="stylesheet" th:href="@{/css/main_content.css}" type="text/css" href="../static/css/main_content.css" />
@@ -94,7 +95,7 @@
                                         th:classappend="${#fields.hasErrors('roles')}? 'has-error'">
                                         <label for="role" class="control-label">Roles</label>
                                         <br />
-                                        <select id="role" multiple="multiple"
+                                        <select id="role" multiple="multiple" class="selectpicker"
                                                 th:field="*{roles}">
                                             <option th:each="role: ${availableRoles}"
                                                     th:value="${role.roleId}"
@@ -187,7 +188,7 @@
                                          th:classappend="${#fields.hasErrors('roles')}? 'has-error'">
                                         <label for="role" class="control-label">Roles</label>
                                         <br />
-                                        <select id="role" multiple="multiple"
+                                        <select id="role" multiple="multiple" class="selectpicker"
                                                 th:field="*{roles}">
                                             <option th:each="role: ${availableRoles}"
                                                     th:value="${role.roleId}"
@@ -219,11 +220,8 @@
     <th:block th:replace="fragments/footer :: footer"/>
     <th:block th:replace="fragments/left_menu :: left-menu-footer" />
 
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css" type="text/css"/>
-
     <script>
-        createMultiSelect("#role");
+        createMultiSelect("Call Center");
     </script>
     <script type="text/javascript" th:if="${newEmployee}">
         document.getElementById('crud_employee').className='active';

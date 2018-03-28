@@ -3,6 +3,8 @@
 <head>
     <th:block th:replace="fragments/header :: header-bootstrap-config"/>
     <th:block th:replace="fragments/header :: header-bootstrap-config-IE"/>
+    <th:block th:replace="fragments/header :: header-bootstrap-widgets" />
+
     <title>Create new order</title>
 
     <link rel="stylesheet" th:href="@{/css/left_menu.css}" type="text/css" href="/static/css/left_menu.css"/>
@@ -50,7 +52,7 @@
                                                 <div class="form-group required"
                                                      th:classappend="${#fields.hasErrors('orderType')}? 'has-error'">
                                                     <label for="order-type" class="control-label">Order Type</label>
-                                                    <select id="order-type" class="form-control"
+                                                    <select id="order-type" class="form-control selectpicker"
                                                             onchange="clearErrorStyles(this)"
                                                             th:field="*{{orderType}}">
                                                         <option th:each="type: ${orderTypes}"

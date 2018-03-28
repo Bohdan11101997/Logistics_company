@@ -172,11 +172,9 @@
 <th:block th:replace="fragments/footer :: footer"/>
 <th:block th:replace="fragments/left_menu :: left-menu-footer" />
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
-
 <script type="text/javascript">
     document.getElementById('user_my_orders').className='active';
-    createMultiSelect("#role", true);
+    createMultiSelect();
     createDatePicker(".input-daterange");
 </script>
 
