@@ -532,6 +532,9 @@ public class RouteProcessor {
     }
 
     public void removeCourier(Long employeeId) {
+        if(employeeId == null)
+            return;
+
         List<Order> uncompletedByEmployee = orderDao.findConfirmedByEmployeeId(employeeId);
         for (Order o : uncompletedByEmployee) {
             o.setCourier(null);
@@ -542,13 +545,10 @@ public class RouteProcessor {
     }
 
     public void removeOrder(Long orderId) {
-        walkOrdersQueue.removeIf(orderEntry -> {
-            orderEntry.order.setCourier(null);
-            return orderEntry.order.getId().equals(orderId);
-        });
-        driveOrdersQueue.removeIf(orderEntry -> {
-            orderEntry.order.setCourier(null);
-            return orderEntry.order.getId().equals(orderId);
-        });
+        if(orderId == null)
+            return;
+
+        walkOrdersQueue.removeIf(orderEntry -> orderEntry.order.getId().equals(orderId));
+        driveOrdersQueue.removeIf(orderEntry -> orderEntry.order.getId().equals(orderId));
     }
 }
