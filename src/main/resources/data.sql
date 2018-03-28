@@ -7,7 +7,7 @@ VALUES (3, 'Ned', 'Stark', '984565658', 'Ned.Stark@ukr.net');
 INSERT INTO contact (contact_id, first_name, last_name, phone_number, email)
 VALUES (4, 'Jaime', 'Lannister', '984565659', 'Jaime.Lannister@ukr.net');
 INSERT INTO contact (contact_id, first_name, last_name, phone_number, email)
-VALUES (5, 'Tyrion', 'Lannister', '984565660', 'its_an_omen@ukr.net');
+VALUES (5, 'stanis1', 'stanis1', '984565660', 'its_an_omen@ukr.net');
 INSERT INTO contact (contact_id, first_name, last_name, phone_number, email)
 VALUES (6, 'Tywin', 'Lannister', '984565661', 'Tywin.Lannister@ukr.net');
 INSERT INTO contact (contact_id, first_name, last_name, phone_number, email)
@@ -27,13 +27,13 @@ VALUES (12, 'manager', 'manager', '888461636', 'manager.manager@example.com');
 INSERT INTO person(person_id,  user_name, password, contact_id)
 VALUES (1, 'Bohdan', '12121212', 1);
 INSERT INTO person (person_id, user_name, password, contact_id)
-VALUES (2, 'Bohdan1', '$2a$10$FaTZAFUbG7UmfDCkAjepf.CY5bHap7wjSsKU02AT6Q7MxB6pgSy1u', 5);
+VALUES (2, 'Bohdan1', '$2a$10$FaTZAFUbG7UmfDCkAjepf.CY5bHap7wjSsKU02AT6Q7MxB6pgSy1u', 2);
 INSERT INTO person (person_id, user_name, password, contact_id)
 VALUES (3, 'Bohdan2', '12121212', 3);
 INSERT INTO person (person_id, user_name, password, contact_id)
 VALUES (4, 'stanis', '$2a$10$d5LXfYNl7n7DxjL8Ci42lOBiPiSd50400IjWU0AGuUYO8TeF/14de', 4);
 INSERT INTO person (person_id, user_name, password, contact_id)
-VALUES (5, 'stanis1', '$2a$10$x8wKe1tpGVJTE4zkHRbDj.OXXblGefWRjjdWw82e5s.m3OjHXGgM6', 2);
+VALUES (5, 'stanis1', '$2a$12$fq0goElQvWERSOzhoMygL.KmiZu9PGQNitqWFPTmHejN2igkLrzMq', 5);
 INSERT INTO person (person_id, user_name, password, contact_id)
 VALUES (6, 'agent-smith', '$2a$10$wTuyKwJX2hUhhuy5Po/lVeKWppG0H3fH0x4UmX4ketu/PHzhghS12', 6);
 INSERT INTO person (person_id, user_name, password, contact_id)

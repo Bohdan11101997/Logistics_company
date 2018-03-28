@@ -104,6 +104,7 @@ public class PasswordController {
         } else {
             logger.error("Same old and new passwords");
             bindingResult.rejectValue("newPassword", "Password.Old.Equals.New");
+            resetPasswordForm.setPersonId(personId);
             return "/reset_password";
         }
 
