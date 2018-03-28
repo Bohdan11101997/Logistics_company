@@ -218,22 +218,28 @@
     <div class="container-fluid bg-grey" style="margin:30px auto">
         <h2 class="text-center">Contacts</h2>
         <div class="row">
-            <div class="col-sm-5 col-lg-5">
+            <div class="col-sm-5 col-lg-5 ">
                 <p>Questions and wishes will be considered in 3 days.</p>
                 <p><span class="glyphicon glyphicon-map-marker"></span> Kyiv, Ukraine</p>
                 <p><span class="glyphicon glyphicon-phone"></span> +380 (044) 777-77-77</p>
                 <p><span class="glyphicon glyphicon-envelope"></span> client.two.client@gmail.com</p>
             </div>
+            <form class="form-horizontal" method="post" enctype="multipart/form-data"
+                  th:action="@{/index/feedback/send}"
+                  th:object="${feedbackForm}" >
             <div class="col-sm-7  col-lg-6">
                 <div class="row">
                     <div class="col-sm-6 form-group">
-                        <input class="form-control" id="nameSend" name="nameSend" placeholder="Your name" type="text" required="required" />
+                        <input class="form-control" id="nameSend" name="nameSend" placeholder="Your name" type="text" required="required"
+                               th:field="*{name}"/>
                     </div>
                     <div class="col-sm-6 form-group">
-                        <input class="form-control" id="emailSend" name="emailSend" placeholder="Your e-mail" type="email" required="required" />
+                        <input class="form-control" id="emailSend" name="emailSend" placeholder="Your e-mail" type="email" required="required"
+                               th:field="*{email}"/>
                     </div>
                 </div>
-                <textarea class="form-control" id="commentsSend" name="commentsSend" placeholder="Message" rows="5"></textarea><br />
+                <textarea class="form-control" id="commentsSend" name="commentsSend" placeholder="Message" rows="5"
+                          th:field="*{message}"></textarea><br />
                 <div class="row">
                     <div class="col-sm-12 form-group">
                         <button class="btn btn-default pull-right" type="submit">Send</button>
@@ -241,6 +247,7 @@
                 </div>
                 <div class=" col-lg-1"></div>
             </div>
+            </form>
         </div>
     </div>
 

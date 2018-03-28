@@ -7,7 +7,7 @@ VALUES (3, 'Ned', 'Stark', '984565658', 'Ned.Stark@ukr.net');
 INSERT INTO contact (contact_id, first_name, last_name, phone_number, email)
 VALUES (4, 'Jaime', 'Lannister', '984565659', 'Jaime.Lannister@ukr.net');
 INSERT INTO contact (contact_id, first_name, last_name, phone_number, email)
-VALUES (5, 'Tyrion', 'Lannister', '984565660', 'Tyrion.Lannister@ukr.net');
+VALUES (5, 'Tyrion', 'Lannister', '984565660', 'its_an_omen@ukr.net');
 INSERT INTO contact (contact_id, first_name, last_name, phone_number, email)
 VALUES (6, 'Tywin', 'Lannister', '984565661', 'Tywin.Lannister@ukr.net');
 INSERT INTO contact (contact_id, first_name, last_name, phone_number, email)
