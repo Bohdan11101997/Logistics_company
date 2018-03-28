@@ -66,7 +66,7 @@ public class IndexController {
         String mainText = feedback.getMessage();
         String waitingForAnswer = formMessageWaitingForAnswerFromFeedbackForm(feedback);
 
-        return greeting + "\n" + mainText + "\n" + waitingForAnswer;
+        return greeting + "\n\n" + mainText + "\n\n" + waitingForAnswer;
     }
 
     private String formMessageGreetingFromFeedbackForm(FeedbackForm feedback){
