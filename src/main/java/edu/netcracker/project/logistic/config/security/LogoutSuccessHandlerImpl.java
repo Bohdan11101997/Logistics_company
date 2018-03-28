@@ -40,6 +40,7 @@ public class LogoutSuccessHandlerImpl extends SimpleUrlLogoutSuccessHandler impl
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null) return;
         try {
             for (GrantedAuthority authority : auth.getAuthorities()) {
                 if (authority.getAuthority().equals("ROLE_CALL_CENTER")) {
