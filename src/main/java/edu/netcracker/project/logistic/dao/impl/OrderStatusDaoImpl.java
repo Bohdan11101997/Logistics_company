@@ -32,6 +32,12 @@ public class OrderStatusDaoImpl implements OrderStatusDao, RowMapper<OrderStatus
         return orderStatus;
     }
 
+    private Long mapRowIds(ResultSet rs, int rowNum) throws SQLException {
+        OrderStatus orderStatus = new OrderStatus();
+        orderStatus.setId(rs.getLong("order_status_id"));
+        return orderStatus.getId();
+    }
+
     @Override
     public OrderStatus save(OrderStatus orderStatus) {
         throw new UnsupportedOperationException("Not implemented");
@@ -70,7 +76,7 @@ public class OrderStatusDaoImpl implements OrderStatusDao, RowMapper<OrderStatus
         }
     }
 
-
+     @Override
     public List<OrderStatus> findAll() {
 
         try {
@@ -78,6 +84,20 @@ public class OrderStatusDaoImpl implements OrderStatusDao, RowMapper<OrderStatus
         } catch (EmptyResultDataAccessException ex) {
             return Collections.emptyList();
         }
+    }
+
+
+    @Override
+    public List<Long> findAllIds() {
+
+        try {
+            return jdbcTemplate.query(getAllStatusIdsQuery(), this::mapRowIds);
+        } catch (EmptyResultDataAccessException ex) {
+            return Collections.emptyList();
+        }
+    }
+    private String getAllStatusIdsQuery() {
+        return queryService.getQuery("all.status.ids");
     }
 
     private String getAllStatusQuery() {
