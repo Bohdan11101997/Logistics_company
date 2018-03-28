@@ -60,12 +60,12 @@
                                     <td th:text="${order.orderStatus.name}">Order Status</td>
                                     <td>
                                         <form method="POST" th:action="@{'/call-center/orders/' + ${order.id} + '/confirm'}">
-                                            <button class="btn btn-link update">Confirm</button>
+                                            <button class="btn btn-link update">confirm</button>
                                         </form>
                                     </td>
                                     <td>
                                         <form method="POST" th:action="@{'/call-center/orders/' + ${order.id} + '/reject'}">
-                                            <button class="btn btn-link delete">Reject</button>
+                                            <button class="btn btn-link delete">reject</button>
                                         </form>
                                     </td>
                                 </tr>
