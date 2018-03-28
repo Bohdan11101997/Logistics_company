@@ -59,6 +59,18 @@
 
                     <h1> Advertisement List </h1>
 
+                    <div th:if="${param.update}">
+                        <div class="alert alert-info">
+                            Advertisement has been updated successfully.
+                        </div>
+                    </div>
+
+                    <div th:if="${param.delete}">
+                        <div class="alert alert-danger">
+                            Advertisement has been deleted sucessfully.
+                        </div>
+                    </div>
+
                     <div class="table-responsive">
                         <table class="table table-striped">
                             <thead>
