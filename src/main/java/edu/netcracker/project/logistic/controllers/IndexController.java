@@ -2,7 +2,9 @@ package edu.netcracker.project.logistic.controllers;
 
 import edu.netcracker.project.logistic.model.Advertisement;
 import edu.netcracker.project.logistic.model.FeedbackForm;
+import edu.netcracker.project.logistic.model.Message;
 import edu.netcracker.project.logistic.service.AdvertisementService;
+import edu.netcracker.project.logistic.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
@@ -18,22 +20,18 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Controller
-@PropertySource("classpath:mail.properties")
 @RequestMapping({"/", "index"})
 public class IndexController {
 
     private AdvertisementService advertisementService;
-    private HttpServletRequest request;
-    private Environment env;
-    private JavaMailSender sender;
+    private MessageService messageService;
 
     @Autowired
-    public IndexController(AdvertisementService advertisementService, HttpServletRequest request, Environment env, JavaMailSender sender) {
+    public IndexController(AdvertisementService advertisementService, MessageService messageService) {
         this.advertisementService = advertisementService;
-        this.request = request;
-        this.env = env;
-        this.sender = sender;
+        this.messageService = messageService;
     }
+
 
     @GetMapping
     public String index(Model model){
@@ -50,20 +48,35 @@ public class IndexController {
     @PostMapping(value = "/feedback/send")
     public String sendFeedback(@ModelAttribute("feedbackForm") FeedbackForm feedback) throws MessagingException {
 
-        // send it in e-mail
-        MimeMessage mimeMessage = sender.createMimeMessage();
-        MimeMessageHelper msg = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-        msg.setSubject("Verify email address");
-        String from = env.getProperty("spring.mail.username");
-        msg.setFrom(from);
-        msg.setTo("its_an_omen@ukr.net");
-        msg.setText("Hello, my name is: " + feedback.getName() + "\n"
-                + feedback.getMessage() + "\n"
-                + "I'm waiting for answer on this e-mail: " + feedback.getEmail(), false) ;
+        Message message = new Message();
+        message.setSubject("Feedback about service");
+        message.setTo("its_an_omen@ukr.net");
 
-        sender.send(mimeMessage);
+        String messageText = formMessageTextFromFeedbackFrom(feedback);
+        message.setText(messageText);
+
+        messageService.sendMessage(message);
 
         return "redirect:/index";
+    }
+
+    private String formMessageTextFromFeedbackFrom(FeedbackForm feedback) {
+
+        String greeting = formMessageGreetingFromFeedbackForm(feedback);
+        String mainText = feedback.getMessage();
+        String waitingForAnswer = formMessageWaitingForAnswerFromFeedbackForm(feedback);
+
+        return greeting + "\n" + mainText + "\n" + waitingForAnswer;
+    }
+
+    private String formMessageGreetingFromFeedbackForm(FeedbackForm feedback){
+        String name = feedback.getName();
+        return "Hello, my name is: " + name;
+    }
+
+    private String formMessageWaitingForAnswerFromFeedbackForm(FeedbackForm feedback) {
+        String email = feedback.getEmail();
+        return "I'm waiting for answer on this e-mail: " + email;
     }
 
 }
