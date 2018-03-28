@@ -368,6 +368,8 @@ public class RouteProcessor {
                     flowBuilder.setOffice(office);
                 }
 
+
+
                 if (!flowBuilder.process(order, worker)) {
                     logger.error(flowBuilder.getError());
                     //manual rollback successfully picked orders
@@ -529,6 +531,8 @@ public class RouteProcessor {
             removeOrder(o.getId());
             createOrder(o);
         }
+        walkWorkerQueue.removeIf(c -> c.employeeId.equals(employeeId));
+        driveWorkerQueue.removeIf(c -> c.employeeId.equals(employeeId));
     }
 
     public void removeOrder(Long orderId) {
