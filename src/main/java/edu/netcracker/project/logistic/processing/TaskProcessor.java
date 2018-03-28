@@ -1,14 +1,15 @@
 package edu.netcracker.project.logistic.processing;
 
-import edu.netcracker.project.logistic.dao.*;
+import edu.netcracker.project.logistic.dao.OrderDao;
+import edu.netcracker.project.logistic.dao.PersonCrudDao;
+import edu.netcracker.project.logistic.dao.TaskDao;
+import edu.netcracker.project.logistic.dao.WorkDayDao;
 import edu.netcracker.project.logistic.model.*;
-import edu.netcracker.project.logistic.service.EmployeeService;
 import edu.netcracker.project.logistic.service.NotificationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -92,9 +93,9 @@ public class TaskProcessor {
     private WorkDayDao workDayDao;
     private NotificationService notificationService;
 
-    public TaskProcessor(OrderDao orderDao, RoleCrudDao roleDao, TaskDao taskDao,
-                         PersonCrudDao personDao, EmployeeService employeeService, WorkDayDao workDayDao,
-                         SessionRegistry sessionRegistry, NotificationService notificationService) {
+    public TaskProcessor(OrderDao orderDao, TaskDao taskDao,
+                         PersonCrudDao personDao, WorkDayDao workDayDao,
+                         NotificationService notificationService) {
         this.orderDao = orderDao;
         this.taskDao = taskDao;
         this.personDao = personDao;
@@ -163,7 +164,7 @@ public class TaskProcessor {
         // Check if work day is nearing end
         if (now.toLocalTime().isBefore(employeeEntry.workDay.getStartTime()) ||
                 now.toLocalTime().plus(WORK_DAY_END_NEARING_INTERVAL)
-                .isAfter(employeeEntry.workDay.getEndTime())) {
+                        .isAfter(employeeEntry.workDay.getEndTime())) {
             taskQueue.put(taskEntry);
             return;
         }
