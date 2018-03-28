@@ -198,15 +198,16 @@
                                     </div>
 
                                     <div class="form-group" th:if="${param.drafted == null}">
-                                        <button class="btn btn-success" th:formaction="@{/user/order}">Save</button>
+                                        <button class="btn btn-success" th:formaction="@{/user/order}">Confirm</button>
                                         <button class="btn btn-info" id="btn-draft" th:formaction="@{/user/order/draft}">Draft</button>
                                     </div>
 
                                     <div class="form-group" th:if="${param.drafted != null}">
                                         <input type="hidden" name="drafted" value="true" />
                                         <input type="hidden" name="id" th:value="${order.id}" />
-                                        <button class="btn btn-success" th:formaction="@{/user/order}">Save</button>
+                                        <button class="btn btn-success" th:formaction="@{/user/order}">Confirm</button>
                                         <button id="btn-delete" class="btn btn-danger" th:formaction="@{/user/order/delete}">Delete</button>
+                                        <button class="btn btn-info" id="btn-draft" th:formaction="@{/user/order/draft}">Draft</button>
                                         <script>
                                             var form = document.getElementById("form-order");
                                             document.getElementById("btn-delete").addEventListener('click', function() {

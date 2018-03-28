@@ -263,7 +263,7 @@ public class UserController {
         newOrderValidator.validate(draftedOrder, result);
         if (result.hasErrors()) {
             model.addAttribute("orderTypes", orderTypeDao.findAll());
-            return String.format("/user/order?drafted=true&id=%s", id);
+            return "user/order";
         }
         OrderDraft draft;
         try {
@@ -367,6 +367,28 @@ public class UserController {
         orderDraft.setPersonId(user.getId());
         orderDraft.setDraft(order);
 
+        orderService.draft(orderDraft);
+        return "redirect:/main";
+    }
+
+    @PostMapping(value = "/order/draft", params = {"drafted", "id"})
+    public String updateDraftOrder(@ModelAttribute("order") Order order, Principal principal,
+                                   @RequestParam String id) {
+        Optional<Person> opt = userService.findOne(principal.getName());
+        if (!opt.isPresent()) {
+            return "error/500";
+        }
+        Person user = opt.get();
+        order.setSenderContact(user.getContact());
+
+        OrderDraft orderDraft = new OrderDraft();
+        try {
+            orderDraft.setId(Long.parseLong(id));
+        } catch (NumberFormatException ex) {
+            return "error/400";
+        }
+        orderDraft.setPersonId(user.getId());
+        orderDraft.setDraft(order);
         orderService.draft(orderDraft);
         return "redirect:/main";
     }

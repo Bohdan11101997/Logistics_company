@@ -55,13 +55,13 @@ public class OrderDraftDaoImpl implements OrderDraftDao, RowMapper<OrderDraft> {
             jdbcTemplate.update(
                     getUpdateQuery(),
                     ps -> {
-                        ps.setLong(1, orderDraft.getId());
-                        ps.setLong(2, orderDraft.getPersonId());
+                        ps.setLong(1, orderDraft.getPersonId());
                         try {
-                            ps.setString(3, objectMapper.writeValueAsString(orderDraft.getDraft()));
+                            ps.setString(2, objectMapper.writeValueAsString(orderDraft.getDraft()));
                         } catch (JsonProcessingException ex) {
                             throw new IllegalStateException("Can't convert order draft data to JSON");
                         }
+                        ps.setLong(3, orderDraft.getId());
                     }
             );
         } else {

@@ -222,6 +222,7 @@ public class OrderServiceImpl implements OrderService {
         Optional<OrderDraft> opt = orderDraftDao.findOne(orderDraft.getId());
         if (opt.isPresent()) {
             OrderDraft record = opt.get();
+            orderDraft.getDraft().setCreationTime(record.getDraft().getCreationTime());
             record.setDraft(orderDraft.getDraft());
             record.getDraft().setOrderStatusTime(LocalDateTime.now());
             orderDraftDao.save(record);
