@@ -19,8 +19,42 @@ function clearErrorStyles(input) {
     }
 }
 
+function createMultiSelect(selectText, displayCount) {
+    displayCount = +displayCount > 0 ? +displayCount : 2; // filter out invalid values
 
-function createMultiSelect(selector, selectAll) {
+    var el = $('.selectpicker');
+
+    el.selectpicker({
+        selectedTextFormat: "count > " + displayCount
+    });
+
+    if (selectText) {
+        el.on("loaded.bs.select", function (event) {
+            el.selectpicker("deselectAll");
+            var options = event.target.options;
+            for (var i = 0; i < options.length; i++) {
+                if (options[i].text === selectText) {
+                    el.selectpicker("val", options[i].value);
+                    return;
+                }
+            }
+        });
+    } else {
+        el.selectpicker("selectAll");
+    }
+
+    el.on("changed.bs.select", function (event) {
+        var options = event.target.options;
+        for (var i = 0; i < options.length; i++) {
+            if (options[i].selected) {
+                return;
+            }
+        }
+        el.selectpicker("selectAll");
+    });
+}
+
+function OLD_createMultiSelect(selector, selectAll) {
     var el = $(selector);
     var elContainer = null;
 

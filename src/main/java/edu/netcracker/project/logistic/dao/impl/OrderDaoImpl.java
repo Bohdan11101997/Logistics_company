@@ -315,19 +315,18 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
             } catch (EmptyResultDataAccessException ex) {
                 return Collections.emptyList();
             }
-        }
-            else if (searchFormOrder.getContact_side() == 3) {
-                try {
-                    return namedParameterJdbcTemplate.query(
-                            getSearchFromOfficeQuery(),
-                            paramMap,
-                            this
+        } else if (searchFormOrder.getContact_side() == 3) {
+            try {
+                return namedParameterJdbcTemplate.query(
+                        getSearchFromOfficeQuery(),
+                        paramMap,
+                        this
 
-                    );
+                );
 
-                } catch (EmptyResultDataAccessException ex) {
-                    return Collections.emptyList();
-                }
+            } catch (EmptyResultDataAccessException ex) {
+                return Collections.emptyList();
+            }
         } else {
 
             return orderBySenderOrReceiver(id);
@@ -354,11 +353,24 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
     }
 
     @Override
-    public List<Order> orderBySenderOrReceiver(Long aLong) {
+    public List<Order> orderBySenderOrReceiver(Long contactId) {
         try {
             return jdbcTemplate.query(
                     getOrderByUser(),
-                    new Object[]{aLong, aLong},
+                    new Object[]{contactId, contactId},
+                    this
+            );
+        } catch (EmptyResultDataAccessException e) {
+            return Collections.emptyList();
+        }
+    }
+
+    @Override
+    public List<Order> findByCourierId(Long courierId) {
+        try {
+            return jdbcTemplate.query(
+                    getFindByCourierIdQuery(),
+                    new Object[]{courierId},
                     this
             );
         } catch (EmptyResultDataAccessException e) {
@@ -417,5 +429,9 @@ public class OrderDaoImpl implements OrderDao, RowMapper<Order> {
 
     private String getFindConfirmedQuery() {
         return queryService.getQuery("select.order.confirmed");
+    }
+
+    private String getFindByCourierIdQuery() {
+        return queryService.getQuery("select.order.by.courier");
     }
 }

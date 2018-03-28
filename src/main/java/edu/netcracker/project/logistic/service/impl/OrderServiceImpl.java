@@ -170,9 +170,10 @@ public class OrderServiceImpl implements OrderService {
             Route emptyRoute = new Route();
             emptyRoute.setWayPoints(Collections.emptyList());
             data.setRoute(emptyRoute);
+        } else {
+            data.setRoute(route);
         }
         data.setLastLocation(String.format("%s,%s", point.getLatitude(), point.getLongitude()));
-        data.setRoute(route);
         courierDataDao.save(data);
     }
 
@@ -194,6 +195,9 @@ public class OrderServiceImpl implements OrderService {
                         () -> new IllegalStateException("Can't find order status 'DELIVERED'")
                 ));
         orderDao.save(order);
+        if(data.getCourierStatus().equals(CourierStatus.FREE)) {
+            routeProcessor.addCourier(employeeId);
+        }
     }
 
     @Transactional
@@ -215,6 +219,9 @@ public class OrderServiceImpl implements OrderService {
                 ));
         orderDao.save(order);
         taskProcessor.createTask(order);
+        if(data.getCourierStatus().equals(CourierStatus.FREE)) {
+            routeProcessor.addCourier(employeeId);
+        }
     }
 
     @Override
