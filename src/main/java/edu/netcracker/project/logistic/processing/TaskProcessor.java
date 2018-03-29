@@ -219,11 +219,13 @@ public class TaskProcessor {
             t.setEmployeeId(null);
             taskDao.delete(t.getId());
             t.setId(null);
+        }
+        workerQueue.remove(new EmployeeEntry(employeeId));
+        for (Task t: uncompletedByEmployee) {
             Order order = orderDao.findOne(t.getOrderId())
                     .orElseThrow(() -> new IllegalStateException("Order for task don't exists"));
             createTask(order);
         }
-        workerQueue.remove(new EmployeeEntry(employeeId));
     }
 
     public void createTask(Order order) {

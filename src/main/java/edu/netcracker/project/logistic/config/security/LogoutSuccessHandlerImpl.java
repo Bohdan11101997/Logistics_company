@@ -1,6 +1,7 @@
 package edu.netcracker.project.logistic.config.security;
 
 import edu.netcracker.project.logistic.model.Person;
+import edu.netcracker.project.logistic.processing.InactiveUsersProcessor;
 import edu.netcracker.project.logistic.processing.RouteProcessor;
 import edu.netcracker.project.logistic.processing.TaskProcessor;
 import edu.netcracker.project.logistic.service.PersonService;
@@ -20,12 +21,10 @@ import javax.servlet.http.HttpServletResponse;
 @Configuration
 public class LogoutSuccessHandlerImpl extends SimpleUrlLogoutSuccessHandler implements LogoutHandler {
     private PersonService personService;
-    private TaskProcessor taskProcessor;
-    private RouteProcessor routeProcessor;
+    private InactiveUsersProcessor inactiveUsersProcessor;
 
-    public LogoutSuccessHandlerImpl(TaskProcessor taskProcessor, RouteProcessor routeProcessor) {
-        this.taskProcessor = taskProcessor;
-        this.routeProcessor = routeProcessor;
+    public LogoutSuccessHandlerImpl(InactiveUsersProcessor inactiveUsersProcessor) {
+        this.inactiveUsersProcessor = inactiveUsersProcessor;
     }
 
     public PersonService getPersonService() {
@@ -41,23 +40,6 @@ public class LogoutSuccessHandlerImpl extends SimpleUrlLogoutSuccessHandler impl
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null) return;
-        try {
-            for (GrantedAuthority authority : auth.getAuthorities()) {
-                if (authority.getAuthority().equals("ROLE_CALL_CENTER")) {
-                    String username = ((User) auth.getPrincipal()).getUsername();
-                    Long employeeId = personService.findOne(username).map(Person::getId)
-                            .orElse(null);
-                    taskProcessor.removeAgent(employeeId);
-                }
-                if (authority.getAuthority().equals("ROLE_COURIER")) {
-                    String username = ((User) auth.getPrincipal()).getUsername();
-                    Long employeeId = personService.findOne(username).map(Person::getId)
-                            .orElse(null);
-                    routeProcessor.removeCourier(employeeId);
-                }
-            }
-        } catch (Exception ex) {
-            logger.error("Error during removal of employee from processing services", ex);
-        }
+        inactiveUsersProcessor.process(auth);
     }
 }
