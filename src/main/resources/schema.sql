@@ -192,6 +192,7 @@ CREATE TABLE logistic_company.order_draft
   draft JSONB NOT NULL
 );
 
+
 ALTER TABLE "logistic_company"."person"
   ADD UNIQUE ("user_name");
 ALTER TABLE "logistic_company"."person"

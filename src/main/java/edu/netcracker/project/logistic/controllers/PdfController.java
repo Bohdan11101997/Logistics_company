@@ -9,6 +9,7 @@ import edu.netcracker.project.logistic.model.SearchFormOrderStatistic;
 import edu.netcracker.project.logistic.service.OfficeService;
 import edu.netcracker.project.logistic.service.UserService;
 import edu.netcracker.project.logistic.service.impl.GeneratePdfReport;
+import org.omg.CosNaming.NamingContextPackage.NotFound;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import java.io.ByteArrayInputStream;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 
@@ -47,8 +49,7 @@ public class PdfController {
         String username = principal.getName();
         Optional<Person> optionalPerson = userService.findOne(username);
 
-
-        Person person = optionalPerson.orElse(null);
+        Person person = optionalPerson.orElseThrow((IllegalStateException::new));
 
         ArrayList<Person> employee = (ArrayList<Person>) managerStatisticsDao.employeesByCourierOrCall_Center();
         ArrayList<Office> offices = (ArrayList<Office>) officeService.allOffices();
@@ -84,8 +85,6 @@ public class PdfController {
         listOrders.add(new ListItem("Average weight cargo:   " + managerStatisticsDao.avarageWeightCargo()));
         listOrders.add(new ListItem("Average capacity cargo:   " + managerStatisticsDao.avarageCapacityCargo()));
 
-
-        assert person != null;
         ByteArrayInputStream bis = GeneratePdfReport.managerReport(employee, offices, listEmployees, listOffices, listOrders, person.getContact().getFirstName(), person.getContact().getLastName());
 
         HttpHeaders headers = new HttpHeaders();

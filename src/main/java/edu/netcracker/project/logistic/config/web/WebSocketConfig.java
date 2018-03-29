@@ -7,6 +7,8 @@ import org.springframework.web.socket.config.annotation.*;
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
+
+
     @Override
     public void configureWebSocketTransport(WebSocketTransportRegistration registry) {
         registry.setSendTimeLimit(15 * 1000).setSendBufferSizeLimit(512 * 1024);

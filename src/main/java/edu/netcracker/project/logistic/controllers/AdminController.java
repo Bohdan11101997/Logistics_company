@@ -367,7 +367,7 @@ public class AdminController {
 
     @GetMapping("/offices")
     public String getAllOffice(Model model) {
-        model.addAttribute("offices", officeService.allOffices());
+        model.addAttribute("offices", officeDao.getOfficesForAdmin());
         model.addAttribute("officeSearchForm", new OfficeSearchForm());
         return "/admin/admin_offices";
     }
@@ -375,7 +375,7 @@ public class AdminController {
     @PostMapping("/offices")
     public String findByDepartmentOrAddress(@ModelAttribute("officeSearchForm") OfficeSearchForm officeSearchForm,  Model model) {
         model.addAttribute("offices", officeDao.findByDepartmentOrAddress(officeSearchForm));
-        return "/manager/manager_statistics_offices";
+        return "/admin/admin_offices";
 
     }
 }
