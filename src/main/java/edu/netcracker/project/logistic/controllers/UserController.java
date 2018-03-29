@@ -267,7 +267,7 @@ public class UserController {
         newOrderValidator.validate(draftedOrder, result);
         if (result.hasErrors()) {
             model.addAttribute("orderTypes", orderTypeDao.findAll());
-            return "user_order";
+            return "user/user_order";
         }
         OrderDraft draft;
         try {
