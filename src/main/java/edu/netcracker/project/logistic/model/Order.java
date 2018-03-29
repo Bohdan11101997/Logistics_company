@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Order {
+
     private Long id;
     private LocalDateTime creationTime;
     private LocalDateTime deliveryTime;
@@ -21,6 +22,7 @@ public class Order {
     private Long width;
     private Long height;
     private Long length;
+    private Long capacity;
 
     public Order() {
     }
@@ -42,6 +44,14 @@ public class Order {
         this.width = other.width;
         this.height = other.height;
         this.length = other.length;
+    }
+
+    public Long getCapacity() {
+        return capacity;
+    }
+
+    public void setCapacity(Long capacity) {
+        this.capacity = capacity;
     }
 
     public Long getId() {

@@ -21,13 +21,16 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private AccessDeniedHandler accessDeniedHandler;
     private AuthenticationSuccessHandler authenticationSuccessHandler;
+    private LogoutSuccessHandlerImpl logoutSuccessHandler;
     private UserDetailsService userDetailsService;
 
     @Autowired
     public SpringSecurityConfig(AccessDeniedHandler accessDeniedHandler,
-                                AuthenticationSuccessHandler authenticationSuccessHandler) {
+                                AuthenticationSuccessHandler authenticationSuccessHandler,
+                                LogoutSuccessHandlerImpl logoutSuccessHandler) {
         this.accessDeniedHandler = accessDeniedHandler;
         this.authenticationSuccessHandler = authenticationSuccessHandler;
+        this.logoutSuccessHandler = logoutSuccessHandler;
     }
 
     public UserDetailsService getUserDetailsService() {
@@ -62,6 +65,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .logout()
                 .invalidateHttpSession(true)
                 .clearAuthentication(true)
+                .addLogoutHandler(logoutSuccessHandler)
                 .permitAll()
                 .and()
                 .exceptionHandling().accessDeniedHandler(accessDeniedHandler);

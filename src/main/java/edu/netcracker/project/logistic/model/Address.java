@@ -38,7 +38,6 @@ public class Address {
         this.location = location;
     }
 
-    //TODO: add default name or create rerequest
     private static String LocationToAddress(LatLng location) {
         /*GeocodingResult result = getListOfAddresses(location)[0];
         for(AddressComponent ac : result.addressComponents){
@@ -71,6 +70,7 @@ public class Address {
         try {
             result = GoogleApiRequest.GeocodingApi().latlng(location)
                     .bounds(new LatLng(50.243848, 30.204895), new LatLng(50.674379, 30.735831))
+                    .components(ComponentFilter.country("ua"), ComponentFilter.administrativeArea("Kiev"))
                     .await();
         } catch (Exception e) {
             System.err.println(e.getMessage());
@@ -83,6 +83,7 @@ public class Address {
         try {
             result = GoogleApiRequest.GeocodingApi().address(address)
                     .bounds(new LatLng(50.243848, 30.204895), new LatLng(50.674379, 30.735831))
+                    .components(ComponentFilter.country("ua"), ComponentFilter.administrativeArea("Kiev"))
                     .await();
         } catch (Exception e) {
             System.err.println(e.getMessage());
@@ -138,7 +139,7 @@ public class Address {
     }
 
     public boolean check(Address with, TravelMode travelMode) {
-        //TODO: change this later
+
         DistanceMatrix result;
         try {
             result = GoogleApiRequest.DistanceMatrixApi()
@@ -152,11 +153,10 @@ public class Address {
 
             if (result.rows[0].elements[0].status != DistanceMatrixElementStatus.OK) {
                 System.err.println("DistansMatrixRequest return " + result.rows[0].elements[0].status.name());
-                return false; // not OK
+                return false; //not OK
             }
 
             return true;//OK
-            //(result.rows[0].elements[0].fare.value.equals(BigDecimal.valueOf(0.0)));
         } catch (ApiException | InterruptedException | IOException e) {
             e.printStackTrace();
             System.err.println("DistansMatrixRequest caught API's exception");

@@ -5,12 +5,32 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class SearchFormOrderStatistic {
+
+    private Long ids;
     private LocalDateTime from;
     private LocalDateTime to;
     private Integer year;
     private Integer month;
     private List<Long> destination_typeIds;
     private List<Long> order_statusIds;
+    private Long sortIds;
+
+
+    public Long getIds() {
+        return ids;
+    }
+
+    public void setIds(Long ids) {
+        this.ids = ids;
+    }
+
+    public Long getSortIds() {
+        return sortIds;
+    }
+
+    public void setSortIds(Long sortIds) {
+        this.sortIds = sortIds;
+    }
 
     public Integer getYear() {
         return year;

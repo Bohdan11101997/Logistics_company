@@ -4,6 +4,7 @@
 
     <th:block th:replace="fragments/header :: header-bootstrap-config" />
     <th:block th:replace="fragments/header :: header-bootstrap-config-IE" />
+    <th:block th:replace="fragments/header :: header-bootstrap-widgets" />
 
     <link rel="stylesheet" th:href="@{/css/left_menu.css}" type="text/css" href="../static/css/left_menu.css" />
     <link rel="stylesheet" th:href="@{/css/main_content.css}" type="text/css" href="../static/css/main_content.css" />
@@ -112,7 +113,7 @@
                         <!-- Paginator -->
                         <div class="form-group col-md-2">
                             <label for= "itemsOnPageSelect" class="control-label">On page</label>
-                            <select class="form-control" id="itemsOnPageSelect">
+                            <select class="form-control selectpicker" id="itemsOnPageSelect">
                                 <option th:each="itemsOnPageValue : ${T(edu.netcracker.project.logistic.model.Pager).ITEMS_ON_PAGE_VALUES}" th:text="${itemsOnPageValue}" th:value="${itemsOnPageValue}"
                                         th:selected="${itemsOnPageValue} == ${pager.itemsOnPage}"></option>
                             </select>
@@ -120,7 +121,7 @@
 
                         <div class="form-group col-md-2">
                             <label for= "buttonsToShowSelect" class="control-label">Buttons</label>
-                            <select class="form-control" id="buttonsToShowSelect">
+                            <select class="form-control selectpicker" id="buttonsToShowSelect">
                                 <option th:each="buttonToShowValue : ${T(edu.netcracker.project.logistic.model.Pager).BUTTONS_TO_SHOW_VALUES}" th:text="${buttonToShowValue}" th:value="${buttonToShowValue}"
                                         th:selected="${buttonToShowValue} == ${pager.buttonsToShow}"></option>
                             </select>

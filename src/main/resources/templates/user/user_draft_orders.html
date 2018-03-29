@@ -12,23 +12,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css" />
 
     <script th:src="@{/js/forms.js}" src="../../static/js/forms.js"></script>
-    <style>
-        @media (min-width: 768px)  {
-            #from-date {
-                margin-right: 5px;
-            }
-        }
-
-        @media (max-width: 767px) {
-            #from-date {
-                margin-bottom: 5px;
-            }
-        }
-
-        .form-horizontal {
-            padding: 0 15px;
-        }
-    </style>
 </head>
 
 <body class="body-color">
@@ -76,7 +59,7 @@
                                     <form method="GET" th:action="@{/user/order}">
                                         <input type="hidden" name="drafted" value="true" />
                                         <input type="hidden" name="id" th:value="${order.id}" value="" />
-                                        <button class="btn btn-link update">Confirm</button>
+                                        <button class="btn btn-link update">Edit</button>
                                     </form>
                                 </td>
                             </tr>
@@ -98,7 +81,6 @@
 
 <script type="text/javascript">
     document.getElementById('user_draft_orders').className='active';
-    createMultiSelect("#role", true);
     createDatePicker(".input-daterange");
 </script>
 

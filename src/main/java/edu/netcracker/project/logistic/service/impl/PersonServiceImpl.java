@@ -11,6 +11,7 @@ import edu.netcracker.project.logistic.service.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -31,6 +32,7 @@ public class PersonServiceImpl implements PersonService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    @Transactional
     @Override
     public void savePerson(Person person) {
         person.setPassword(passwordEncoder.encode(person.getPassword()));
@@ -39,10 +41,14 @@ public class PersonServiceImpl implements PersonService {
                 person.getRoles().stream()
                         .anyMatch(r -> r.getRoleName().equals("ROLE_COURIER"));
         if (hasCourierRole) {
+            Optional<CourierData> opt = courierDataDao.findOne(person.getId());
+            if (opt.isPresent()) return;
+
             CourierData data = new CourierData();
             data.setCourierStatus(CourierStatus.FREE);
             data.setCourier(person);
             data.setRoute(new Route());
+            data.setLastLocation("");
             data.setTravelMode(TravelMode.WALKING);
             courierDataDao.save(data);
         }

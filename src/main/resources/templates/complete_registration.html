@@ -32,7 +32,7 @@
             <h1>Activate your account</h1>
             <br/>
             <p>Message with activation link was sent to provided email.</p>
-            <p>You will be redirected to <a th:href="@{/index.html}" href="#" id="index">main</a> page after 10 seconds.
+            <p>You will be redirected to <a th:href="@{/index.html}" href="#" id="index">login</a> page after 10 seconds.
             </p>
         </div>
     </div>
@@ -41,7 +41,6 @@
             var indexHref = document.getElementById("index").getAttribute("href");
             location.assign(indexHref);
         }
-
         setTimeout(redirectToIndex, 10000);
     </script>
 </body>

@@ -344,7 +344,9 @@ public class RouteProcessor {
 
                 try {
                     if (!driverWorker) {
-                        order = walkOrdersQueue.take();
+                        order = walkOrdersQueue.poll(15, TimeUnit.SECONDS);
+                        if(order == null)
+                            continue;
                     } else {
                         while (order == null) {
                             order = driveOrdersQueue.poll(15, TimeUnit.SECONDS);
@@ -362,15 +364,29 @@ public class RouteProcessor {
                 logger.info("Begin - new route building for ({})", worker);
 
                 office = order.getOrder().getOffice() == null ? getRandomOffice() : order.getOrder().getOffice();
-                flowBuilder.setOffice(office);
+                if (office == null) {
+                    logger.error("There are no offices created");
+                } else {
+                    flowBuilder.setOffice(office);
+                }
+
+
 
                 if (!flowBuilder.process(order, worker)) {
                     logger.error(flowBuilder.getError());
                     //manual rollback successfully picked orders
-                    for (OrderEntry orderEntry : flowBuilder.getOrdersSequence())
-                        if (!orderEntry.isOrderFromClient())//do not multiply fake orders
+
+                    for (OrderEntry orderEntry : flowBuilder.getOrdersSequence()) {
+                        if (!orderEntry.isOrderFromClient()) {//do not multiply fake orders
                             addOrder(orderEntry);
-                } else if (assignOrders(flowBuilder.getOrdersSequence(), worker)) {
+                        }
+                    }
+                    if(driverWorker){
+                        driveWorkerQueue.add(worker);
+                    } else {
+                        walkWorkerQueue.add(worker);
+                    }
+                } else if (assignOrders(flowBuilder.getOrdersSequence(), worker)) { //if process success
                     worker.courierData.getRoute().setMapUrl(flowBuilder.getStaticMap().toString());
                     worker.courierData.setCourierStatus(CourierStatus.ON_WAY);
                     courierDataDao.save(worker.courierData);
@@ -450,13 +466,13 @@ public class RouteProcessor {
 
         Optional<WorkDay> opt = workDayDao.findScheduleForDate(workDayDate, employeeId);
         if (!opt.isPresent()) {
-            logger.warn("Employee #{} is not working on this day ({})", employeeId, workDayDate);
+            logger.error("Employee #{} is not working on this day ({})", employeeId, workDayDate);
             return;
         }
         WorkDay workDay = opt.get();
         Optional<CourierData> optCd = courierDataDao.findOne(employeeId);
         if (!optCd.isPresent()) {
-            logger.info("Employee is not courier on this day ({})", workDayDate);
+            logger.error("Employee is not courier on this day ({})", workDayDate);
             return;
         }
         CourierData courierData = optCd.get();
@@ -518,6 +534,9 @@ public class RouteProcessor {
     }
 
     public void removeCourier(Long employeeId) {
+        if(employeeId == null)
+            return;
+
         List<Order> uncompletedByEmployee = orderDao.findConfirmedByEmployeeId(employeeId);
         for (Order o : uncompletedByEmployee) {
             o.setCourier(null);
@@ -525,16 +544,15 @@ public class RouteProcessor {
             removeOrder(o.getId());
             createOrder(o);
         }
+        walkWorkerQueue.removeIf(c -> c.employeeId.equals(employeeId));
+        driveWorkerQueue.removeIf(c -> c.employeeId.equals(employeeId));
     }
 
     public void removeOrder(Long orderId) {
-        walkOrdersQueue.removeIf(orderEntry -> {
-            orderEntry.order.setCourier(null);
-            return orderEntry.order.getId().equals(orderId);
-        });
-        driveOrdersQueue.removeIf(orderEntry -> {
-            orderEntry.order.setCourier(null);
-            return orderEntry.order.getId().equals(orderId);
-        });
+        if(orderId == null)
+            return;
+
+        walkOrdersQueue.removeIf(orderEntry -> orderEntry.order.getId().equals(orderId));
+        driveOrdersQueue.removeIf(orderEntry -> orderEntry.order.getId().equals(orderId));
     }
 }

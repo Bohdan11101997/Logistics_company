@@ -86,11 +86,11 @@ VALUES (7, trim(to_char(CURRENT_DATE, 'DAY')) :: WEEK_DAY, '00:00', '23:59');
 INSERT INTO work_day (employee_id, week_day, start_time, end_time)
 VALUES (8, trim(to_char(CURRENT_DATE, 'DAY')) :: WEEK_DAY, '06:00', '23:00');
 
-INSERT INTO address (address_id, address_name) VALUES (1, 'Zodchykh St, 34А, Kyiv');
+INSERT INTO address (address_id, address_name) VALUES (1, 'Zodchykh St, 34A, Kyiv');
 INSERT INTO address (address_id, address_name) VALUES (2, 'Lesya Kurbasa Ave, 18, Kyiv');
 INSERT INTO address (address_id, address_name) VALUES (3, 'Semashka St, 9, Kyiv');
 INSERT INTO address (address_id, address_name) VALUES (4, 'Mykoly Krasnova St, 29, Kyiv');
-INSERT INTO address (address_id, address_name) VALUES (5, 'Borysa Zhytkova St, 7Б, Kyiv');
+INSERT INTO address (address_id, address_name) VALUES (5, 'Borysa Zhytkova St, 7B, Kyiv');
 INSERT INTO address (address_id, address_name) VALUES (6, 'Bakynska St, 35, 5, Kyiv');
 INSERT INTO address (address_id, address_name) VALUES (7, 'Vvedenska St, 25-21, Kyiv');
 INSERT INTO address (address_id, address_name) VALUES (8, 'Druzhby Narodiv Blvd, 23, Kyiv');
@@ -118,9 +118,9 @@ INSERT INTO order_status (order_status_id, status_name) VALUES (7, 'DELIVERED');
 
 
 INSERT INTO logistic_company."order"(order_id, estimated_delivery_time,  courier_id, receiver_contact_id, receiver_address_id,  office_id,  order_status_id, order_type_id, weight, width, height, length)
-VALUES (1, '04:05:06', 7, 2, 1,3,  6,1, 12,12,12,12);
+VALUES (1, '04:05:06', 7, 2, 1,3,  6,3, 14,14,14,14);
 INSERT INTO logistic_company."order"(order_id, estimated_delivery_time,  courier_id, receiver_contact_id, receiver_address_id,  office_id, order_status_id, order_type_id, weight, width, height, length)
-VALUES (3, '14:05:06', 7, 5, 1,3,  6,1, 12,12,12,12);
+VALUES (3, '14:05:06', 7, 5, 1,3,  6,3, 13,13,13,13);
 INSERT INTO logistic_company."order"(order_id, estimated_delivery_time,  courier_id, receiver_contact_id, receiver_address_id, office_id, order_status_id, order_type_id, weight, width, height, length)
 VALUES (2, '04:05:06', 7, 2, 1,2,  6,2, 112,132,1322,12);
 INSERT INTO logistic_company."order"(order_id, estimated_delivery_time,  courier_id, receiver_contact_id, receiver_address_id, sender_contact_id, sender_address_id, order_status_id, order_type_id, weight, width, height, length)
@@ -174,16 +174,9 @@ INSERT INTO "advertisement" (advertisement_id,caption,description,show_first_dat
 
 INSERT INTO reset_password (person_id, reset_token) VALUES (4, '47a95c8c-a5d1-4984-9ce5-904ecd81e637');
 
--- INSERT INTO logistic_company."order" (order_id, estimated_delivery_time, courier_id, receiver_contact_id, receiver_address_id, sender_contact_id, sender_address_id, office_id, order_status_id, order_type_id, weight, width, height, length)
--- VALUES (1, '04:05:06', 7, 5, 1, 2, 2, 1, 6, 1, 12, 12, 12, 12);
--- INSERT INTO logistic_company."order" (order_id, estimated_delivery_time, courier_id, receiver_contact_id, receiver_address_id, sender_contact_id, sender_address_id, office_id, order_status_id, order_type_id, weight, width, height, length)
--- VALUES (3, '14:05:06', 7, 5, 1, 2, 2, 1, 6, 1, 12, 12, 12, 12);
--- INSERT INTO logistic_company."order" (order_id, estimated_delivery_time, courier_id, receiver_contact_id, receiver_address_id, sender_contact_id, sender_address_id, office_id, order_status_id, order_type_id, weight, width, height, length)
--- VALUES (2, '04:05:06', 7, 2, 1, 5, 2, 1, 6, 2, 112, 132, 1322, 12);
-
 INSERT INTO logistic_company."courier_data" (person_id, courier_status, courier_last_location, courier_travel_mode, route)
-VALUES (5, trim('FREE') :: logistic_company.COURIER_STATUS, '', 'DRIVING', '{"mapUrl":null,"wayPoints":[]}' :: json);
+VALUES (5, 'FREE' :: logistic_company.COURIER_STATUS, '', 'DRIVING', '{"mapUrl":null,"wayPoints":[]}' :: json);
 INSERT INTO logistic_company."courier_data" (person_id, courier_status, courier_last_location, courier_travel_mode, route)
-VALUES (7, trim('FREE') :: logistic_company.COURIER_STATUS, '', 'WALKING', '{"mapUrl":null,"wayPoints":[]}' :: json);
+VALUES (7, 'FREE' :: logistic_company.COURIER_STATUS, '', 'WALKING', '{"mapUrl":null,"wayPoints":[]}' :: json);
 INSERT INTO logistic_company."courier_data" (person_id, courier_status, courier_last_location, courier_travel_mode, route)
-VALUES (8, trim('FREE') :: logistic_company.COURIER_STATUS, '', 'WALKING', '{"mapUrl":null,"wayPoints":[]}' :: json);
+VALUES (8, 'FREE' :: logistic_company.COURIER_STATUS, '', 'WALKING', '{"mapUrl":null,"wayPoints":[]}' :: json);

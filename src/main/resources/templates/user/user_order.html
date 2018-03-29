@@ -3,20 +3,22 @@
 <head>
     <th:block th:replace="fragments/header :: header-bootstrap-config"/>
     <th:block th:replace="fragments/header :: header-bootstrap-config-IE"/>
+    <th:block th:replace="fragments/header :: header-bootstrap-widgets"/>
+
     <title>Create new order</title>
 
     <link rel="stylesheet" th:href="@{/css/left_menu.css}" type="text/css" href="/static/css/left_menu.css"/>
-    <link rel="stylesheet" th:href="@{/css/main_content.css}" type="text/css" href="/static/css/main_content.css" />
-    <link rel="stylesheet" th:href="@{/css/well.css}" type="text/css" href="/static/css/well.css" />
-    <link rel="stylesheet" th:href="@{/css/table.css}" type="text/css" href="/static/css/table.css" />
+    <link rel="stylesheet" th:href="@{/css/main_content.css}" type="text/css" href="/static/css/main_content.css"/>
+    <link rel="stylesheet" th:href="@{/css/well.css}" type="text/css" href="/static/css/well.css"/>
+    <link rel="stylesheet" th:href="@{/css/table.css}" type="text/css" href="/static/css/table.css"/>
 
     <script th:src="@{/js/forms.js}"></script>
     <script th:src="@{/js/websocket.js}"></script>
     <style>
-    #order-size input {
-        margin-bottom: 5px;
-        margin-right: 5px;
-    }
+        #order-size input {
+            margin-bottom: 5px;
+            margin-right: 5px;
+        }
     </style>
 </head>
 <body class="body-color">
@@ -50,7 +52,7 @@
                                                 <div class="form-group required"
                                                      th:classappend="${#fields.hasErrors('orderType')}? 'has-error'">
                                                     <label for="order-type" class="control-label">Order Type</label>
-                                                    <select id="order-type" class="form-control"
+                                                    <select id="order-type" class="form-control selectpicker"
                                                             onchange="clearErrorStyles(this)"
                                                             th:field="*{{orderType}}">
                                                         <option th:each="type: ${orderTypes}"
@@ -67,8 +69,10 @@
                                                 <div class="form-group" id="order-weight" style="display: none"
                                                      th:classappend="${#fields.hasErrors('weight')}? 'has-error'">
                                                     <label for="weight" class="control-label">Weight (kg)</label>
-                                                    <input id="weight" class="form-control" oninput="clearErrorStyles(this)"
-                                                           pattern="\d{1,}(.\d{1,})*" title="Decimal value representing order weight"
+                                                    <input id="weight" class="form-control"
+                                                           oninput="clearErrorStyles(this)"
+                                                           pattern="\d{1,}(.\d{1,})*"
+                                                           title="Decimal value representing order weight"
                                                            required="required"
                                                            th:field="*{weight}"/>
                                                     <div class="has-error help-block"
@@ -80,17 +84,20 @@
                                                      th:classappend="${#fields.hasErrors('width') || #fields.hasErrors('height') || #fields.hasErrors('length')}? 'has-error'">
                                                     <label class="control-label">Size (cm)</label>
                                                     <div class="form-inline">
-                                                        <input type="number" id="width" class="form-control" placeholder="Width"
+                                                        <input type="number" id="width" class="form-control"
+                                                               placeholder="Width"
                                                                title="Width" min="1"
                                                                oninput="clearErrorStyles(this)"
                                                                required="required"
                                                                th:field="*{width}"/>
-                                                        <input type="number" id="height" class="form-control" placeholder="Height"
+                                                        <input type="number" id="height" class="form-control"
+                                                               placeholder="Height"
                                                                title="Height" min="1"
                                                                oninput="clearErrorStyles(this)"
                                                                required="required"
                                                                th:field="*{height}"/>
-                                                        <input type="number" id="length" class="form-control" placeholder="Length"
+                                                        <input type="number" id="length" class="form-control"
+                                                               placeholder="Length"
                                                                title="Length" min="1"
                                                                required="required"
                                                                oninput="clearErrorStyles(this)"
@@ -116,7 +123,8 @@
                                             <div class="col-lg-10 col-lg-offset-1">
                                                 <div class="form-group required"
                                                      th:classappend="${#fields.hasErrors('senderAddress')}? 'has-error'">
-                                                    <label for="receiver-address" class="control-label">Sender Address</label>
+                                                    <label for="receiver-address" class="control-label">Sender
+                                                        Address</label>
                                                     <input type="text" id="receiver-address" class="form-control"
                                                            required="required"
                                                            oninput="clearErrorStyles(this)"
@@ -128,7 +136,8 @@
 
                                                 <div class="form-group required"
                                                      th:classappend="${#fields.hasErrors('receiverAddress')}? 'has-error'">
-                                                    <label for="sender-address" class="control-label">Receiver Address</label>
+                                                    <label for="sender-address" class="control-label">Receiver
+                                                        Address</label>
                                                     <input type="text" id="sender-address" class="form-control"
                                                            required="required"
                                                            oninput="clearErrorStyles(this)"
@@ -186,7 +195,8 @@
                                                     <label for="phone" class="control-label">Phone</label>
                                                     <input type="text" class="form-control" id="phone"
                                                            minlength="9" maxlength="15"
-                                                           required="required" pattern="(\+380)*([\-\s]*\d[\-\s]*){9}" title="9 digit phone number without country code"
+                                                           required="required" pattern="(\+380)*([\-\s]*\d[\-\s]*){9}"
+                                                           title="9 digit phone number without country code"
                                                            oninput="clearErrorStyles(this)"
                                                            th:field="*{receiverContact.phoneNumber}"/>
                                                     <div class="has-error help-block"
@@ -197,25 +207,34 @@
                                         </div>
                                     </div>
 
-                                    <div class="form-group" th:if="${param.drafted == null}">
-                                        <button class="btn btn-success" th:formaction="@{/user/order}">Save</button>
-                                        <button class="btn btn-info" id="btn-draft" th:formaction="@{/user/order/draft}">Draft</button>
+                                    <div class="form-group col-lg-10" th:if="${param.drafted == null}">
+                                        <button class="btn btn-success" th:formaction="@{/user/order}">Confirm
+                                        </button>
+                                        <button class="btn btn-info" id="btn-draft"
+                                                th:formaction="@{/user/order/draft}">Draft
+                                        </button>
                                     </div>
 
-                                    <div class="form-group" th:if="${param.drafted != null}">
-                                        <input type="hidden" name="drafted" value="true" />
-                                        <input type="hidden" name="id" th:value="${order.id}" />
-                                        <button class="btn btn-success" th:formaction="@{/user/order}">Save</button>
-                                        <button id="btn-delete" class="btn btn-danger" th:formaction="@{/user/order/delete}">Delete</button>
+                                    <div class="form-group col-lg-10" th:if="${param.drafted != null}">
+                                        <input type="hidden" name="drafted" value="true"/>
+                                        <input type="hidden" name="id" th:value="${order.id}"/>
+                                        <button class="btn btn-success" th:formaction="@{/user/order}">Confirm</button>
+                                        <button id="btn-delete" class="btn btn-danger"
+                                                th:formaction="@{/user/order/delete}">Delete
+                                        </button>
+                                        <button class="btn btn-info" id="btn-draft" th:formaction="@{/user/order/draft}">
+                                            Draft
+                                        </button>
                                         <script>
                                             var form = document.getElementById("form-order");
-                                            document.getElementById("btn-delete").addEventListener('click', function() {
+                                            document.getElementById("btn-delete").addEventListener('click', function () {
                                                 form.setAttribute("novalidate", "novalidate");
                                             })
                                         </script>
                                     </div>
                                 </div>
                             </div>
+
                         </form>
 
                     </div>
@@ -251,10 +270,10 @@
     var form = document.getElementById("form-order");
     var draftButton = document.getElementById("btn-draft");
     draftButton.addEventListener(
-        "click", function() {
+        "click", function () {
             form.setAttribute("novalidate", "novalidate");
         }
-    )
+    );
 </script>
 
 <script th:inline="javascript">

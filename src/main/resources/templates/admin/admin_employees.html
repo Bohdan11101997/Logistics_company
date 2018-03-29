@@ -3,6 +3,7 @@
 <head>
     <th:block th:replace="fragments/header :: header-bootstrap-config" />
     <th:block th:replace="fragments/header :: header-bootstrap-config-IE" />
+    <th:block th:replace="fragments/header :: header-bootstrap-widgets" />
 
     <link rel="stylesheet" th:href="@{/css/left_menu.css}" type="text/css" href="../../static/css/left_menu.css" />
     <link rel="stylesheet" th:href="@{/css/main_content.css}" type="text/css" href="../static/css/main_content.css" />
@@ -11,18 +12,6 @@
 
     <script th:src="@{/js/forms.js}" src="../../static/js/forms.js"></script>
     <style>
-        @media (min-width: 768px) {
-            #from-date {
-                margin-right: 5px;
-            }
-        }
-
-        @media (max-width: 767px) {
-            #from-date {
-                margin-bottom: 5px;
-            }
-        }
-
         .form-horizontal {
             padding: 0 15px;
         }
@@ -54,19 +43,19 @@
                                     <div class="form-group">
                                         <label for="first-name" class="control-label">First Name</label>
                                         <input type="text" class="form-control" id="first-name"
-                                            th:field="*{firstName}" />
+                                               th:field="*{firstName}" />
                                     </div>
 
                                     <div class="form-group">
                                         <label for="last-name" class="control-label">Last Name</label>
                                         <input type="text" class="form-control" id="last-name"
-                                            th:field="*{lastName}"/>
+                                               th:field="*{lastName}"/>
                                     </div>
 
                                     <div class="form-group">
                                         <label for="role" class="control-label">Role</label>
                                         <br />
-                                        <select id="role" multiple="multiple"
+                                        <select id="role" multiple="multiple" class="selectpicker"
                                                 th:field="*{roleIds}">
                                             <option th:each="role: ${availableRoles}"
                                                     th:value="${role.roleId}"
@@ -143,13 +132,14 @@
     </div>
 </div>
 
-    <th:block th:replace="fragments/footer :: footer"/>
-    <th:block th:replace="fragments/left_menu :: left-menu-footer" />
+<th:block th:replace="fragments/footer :: footer"/>
+<th:block th:replace="fragments/left_menu :: left-menu-footer" />
 
 <script type="text/javascript">
     document.getElementById('employees').className = 'active';
-    createMultiSelect("#role", true);
+    createMultiSelect();
     createDatePicker(".input-daterange");
 </script>
+
 </body>
 </html>

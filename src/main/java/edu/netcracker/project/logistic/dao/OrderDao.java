@@ -10,7 +10,11 @@ public interface OrderDao extends  CrudDao<Order, Long> {
     List<Order> findConfirmedByEmployeeId(Long employeeId);
     List<Order> findNotProcessed();
     List<Order> findNotProcessedByEmployeeId(Long employeeId);
+    List<Order> findByCourierId(Long courierId);
     List<Order> orderBySenderOrReceiver(Long contactId);
+
+    List<Long> getAllOrderIds();
+
     List<Order> search(SearchFormOrder searchFormOrder, Long id);
 }
 

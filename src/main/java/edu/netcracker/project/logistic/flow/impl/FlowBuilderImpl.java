@@ -64,7 +64,7 @@ public abstract class FlowBuilderImpl implements FlowBuilder {
 
 
     @Override
-    public void setOffice(Office office){
+    public void setOffice(@NotNull Office office){
         this.office = office;
         reset(office,isUseMapRequests());
     }

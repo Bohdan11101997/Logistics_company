@@ -60,10 +60,6 @@ public class Office {
 
     @Override
     public String toString() {
-        return "Office{" +
-                "officeId=" + officeId +
-                ", name='" + name + '\'' +
-                ", address=" + address +
-                '}';
+        return  name;
     }
 }

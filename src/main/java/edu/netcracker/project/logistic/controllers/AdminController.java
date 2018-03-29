@@ -329,35 +329,41 @@ public class AdminController {
 
     @GetMapping("/crud/office")
     public String createOffice(Model model) {
+        model.addAttribute("newOffice", true);
         model.addAttribute("office", new Office());
         return "/admin/admin_crud_office";
     }
 
+    @PostMapping("/crud/office")
+    public String saveOffice(@ModelAttribute("office") Office office) {
+        addressService.save(office.getAddress());
+        officeService.save(office);
+        return "redirect:/admin/offices";
+    }
 
     @GetMapping("/office/update/{id}")
-    public String updateOffice(@PathVariable long id, Model model) {
+    public String getUpdateOffice(@PathVariable long id, Model model) {
+        model.addAttribute("newOffice", false);
         model.addAttribute("office", officeService.findOne(id));
         return "/admin/admin_crud_office";
     }
 
+    @PostMapping("/office/update/{id}")
+    public String updateOffice(@PathVariable long id, Model model, @ModelAttribute("office") Office office ) {
+        model.addAttribute("office", officeService.findOne(id));
+        office.setOfficeId(id);
+        addressService.save(office.getAddress());
+        officeService.save(office);
+        return "redirect:/admin/offices";
+    }
+
     @GetMapping("/office/delete/{id}")
     public String deleteOffice(@PathVariable Long id) {
-
         officeService.delete(id);
         return "redirect:/admin/offices";
     }
 
-    @PostMapping("/crud/office")
-    public String saveOffice(@ModelAttribute("office") Office office) {
-        Optional<Address> opt = addressService.findOne(office.getAddress().getName());
-        if (opt.isPresent()) {
-            return "error/500";
-        }
-        addressService.save(office.getAddress());
-        addressService.findOne(office.getAddress().getName()).get();
-        officeService.save(office);
-        return "redirect:/admin/offices";
-    }
+
 
     @GetMapping("/offices")
     public String getAllOffice(Model model) {
@@ -367,9 +373,9 @@ public class AdminController {
     }
 
     @PostMapping("/offices")
-    public String findByDepartmentOrAddress( @ModelAttribute("officeSearchForm") OfficeSearchForm officeSearchForm,  Model model) {
+    public String findByDepartmentOrAddress(@ModelAttribute("officeSearchForm") OfficeSearchForm officeSearchForm,  Model model) {
         model.addAttribute("offices", officeDao.findByDepartmentOrAddress(officeSearchForm));
-        return "/admin/admin_offices";
+        return "/manager/manager_statistics_offices";
 
     }
 }

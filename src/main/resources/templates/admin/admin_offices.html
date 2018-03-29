@@ -4,6 +4,7 @@
 
     <th:block th:replace="fragments/header :: header-bootstrap-config" />
     <th:block th:replace="fragments/header :: header-bootstrap-config-IE" />
+    <th:block th:replace="fragments/header :: header-bootstrap-widgets" />
 
     <link rel="stylesheet" th:href="@{/css/left_menu.css}" type="text/css" href="../../static/css/left_menu.css" />
     <link rel="stylesheet" th:href="@{/css/main_content.css}" type="text/css" href="../static/css/main_content.css" />
@@ -46,11 +47,9 @@
                                         <label for="Select_side" class="control-label">Sort by</label>
                                         <select class="form-control" id="Select_side"
                                                 th:field="*{sort_ids}">
-                                            <!--<option>Last Name</option>-->
-                                            <option th:value="${1}">ID</option>
+                                            <option th:value="${1}">Department number</option>
                                             <option th:value="${2}">Orders Sent</option>
-                                            <option th:value="${3}">Nothing</option>
-                                            <!--<option>Usefulness</option>-->
+
                                         </select>
                                     </div>
 
@@ -74,7 +73,6 @@
                                 <th>ID</th>
                                 <th>Address</th>
                                 <th>Department Number</th>
-                                <th>Count orders</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -83,7 +81,6 @@
                                 <td th:text="${office.officeId}"></td>
                                 <td th:text="${office.address}"></td>
                                 <td th:text="${office.name}"></td>
-                                <td th:text="${office.count}"></td>
                                 <td>
                                     <form th:action="@{'/admin/office/update/' + ${office.officeId}}" th:method="GET">
                                         <button class="btn btn-link update">update</button>

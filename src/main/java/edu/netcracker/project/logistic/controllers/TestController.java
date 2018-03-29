@@ -1,5 +1,6 @@
 package edu.netcracker.project.logistic.controllers;
 
+import com.google.maps.model.GeocodingResult;
 import edu.netcracker.project.logistic.dao.ContactDao;
 import edu.netcracker.project.logistic.dao.OfficeDao;
 import edu.netcracker.project.logistic.dao.impl.AddressDaoImpl;
@@ -67,10 +68,10 @@ public class TestController {
 
     //        PdfView pdfView;
 
-//        Address address = new Address("Київ, Академіка Янгеля, 5");
-//        Address address1 = new Address((long) 3, "Академіка Янгеля, 5");
-////        addressService.save(address);
-//        addressService.save(address1);
+        Address address = new Address((long) 3,"Київ, Академіка Янгеля, 5");
+        Address address1 = new Address((long) 3, "Академіка Янгеля, 5");
+       addressService.save(address);
+        addressService.save(address1);
 ////
 ////        System.out.println(address.check("qwqw"));
 ////
@@ -83,6 +84,23 @@ public class TestController {
 //        contactDao.save(contact);
 //        Person person1 = new Person("nick_name", "1121212", localDate, "sdfffsfsdf", contact);
 //        personService.savePerson(person1);
+
+        System.out.println("San Francisco");
+        for(GeocodingResult gr : Address.getListOfAddresses("San Francisco"))
+           System.out.println(gr.formattedAddress);
+        System.out.println("===========================================");
+        System.out.println("ad");
+        for(GeocodingResult gr : Address.getListOfAddresses("ad"))
+            System.out.println(gr.formattedAddress);
+        System.out.println("===========================================");
+        System.out.println("Ukraine, Kiev, BVS St, 1");
+        for(GeocodingResult gr : Address.getListOfAddresses("Ukraine, Kiev, BVS St, 1"))
+            System.out.println(gr.formattedAddress);
+        System.out.println("===========================================");
+        System.out.println("Бульвар Верховної Ради, 12");
+        for(GeocodingResult gr : Address.getListOfAddresses("Бульвар Верховної Ради, 12"))
+            System.out.println(gr.formattedAddress);
+        System.out.println("===========================================");
 
         return "test";
     }

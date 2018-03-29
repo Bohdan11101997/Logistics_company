@@ -23,7 +23,6 @@ public class ManagerController {
     private  OrderTypeDao orderTypeDao;
     private OfficeDao officeDao;
 
-
     @Autowired
     public ManagerController(ManagerStatisticsDao managerStatisticsDao, RoleCrudDao roleCrudDao, OrderStatusDao orderStatusDao, OrderTypeDao orderTypeDao, OfficeDao officeDao) {
         this.managerStatisticsDao = managerStatisticsDao;
@@ -66,7 +65,7 @@ public class ManagerController {
 
 
     @PostMapping("/statistics/orders")
-    public String SearchOrdersByManager(@ModelAttribute("searchFormOrderStatistic") SearchFormOrderStatistic searchFormOrderStatistic, Model model) {
+    public String searchOrdersByManager(@ModelAttribute("searchFormOrderStatistic") SearchFormOrderStatistic searchFormOrderStatistic, Model model) {
         List<StatisticTask> personList = managerStatisticsDao.searchStatisticOrders(searchFormOrderStatistic);
         model.addAttribute("countOrder", managerStatisticsDao.countOrders());
         model.addAttribute("destination_typeOrders", orderTypeDao.findAll());
@@ -77,6 +76,13 @@ public class ManagerController {
         model.addAttribute("personList", personList);
         model.addAttribute("countOrdersBetweenDate", managerStatisticsDao.countOrdersBetweenDate(searchFormOrderStatistic.getFrom(), searchFormOrderStatistic.getTo()));
         model.addAttribute("countOrder", managerStatisticsDao.countOrders());
+        model.addAttribute("averageWeightDocument", managerStatisticsDao.avarageWeightDocument());
+        model.addAttribute("averageCapacityDocument", managerStatisticsDao.avarageCapacityDocument());
+        model.addAttribute("averageWeightPackage", managerStatisticsDao.avarageWeightPackage());
+        model.addAttribute("averageCapacityPackage", managerStatisticsDao.avarageCapacityPackage());
+        model.addAttribute("averageWeightCargo", managerStatisticsDao.avarageWeightCargo());
+        model.addAttribute("averageCapacityCargo", managerStatisticsDao.avarageCapacityCargo());
+
         return "manager/manager_statistics_orders";
     }
 
@@ -108,13 +114,13 @@ public class ManagerController {
 
     @GetMapping("/statistics/offices")
     public String getAllOffice(Model model) {
-        model.addAttribute("offices", officeDao.allOffices());
+        model.addAttribute("offices", officeDao.allOfficesForManager());
         model.addAttribute("officeSearchForm", new OfficeSearchForm());
         return "/manager/manager_statistics_offices";
     }
 
     @PostMapping("/statistics/offices")
-    public String findByDepartmentOrAddress( @ModelAttribute("officeSearchForm") OfficeSearchForm officeSearchForm,  Model model) {
+    public String findByDepartmentOrAddress(@ModelAttribute("officeSearchForm") OfficeSearchForm officeSearchForm,  Model model) {
         model.addAttribute("offices", officeDao.findByDepartmentOrAddress(officeSearchForm));
         return "/manager/manager_statistics_offices";
 

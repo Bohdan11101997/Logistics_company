@@ -3,7 +3,6 @@ package edu.netcracker.project.logistic.controllers;
 
 import edu.netcracker.project.logistic.dao.OrderDao;
 import edu.netcracker.project.logistic.model.Person;
-import edu.netcracker.project.logistic.service.OrderService;
 import edu.netcracker.project.logistic.service.PersonService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,12 +16,10 @@ import java.util.Optional;
 @RequestMapping("/courier")
 public class CourierController {
     private PersonService personService;
-    private OrderService orderService;
     private OrderDao orderDao;
 
-    public CourierController(PersonService personService, OrderService orderService, OrderDao orderDao) {
+    public CourierController(PersonService personService, OrderDao orderDao) {
         this.personService = personService;
-        this.orderService = orderService;
         this.orderDao = orderDao;
     }
 
@@ -38,7 +35,10 @@ public class CourierController {
     }
 
     @GetMapping("/orders")
-    public String viewOrderHistory() {
+    public String viewOrderHistory(Principal principal, Model model) {
+        Person user = personService.findOne(principal.getName())
+                .orElseThrow(IllegalStateException::new);
+        model.addAttribute("orders", orderDao.findByCourierId(user.getId()));
         return "courier/courier_orders_history";
     }
 }

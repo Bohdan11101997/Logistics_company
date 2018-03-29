@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 public class GeneratePdfReport {
 
 
-    public static ByteArrayInputStream citiesReport(ArrayList<Person> employees, ArrayList<Office> offices, List listEmployees, List listOffices, List listOrders, String firstName, String lastName) {
+    public static ByteArrayInputStream managerReport(ArrayList<Person> employees, ArrayList<Office> offices, List listEmployees, List listOffices, List listOrders, String firstName, String lastName) {
 
         Document document = new Document(PageSize.A4.rotate(), 36, 36, 54, 36);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
