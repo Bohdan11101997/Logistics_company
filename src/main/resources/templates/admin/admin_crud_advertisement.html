@@ -154,5 +154,22 @@
         createDatePicker(".input-daterange");
     </script>
 
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+
+        var flag = [[${update}]];
+        window.onload = function() {
+            if(flag)
+                return;
+            doIfNew();
+        };
+        /*]]>*/
+
+        function doIfNew() {
+            document.getElementById('crud_advertisement').className='active';
+        }
+
+    </script>
+
 </body>
 </html>

@@ -16,6 +16,31 @@
             max-height:100px;
             max-width: 200px;
         }
+
+        @media(max-width:766px){
+            .table-responsive>.table>tbody>tr>td{
+                white-space:normal;
+            }
+
+            .description{
+                min-width: 250px;
+                max-width: 300px;
+            }
+        }
+
+        @media (min-width: 767px) and (max-width: 1280px) {
+            .description{
+                min-width:250px;
+                max-width:300px;
+            }
+        }
+
+        @media (min-width: 1281px) and (max-width: 1920px) {
+            .description{
+                min-width:200px;
+                max-width:300px;
+            }
+        }
     </style>
 
 
@@ -35,13 +60,25 @@
 
                     <h1> Advertisement List </h1>
 
+                    <div th:if="${param.update}">
+                        <div class="alert alert-info">
+                            Advertisement has been updated successfully.
+                        </div>
+                    </div>
+
+                    <div th:if="${param.delete}">
+                        <div class="alert alert-danger">
+                            Advertisement has been deleted sucessfully.
+                        </div>
+                    </div>
+
                     <div class="table-responsive">
                         <table class="table table-striped">
                             <thead>
                             <tr>
                                 <th>#</th>
                                 <th>Caption</th>
-                                <th>Description</th>
+                                <th class="description">Description</th>
                                 <th>First Show Date</th>
                                 <th>End Show Date</th>
                                 <th>Type</th>

@@ -15,17 +15,10 @@
 }
 
 .nav.navbar-nav li a {
-    background-color: transparent;
     color: white;
 }
 
-.nav.navbar-nav li a:active {
-    background-color: #FF5619;
-    color:white;
-}
-
 .nav.navbar-nav li a:focus {
-    background-color: transparent;
     color: white;
 }
 
@@ -34,14 +27,48 @@
     color: white;
 }
 
-.nav.navbar-nav .dropdown a:active {
-    background-color: #FF5619;
-    color: white;
+.one .active{
+    background-color: #FF4019;
 }
+
+.one .active a:hover{
+    background-color: #FF4019;
+}
+
+.one .active a:focus{
+    background-color: #FF4019;
+}
+
 
 .nav.navbar-nav .dropdown a:hover {
     background-color: #FF5619;
     color: white;
+}
+
+.navbar-default .navbar-nav>.active>a{
+    background-color: #FF5619;
+    color: white;
+}
+
+.navbar-default .navbar-nav>.active>a:focus{
+    background-color: #FF5619;
+    color: white;
+}
+
+
+.nav .navbar-nav>.active>a {
+    background-color: #FF4019;
+    color:white;
+}
+
+.side-menu .dropdown.panel.panel-default .panel-body .nav.navbar-nav li a:hover {
+    background-color: #FF4019;
+    color:white;
+}
+
+.side-menu .dropdown.panel.panel-default .panel-body .nav.navbar-nav>.active>a:focus{
+    background-color: #FF4019;
+    color:white;
 }
 
 #side-menu-items {
@@ -104,10 +131,6 @@
 .side-menu .dropdown .panel-body .navbar-nav li:last-child {
 }
 
-.side-menu .dropdown.panel.panel-default .panel-body .nav.navbar-nav li a:active {
-    background-color: #FF4019;
-}
-
 .side-menu .panel-body {
     padding: 0;
 }
@@ -118,10 +141,6 @@
 }
 .side-menu .panel-body .navbar-form .form-group {
     width: 100%;
-}
-
-.side-menu .dropdown.panel.panel-default .panel-body .nav.navbar-nav li a:hover {
-    background-color: #FF4019;
 }
 
 .side-menu-container .nav .dropdown {
