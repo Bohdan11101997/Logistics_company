@@ -39,6 +39,8 @@
 
                             <li class="one"><a id="logout" th:href="@{/logout}" th:method="post" href="#"><span class="glyphicon glyphicon-off"></span>Log out</a></li>
 
+                            <li class="one"><a id="landing" th:href="@{/}" th:method="get" href="#"><span class="glyphicon glyphicon-picture"></span>Landing page</a></li>
+
                             <li class="one"><a id="main" th:href="@{/main}" th:method="get" href="#"><span class="glyphicon glyphicon-exclamation-sign"></span>Main</a></li>
 
                             <li id="user_list" sec:authorize="hasRole('ROLE_USER')" class="dropdown panel panel-default">
