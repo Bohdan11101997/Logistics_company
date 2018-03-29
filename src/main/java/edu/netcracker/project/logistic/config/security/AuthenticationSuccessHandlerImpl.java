@@ -23,7 +23,7 @@ public class AuthenticationSuccessHandlerImpl implements AuthenticationSuccessHa
 
     private final int SESSION_INACTIVITY_TIMEOUT = 60 * 60;
 
-    private final Logger logger = LoggerFactory.getLogger(RegistrationController.class);
+    private final Logger logger = LoggerFactory.getLogger(AuthenticationSuccessHandlerImpl.class);
     private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
     @Override

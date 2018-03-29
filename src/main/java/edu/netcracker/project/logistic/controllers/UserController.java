@@ -93,10 +93,12 @@ public class UserController {
 
     private UserForm getUserFormFilledWithContactData(Contact contact) {
         UserForm userForm = new UserForm();
-        userForm.setFirstName(contact.getFirstName());
-        userForm.setLastName(contact.getLastName());
-        userForm.setEmail(contact.getEmail());
-        userForm.setPhoneNumber(contact.getPhoneNumber());
+        Contact contactForUserForm = new Contact();
+        contactForUserForm.setFirstName(contact.getFirstName());
+        contactForUserForm.setLastName(contact.getLastName());
+        contactForUserForm.setEmail(contact.getEmail());
+        contactForUserForm.setPhoneNumber(contact.getPhoneNumber());
+        userForm.setContact(contactForUserForm);
         return userForm;
     }
 
@@ -119,11 +121,13 @@ public class UserController {
         Person person = optionalPerson.get();
         String oldUsername = person.getUserName();
         person.setUserName(userForm.getUserName());
+
         Contact contact = person.getContact();
-        contact.setFirstName(userForm.getFirstName());
-        contact.setLastName(userForm.getLastName());
-        contact.setEmail(userForm.getEmail());
-        contact.setPhoneNumber(userForm.getPhoneNumber());
+        Contact contactFromUserForm = userForm.getContact();
+        contact.setFirstName(contactFromUserForm.getFirstName());
+        contact.setLastName(contactFromUserForm.getLastName());
+        contact.setEmail(contactFromUserForm.getEmail());
+        contact.setPhoneNumber(contactFromUserForm.getPhoneNumber());
 
         fieldValidator.validate(userForm, bindingResult);
         updateUserValidator.validate(person, bindingResult);

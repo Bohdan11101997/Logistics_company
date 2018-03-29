@@ -1,5 +1,8 @@
-package edu.netcracker.project.logistic.error;
+package edu.netcracker.project.logistic.config.security;
 
+import edu.netcracker.project.logistic.controllers.RegistrationController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -12,7 +15,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Component
-public class MyAccessDeniedHandler implements AccessDeniedHandler {
+public class AccessDeniedHandlerImpl implements AccessDeniedHandler {
+
+    private final Logger logger = LoggerFactory.getLogger(AccessDeniedHandlerImpl.class);
 
     @Override
     public void handle(HttpServletRequest httpServletRequest,
@@ -22,7 +27,7 @@ public class MyAccessDeniedHandler implements AccessDeniedHandler {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         if (auth != null) {
-            // debug
+            logger.error("User is not authenticated! Access denied!");
         }
 
         httpServletResponse.sendRedirect(httpServletRequest.getContextPath() + "/error/403");

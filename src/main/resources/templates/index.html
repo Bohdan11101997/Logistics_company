@@ -54,6 +54,11 @@
             .carousel-caption{
                 background-color: transparent;
             }
+
+            .carousel-inner>.item>img {
+                height: 300px;
+                width: auto;
+            }
         }
 
         @media (min-width: 767px) and (max-width: 1920px){
@@ -63,13 +68,17 @@
             .hide-mobile {
                 display: block;
             }
+
+            .carousel-inner>.item>img {
+                height: 800px;
+                width: auto;
+            }
         }
 
         .carousel-caption{
             background-color:var(--second-color);
             border-radius: 5px;
         }
-
     </style>
 
 </head>
@@ -165,7 +174,7 @@
 
     <div class="carousel-inner" role="listbox">
         <div class="item active">
-            <img src = "/images/advertising_high.jpg" alt="Image" />
+            <img src = "images/advertising_high.jpg" alt="Image" />
             <div class="carousel-caption">
                 <div class="show-mobile">
                     <h6>Swipe right to see all new advertisements</h6>
@@ -209,30 +218,39 @@
     <div class="container-fluid bg-grey" style="margin:30px auto">
         <h2 class="text-center">Contacts</h2>
         <div class="row">
-            <div class="col-sm-5 col-lg-5">
+            <div class="col-sm-5 col-lg-5 ">
                 <p>Questions and wishes will be considered in 3 days.</p>
                 <p><span class="glyphicon glyphicon-map-marker"></span> Kyiv, Ukraine</p>
                 <p><span class="glyphicon glyphicon-phone"></span> +380 (044) 777-77-77</p>
                 <p><span class="glyphicon glyphicon-envelope"></span> client.two.client@gmail.com</p>
             </div>
             <div class="col-sm-7  col-lg-6">
+            <form method="post"
+                  th:action="@{/index/feedback/send}"
+                  th:object="${feedbackForm}" >
                 <div class="row">
                     <div class="col-sm-6 form-group">
-                        <input class="form-control" id="nameSend" name="nameSend" placeholder="Your name" type="text" required="required" />
+                        <input class="form-control" id="nameSend" name="nameSend" placeholder="Your name" type="text" required="required"
+                               th:field="*{name}"/>
                     </div>
                     <div class="col-sm-6 form-group">
-                        <input class="form-control" id="emailSend" name="emailSend" placeholder="Your e-mail" type="email" required="required" />
+                        <input class="form-control" id="emailSend" name="emailSend" placeholder="Your e-mail" type="email" required="required"
+                               th:field="*{email}"/>
                     </div>
                 </div>
-                <textarea class="form-control" id="commentsSend" name="commentsSend" placeholder="Message" rows="5"></textarea><br />
+                <textarea class="form-control" id="commentsSend" name="commentsSend" placeholder="Message" rows="5"
+                          th:field="*{message}"></textarea><br />
                 <div class="row">
                     <div class="col-sm-12 form-group">
                         <button class="btn btn-default pull-right" type="submit">Send</button>
                     </div>
                 </div>
                 <div class=" col-lg-1"></div>
+            </form>
             </div>
         </div>
+
+
     </div>
 
     <!-- Add Google Maps -->
