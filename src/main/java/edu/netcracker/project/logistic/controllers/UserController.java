@@ -171,7 +171,7 @@ public class UserController {
         }
 
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        // change for single password
+
         Optional<Person> optionalPerson = userService.findOne(username);
 
         if (!optionalPerson.isPresent()) {
@@ -288,9 +288,9 @@ public class UserController {
 
 
     @PostMapping(value = "/order/delete", params = {"drafted", "id"})
-    public String deleteDraft(Model model, @ModelAttribute("order") Order draftedOrder,
+    public String deleteDraft( @ModelAttribute("order") Order draftedOrder,
                                          @RequestParam String id,
-                                         BindingResult result, Principal principal) {
+                               Principal principal) {
         Optional<Person> opt = userService.findOne(principal.getName());
         if (!opt.isPresent()) {
             return "error/500";
@@ -315,8 +315,10 @@ public class UserController {
     @GetMapping("/orders")
     public String getOrderByUser(Model model, Principal principal) {
         Optional<Person> opt = userService.findOne(principal.getName());
+        if (!opt.isPresent()) {
+            return "error/500";
+        }
         Person user = opt.get();
-
         model.addAttribute("orders", orderDao.orderBySenderOrReceiver(user.getId()));
         model.addAttribute("destination_typeOrders", orderTypeDao.findAll());
         model.addAttribute("status_OrdersList", orderStatusDao.findAll());
@@ -397,17 +399,6 @@ public class UserController {
         return "redirect:/main";
     }
 
-    @GetMapping("/order/update/{id}")
-    public String updateOrder(@PathVariable long id, Model model) {
-        model.addAttribute("order", orderDao.findOne(id));
-        return "/user/order";
-    }
-
-    @GetMapping("/order/delete/{id}")
-    public String deleteOffice(@PathVariable Long id) {
-        orderDao.delete(id);
-        return "redirect:/user/orders";
-    }
 
     @GetMapping(value = "")
     public String viewSentOrders() {

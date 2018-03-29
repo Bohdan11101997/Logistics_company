@@ -12,5 +12,7 @@ public interface OfficeDao extends CrudDao<Office, Long> {
 
     List<Office> allOfficesForManager();
 
+    List<Office>  getOfficesForAdmin();
+
     List<Office> allOffices();
 }

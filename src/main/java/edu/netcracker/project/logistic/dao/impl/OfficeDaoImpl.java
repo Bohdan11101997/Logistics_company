@@ -55,7 +55,7 @@ public class OfficeDaoImpl implements OfficeDao, QueryDao, RowMapper<Office> {
     }
 
 
-    private Office mapRowOrder(ResultSet resultSet, int i) throws SQLException {
+    private Office mapRowOffice(ResultSet resultSet, int i) throws SQLException {
 
         Office office = new Office();
         office.setOfficeId(resultSet.getLong("office_id"));
@@ -112,7 +112,7 @@ public class OfficeDaoImpl implements OfficeDao, QueryDao, RowMapper<Office> {
             office = jdbcTemplate.queryForObject(
                     getFindOneQuery(),
                     new Object[]{aLong},
-                    this::mapRow);
+                    this);
             logger.info("Find one office");
             return Optional.of(office);
 
@@ -146,7 +146,7 @@ public class OfficeDaoImpl implements OfficeDao, QueryDao, RowMapper<Office> {
                 return namedParameterJdbcTemplate.query(
                         getAllOfficesSortByNumber(),
                         paramMap,
-                        this::mapRowOrder);
+                        this::mapRowOffice);
 
             } catch (EmptyResultDataAccessException ex) {
                 return Collections.emptyList();
@@ -157,7 +157,7 @@ public class OfficeDaoImpl implements OfficeDao, QueryDao, RowMapper<Office> {
                 return namedParameterJdbcTemplate.query(
                         getAllOfficesSortByOrdersSent(),
                         paramMap,
-                        this::mapRowOrder);
+                        this::mapRowOffice);
 
             } catch (EmptyResultDataAccessException ex) {
                 return Collections.emptyList();
@@ -168,7 +168,7 @@ public class OfficeDaoImpl implements OfficeDao, QueryDao, RowMapper<Office> {
                 return namedParameterJdbcTemplate.query(
                         getAllOfficesByDepartmentOrAddress(),
                         paramMap,
-                        this::mapRowOrder);
+                        this::mapRowOffice);
 
             } catch (EmptyResultDataAccessException ex) {
                 return Collections.emptyList();
@@ -179,12 +179,18 @@ public class OfficeDaoImpl implements OfficeDao, QueryDao, RowMapper<Office> {
 
     @Override
     public List<Office> allOfficesForManager() {
-        return jdbcTemplate.query(getAllOfficesForManager(), this::mapRowOrder);
+        return jdbcTemplate.query(getAllOfficesForManager(), this::mapRowOffice);
     }
 
     @Override
+    public List<Office>  getOfficesForAdmin() {
+        return jdbcTemplate.query(getAllOfficesForAdmin(), this::mapRowOffice);
+    }
+
+
+    @Override
     public List<Office> allOffices() {
-        return jdbcTemplate.query(getAllOffices(), this::mapRow);
+        return jdbcTemplate.query(getAllOffices(), this);
     }
 
     @Override
@@ -209,6 +215,10 @@ public class OfficeDaoImpl implements OfficeDao, QueryDao, RowMapper<Office> {
 
     private String getAllOffices() {
         return queryService.getQuery("all.office");
+    }
+
+    private String getAllOfficesForAdmin() {
+        return queryService.getQuery("all.office.for.manager");
     }
 
     private String getAllOfficesForManager() {

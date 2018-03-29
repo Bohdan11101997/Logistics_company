@@ -13,6 +13,7 @@ public class Person {
     private LocalDateTime registrationDate;
     private Contact contact;
     private Set<Role> roles;
+    private Long count;
 
     public Person(String userName, String password, LocalDateTime registrationDate, Contact contact, Set<Role> roles) {
         this.userName = userName;
@@ -33,6 +34,14 @@ public class Person {
         this.id = id;
     }
 
+
+    public Long getCount() {
+        return count;
+    }
+
+    public void setCount(Long count) {
+        this.count = count;
+    }
 
     @NotNull
     @Size(min = 6, max = 30)

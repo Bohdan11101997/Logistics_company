@@ -40,7 +40,6 @@
     <div th:replace="fragments/left_menu :: left-menu-header">
     </div>
 
-    <!-- Main Content -->
     <div class="container-fluid">
         <div class="side-body">
             <div class="row">
@@ -110,12 +109,10 @@
                                         <label for="Select_side" class="control-label">Sort by</label>
                                         <select class="form-control" id="Select_side"
                                                 th:field="*{sortIds}">
-                                            <!--<option>Last Name</option>-->
                                             <option th:value="${1}">Id</option>
                                             <option th:value="${2}">Creation date</option>
                                             <option th:value="${3}">Weight</option>
                                             <option th:value="${3}">Capacity</option>
-                                            <!--<option>Usefulness</option>-->
                                         </select>
                                     </div>
 
@@ -138,8 +135,6 @@
                             <tr>
                                 <th>#</th>
                                 <th>ID</th>
-                                <!--<th>Receiver contact</th>-->
-                                <!--<th>Sender contact</th>-->
                                 <th>Order type</th>
                                 <th>Order status</th>
                                 <th>Creation date</th>
@@ -154,8 +149,6 @@
                             <tr th:each="statistic_task, iter : ${personList}">
                                 <td th:text="${iter.index + 1}"></td>
                                 <td th:text="${statistic_task.order.id}"></td>
-                                <!--<td th:text="${statistic_task.order.receiverContact}"></td>-->
-                                <!--<td th:text="${statistic_task.order.senderContact}"></td>-->
                                 <td th:text="${statistic_task.order.orderType}"></td>
                                 <td th:text="${statistic_task.order.orderStatus}"></td>
                                 <td th:text="${{statistic_task.order.creationTime}}"></td>
@@ -189,18 +182,10 @@
     </div>
 </div>
 
-
 <th:block th:replace="fragments/footer :: footer"/>
 <th:block th:replace="fragments/left_menu :: left-menu-footer" />
 
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
-
 <script type="text/javascript">
-    document.getElementById('user_my_orders').className='active';
-
-    // createMultiSelect"#role", true);
-
     createMultiSelect();
 
     createDatePicker(".input-daterange");

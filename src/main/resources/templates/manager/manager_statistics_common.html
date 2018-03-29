@@ -18,12 +18,11 @@
     <div th:replace="fragments/left_menu :: left-menu-header">
     </div>
 
-    <!-- Main Content -->
     <div class="container-fluid">
         <div class="side-body">
             <div class="row">
                 <div class="col-lg-10 col-md-10 col-md-offset-1 col-lg-offset-1">
-
+                    <h1>Common Statistics</h1>
                     <form method="post" class="form-horizontal" th:object="${searchFormOrderStatistic}">
                         <div class="form-group"
                              th:classappend="${#fields.hasErrors('from')}? 'has-error'">
@@ -42,7 +41,7 @@
                         </div>
                         <div class="form-group">
                             <button class="btn btn-primary">
-                                <a href="#"  class="glyphicon glyphicon-search"></a>
+                                <a href="#" class="glyphicon glyphicon-search"></a>
                                 Search
                             </button>
                         </div>
@@ -67,16 +66,11 @@
                         </div>
                         <div class="form-group">
                             <button class="btn btn-primary">
-
-                                <a href="/pdfreport" target="_blank" class="glyphicon glyphicon-search"></a>
-                               Generate
-
-
+                                <a href="/pdfreport" class="glyphicon glyphicon-search"></a>
+                                Generate
                             </button>
                         </div>
                     </form>
-
-
                     <h2>Employees:</h2><label th:text="${countEmployees}"></label>
                     <h5>Admins:</h5><label th:text="${countEmployeesAdmins}"></label>
                     <h5>Couriers:</h5><label th:text="${countEmployeesCouriers}"></label>
@@ -102,12 +96,8 @@
 <th:block th:replace="fragments/left_menu :: left-menu-footer"/>
 
 <script>
-    function sendmail() {
-        window.open('/pdfreport');
-
-    }
     createDatePicker(".input-daterange");
-    document.getElementById('manager_statistics_common').className='active';
+    document.getElementById('manager_statistics_common').className = 'active';
 </script>
 </body>
 </html>

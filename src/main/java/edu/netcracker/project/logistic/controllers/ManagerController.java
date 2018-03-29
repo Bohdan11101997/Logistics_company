@@ -16,11 +16,10 @@ import java.util.List;
 public class ManagerController {
 
 
-
     private ManagerStatisticsDao managerStatisticsDao;
     private RoleCrudDao roleCrudDao;
     private OrderStatusDao orderStatusDao;
-    private  OrderTypeDao orderTypeDao;
+    private OrderTypeDao orderTypeDao;
     private OfficeDao officeDao;
 
     @Autowired
@@ -38,7 +37,6 @@ public class ManagerController {
         model.addAttribute("employees", employees);
         model.addAttribute("availableRoles", roleCrudDao.findEmployeeRolesForManager());
         model.addAttribute("searchFormStatisticEmployee", new SearchFormStatisticEmployee());
-
         return "/manager/manager_statistics_employees";
     }
 
@@ -52,11 +50,8 @@ public class ManagerController {
     }
 
 
-
-
     @GetMapping("/statistics/orders")
     public String getStatisticOrderByManager(Model model) {
-
         model.addAttribute("destination_typeOrders", orderTypeDao.findAll());
         model.addAttribute("status_OrdersList", orderStatusDao.findAll());
         model.addAttribute("searchFormOrderStatistic", new SearchFormOrderStatistic());
@@ -82,7 +77,6 @@ public class ManagerController {
         model.addAttribute("averageCapacityPackage", managerStatisticsDao.avarageCapacityPackage());
         model.addAttribute("averageWeightCargo", managerStatisticsDao.avarageWeightCargo());
         model.addAttribute("averageCapacityCargo", managerStatisticsDao.avarageCapacityCargo());
-
         return "manager/manager_statistics_orders";
     }
 
@@ -120,9 +114,8 @@ public class ManagerController {
     }
 
     @PostMapping("/statistics/offices")
-    public String findByDepartmentOrAddress(@ModelAttribute("officeSearchForm") OfficeSearchForm officeSearchForm,  Model model) {
+    public String findByDepartmentOrAddress(@ModelAttribute("officeSearchForm") OfficeSearchForm officeSearchForm, Model model) {
         model.addAttribute("offices", officeDao.findByDepartmentOrAddress(officeSearchForm));
         return "/manager/manager_statistics_offices";
-
     }
 }

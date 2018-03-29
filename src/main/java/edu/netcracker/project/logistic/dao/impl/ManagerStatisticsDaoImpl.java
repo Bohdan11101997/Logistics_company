@@ -50,7 +50,7 @@ public class ManagerStatisticsDaoImpl implements ManagerStatisticsDao {
         for (int i = 0; rowsLeft; i++) {
             Person person = new Person();
             person.setId(rs.getLong("person_id"));
-            person.setId(rs.getLong("count_orders"));
+            person.setCount(rs.getLong("count_orders"));
             person.setRegistrationDate(rs.getTimestamp("registration_date").toLocalDateTime());
 
             Contact contact = contactMapper.mapRow(rs, i);

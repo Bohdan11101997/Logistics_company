@@ -73,6 +73,7 @@
                                 <th>ID</th>
                                 <th>Address</th>
                                 <th>Department Number</th>
+                                <th>Count orders</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -81,6 +82,7 @@
                                 <td th:text="${office.officeId}"></td>
                                 <td th:text="${office.address}"></td>
                                 <td th:text="${office.name}"></td>
+                                <td th:text="${office.count}"></td>
                                 <td>
                                     <form th:action="@{'/admin/office/update/' + ${office.officeId}}" th:method="GET">
                                         <button class="btn btn-link update">update</button>

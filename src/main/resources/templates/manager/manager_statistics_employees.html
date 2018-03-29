@@ -21,7 +21,7 @@
     <div th:replace="fragments/left_menu :: left-menu-header">
     </div>
 
-    <!-- Main Content -->
+
     <div class="container-fluid">
         <div class="side-body">
             <div class="row">
@@ -63,10 +63,8 @@
                                             <label for="sortEmployees" class="control-label">Sort by</label>
                                             <select class="form-control" id="sortEmployees"
                                                     th:field="*{sortId}">
-                                                <!--<option>Last Name</option>-->
                                                 <option th:value="${1}">Registration Date</option>
                                                 <option th:value="${2}">Orders Handled</option>
-                                                <!--<option>Usefulness</option>-->
                                             </select>
                                         </div>
 
@@ -97,18 +95,13 @@
                             </thead>
                             <tbody>
                             <tr th:each="emp, iter: ${employees}">
-                                <td th:text="${iter.index + 1}">1</td>
-                                <td th:text="${emp.contact.firstName}">Count</td>
-                                <td th:text="${emp.contact.lastName}">Last</td>
-                                <td th:text="${emp.contact.email}">mail@gmail.com</td>
-                                <td th:text="${emp.contact.phoneNumber}">+380777777777</td>
-                                <td th:text="${{emp.registrationDate}}">16-02-2018</td>
-                                <td th:text="${{emp.id}}">16-02-2018</td>
-                                <td>
-                                    <form th:action="@{'/admin/crud/employee/' + ${emp.id}}" th:method="GET">
-                                        <button class="btn btn-link more">more</button>
-                                    </form>
-                                </td>
+                                <td th:text="${iter.index + 1}"></td>
+                                <td th:text="${emp.contact.firstName}"></td>
+                                <td th:text="${emp.contact.lastName}"></td>
+                                <td th:text="${emp.contact.email}"></td>
+                                <td th:text="${emp.contact.phoneNumber}"></td>
+                                <td th:text="${{emp.registrationDate}}"></td>
+                                <td th:text="${{emp.count}}"></td>
                             </tr>
                             </tbody>
                         </table>
@@ -123,7 +116,7 @@
 <th:block th:replace="fragments/footer :: footer"/>
 <th:block th:replace="fragments/left_menu :: left-menu-footer" />
 
-<!-- Latest compiled and minified JavaScript -->
+
 <script type="text/javascript">
     document.getElementById('employees').className = 'active';
     createMultiSelect();
