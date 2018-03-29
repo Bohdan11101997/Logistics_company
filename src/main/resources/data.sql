@@ -1,5 +1,5 @@
 INSERT INTO contact (contact_id, first_name, last_name, phone_number, email)
-VALUES (1, 'Bohdan', 'Zinkevich', '984565656', 'bohdan.zsnkevich@ukr.net');
+VALUES (1, 'admin', 'admin', '984565656', 'admin.admin@example.com');
 INSERT INTO contact (contact_id, first_name, last_name, phone_number, email)
 VALUES (2, 'Stanislav', 'Popov', '984565657', 'stanis1.stanis1@ukr.net');
 INSERT INTO contact (contact_id, first_name, last_name, phone_number, email)
@@ -15,17 +15,21 @@ VALUES (7, 'Khal', 'Drogo', '984565662', 'Khal.Drogo@example.com');
 INSERT INTO contact (contact_id, first_name, last_name, phone_number, email)
 VALUES (8, 'Daenerys', 'Targaryen', '984565663', 'Daenerys.Targaryen@example.com');
 INSERT INTO contact (contact_id, first_name, last_name, phone_number, email)
-VALUES (9, 'courier', 'rapidman', '984565664', 'courier.rapidman@example.com');
+VALUES (9, 'courier', 'courier', '984565664', 'courier.rapidman@example.com');
 INSERT INTO contact (contact_id, first_name, last_name, phone_number, email)
 VALUES (10, 'Sansa', 'Stark', '984565665', 'Sansa.Stark@example.com');
 INSERT INTO contact (contact_id, first_name, last_name, phone_number, email)
 VALUES (11, 'callcenter', 'callcenter', '984565666', 'callcenter.callcenter@example.com');
 INSERT INTO contact (contact_id, first_name, last_name, phone_number, email)
 VALUES (12, 'manager', 'manager', '888461636', 'manager.manager@example.com');
+INSERT INTO contact (contact_id, first_name, last_name, phone_number, email)
+VALUES (13, 'callcenter2', 'callcenter2', '984586723', 'callcenter2.callcenter2@example.com');
+INSERT INTO contact (contact_id, first_name, last_name, phone_number, email)
+VALUES (14, 'user', 'user', '984686433', 'user.user@example.com');
 
 
 INSERT INTO person(person_id,  user_name, password, contact_id)
-VALUES (1, 'Bohdan', '12121212', 1);
+VALUES (1, 'admin', '$2a$10$do0ntKXgpga53XkvYdlDFe7y1NUXcD2MpKKag5dZs/RiPqxotDg7G', 1);
 INSERT INTO person (person_id, user_name, password, contact_id)
 VALUES (2, 'Bohdan1', '$2a$10$FaTZAFUbG7UmfDCkAjepf.CY5bHap7wjSsKU02AT6Q7MxB6pgSy1u', 2);
 INSERT INTO person (person_id, user_name, password, contact_id)
@@ -39,11 +43,15 @@ VALUES (6, 'agent-smith', '$2a$10$wTuyKwJX2hUhhuy5Po/lVeKWppG0H3fH0x4UmX4ketu/PH
 INSERT INTO person (person_id, user_name, password, contact_id)
 VALUES (7, 'khal', '$2a$10$VVyAe5T0h9uy5DmUf2XGmOLji7MhIXECaQz1t7h9QVZjukRDsgTt2', 7);
 INSERT INTO person (person_id, user_name, password, contact_id)
-VALUES (8, 'courier', '$2a$10$xAqw2EDobxgMKPp3.yBt5OJAuWa/eQxajk2W1ALNuW5MiFxWs4YZC', 8);
+VALUES (8, 'courier', '$2a$10$xAqw2EDobxgMKPp3.yBt5OJAuWa/eQxajk2W1ALNuW5MiFxWs4YZC', 9);
 INSERT INTO person (person_id, user_name, password, contact_id)
 VALUES (11, 'callcenter', '$2a$10$GgaiWAHTSsCZYdUJt.9Wo.Pr9z/3.r5mIbmzGV2gESwXm9NRKmpd6', 11);
 INSERT INTO person (person_id, user_name, password, contact_id)
 VALUES (12, 'manager', '$2a$10$PKTqjODixGFeY4SG/6uUMOdmPS2neZBJiqOkoe2xgzYz7wPHlO/c.', 12);
+INSERT INTO person (person_id, user_name, password, contact_id)
+VALUES (13, 'callcenter2', '$2a$10$4PWipctvLvrRn1fmVFDLT.9qm6UF7DFh8aEzdFnV9Cf4ZprIeO6ay', 13);
+INSERT INTO person (person_id, user_name, password, contact_id)
+VALUES (14, 'user', '$2a$10$wB6rk6JK4CeETrYEjzXI7elg6GlJhVZ6T028cW1p2LvLo30MNzbIm', 14);
 
 INSERT INTO role (role_id, role_name, is_employee_role, priority) VALUES (1, 'ROLE_ADMIN', TRUE, 'VIP');
 INSERT INTO role (role_id, role_name, is_employee_role, priority) VALUES (2, 'ROLE_USER', FALSE, 'NORMAL');
@@ -54,6 +62,7 @@ INSERT INTO role (role_id, role_name, is_employee_role, priority) VALUES (6, 'RO
 INSERT INTO role (role_id, role_name, is_employee_role, priority) VALUES (7, 'ROLE_COURIER', TRUE, 'VIP');
 
 INSERT INTO person_role (person_id, role_id) VALUES (1, 1);
+INSERT INTO person_role (person_id, role_id) VALUES (1, 2);
 INSERT INTO person_role (person_id, role_id) VALUES (2, 3);
 INSERT INTO person_role (person_id, role_id) VALUES (4, 1);
 INSERT INTO person_role (person_id, role_id) VALUES (2, 2);
@@ -65,12 +74,18 @@ INSERT INTO person_role (person_id, role_id) VALUES (5, 7);
 INSERT INTO person_role (person_id, role_id) VALUES (6, 5);
 INSERT INTO person_role (person_id, role_id) VALUES (7, 7);
 INSERT INTO person_role (person_id, role_id) VALUES (8, 7);
+INSERT INTO person_role (person_id, role_id) VALUES (8, 2);
 INSERT INTO person_role (person_id, role_id) VALUES (11, 5);
+INSERT INTO person_role (person_id, role_id) VALUES (11, 2);
 INSERT INTO person_role (person_id, role_id) VALUES (12, 4);
+INSERT INTO person_role (person_id, role_id) VALUES (12, 2);
+INSERT INTO person_role (person_id, role_id) VALUES (13, 5);
+INSERT INTO person_role (person_id, role_id) VALUES (13, 2);
+INSERT INTO person_role (person_id, role_id) VALUES (14, 2);
 INSERT INTO person_role (person_id, role_id) VALUES (2, 4);
 
 INSERT INTO work_day (employee_id, week_day, start_time, end_time)
-VALUES (1, trim(to_char(CURRENT_DATE, 'DAY')) :: WEEK_DAY, '12:00', '22:00');
+VALUES (1, trim(to_char(CURRENT_DATE, 'DAY')) :: WEEK_DAY, '10:00', '22:00');
 INSERT INTO work_day (employee_id, week_day, start_time, end_time)
 VALUES (2, trim(to_char(CURRENT_DATE, 'DAY')) :: WEEK_DAY, '07:00', '15:00');
 INSERT INTO work_day (employee_id, week_day, start_time, end_time)
@@ -84,7 +99,15 @@ VALUES (6, trim(to_char(CURRENT_DATE, 'DAY')) :: WEEK_DAY, '00:00', '23:59');
 INSERT INTO work_day (employee_id, week_day, start_time, end_time)
 VALUES (7, trim(to_char(CURRENT_DATE, 'DAY')) :: WEEK_DAY, '00:00', '23:59');
 INSERT INTO work_day (employee_id, week_day, start_time, end_time)
-VALUES (8, trim(to_char(CURRENT_DATE, 'DAY')) :: WEEK_DAY, '06:00', '23:00');
+VALUES (8, trim(to_char(CURRENT_DATE, 'DAY')) :: WEEK_DAY, '10:00', '22:00');
+INSERT INTO work_day (employee_id, week_day, start_time, end_time)
+VALUES (11, trim(to_char(CURRENT_DATE, 'DAY')) :: WEEK_DAY, '10:00', '22:00');
+INSERT INTO work_day (employee_id, week_day, start_time, end_time)
+VALUES (12, trim(to_char(CURRENT_DATE, 'DAY')) :: WEEK_DAY, '10:00', '22:00');
+INSERT INTO work_day (employee_id, week_day, start_time, end_time)
+VALUES (13, trim(to_char(CURRENT_DATE, 'DAY')) :: WEEK_DAY, '10:00', '22:00');
+INSERT INTO work_day (employee_id, week_day, start_time, end_time)
+VALUES (14, trim(to_char(CURRENT_DATE, 'DAY')) :: WEEK_DAY, '10:00', '22:00');
 
 INSERT INTO address (address_id, address_name) VALUES (1, 'Zodchykh St, 34A, Kyiv');
 INSERT INTO address (address_id, address_name) VALUES (2, 'Lesya Kurbasa Ave, 18, Kyiv');
@@ -179,4 +202,4 @@ VALUES (5, 'FREE' :: logistic_company.COURIER_STATUS, '', 'DRIVING', '{"mapUrl":
 INSERT INTO logistic_company."courier_data" (person_id, courier_status, courier_last_location, courier_travel_mode, route)
 VALUES (7, 'FREE' :: logistic_company.COURIER_STATUS, '', 'WALKING', '{"mapUrl":null,"wayPoints":[]}' :: json);
 INSERT INTO logistic_company."courier_data" (person_id, courier_status, courier_last_location, courier_travel_mode, route)
-VALUES (8, 'FREE' :: logistic_company.COURIER_STATUS, '', 'WALKING', '{"mapUrl":null,"wayPoints":[]}' :: json);
+VALUES (8, 'FREE' :: logistic_company.COURIER_STATUS, '', 'DRIVING', '{"mapUrl":null,"wayPoints":[]}' :: json);
