@@ -345,8 +345,11 @@ public class RouteProcessor {
                 try {
                     if (!driverWorker) {
                         order = walkOrdersQueue.poll(15, TimeUnit.SECONDS);
-                        if(order == null)
+                        if(order == null) {
+                            logger.info("No walk order found. Restarting search");
+                            walkWorkerQueue.put(worker);
                             continue;
+                        }
                     } else {
                         while (order == null) {
                             order = driveOrdersQueue.poll(15, TimeUnit.SECONDS);

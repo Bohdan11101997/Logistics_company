@@ -10,6 +10,10 @@
         .error {
             color: var(--error-color);
         }
+
+        #prev-order, #next-order {
+            color: white;
+        }
     </style>
 </head>
 <body class="body-color">
@@ -204,7 +208,7 @@
         xhr.onreadystatechange = function () {
             if (xhr.readyState !== XMLHttpRequest.DONE) return;
             if (xhr.status === 200) {
-                APP.wayPoints[APP.currentOrder].status = "CANCELLED";
+                APP.route.wayPoints[APP.currentOrder].status = "CANCELLED";
                 var routeCompleted = APP.route.wayPoints.every(function (point) {
                     return point.status !== "DELIVERING";
                 });
