@@ -2,8 +2,10 @@ package edu.netcracker.project.logistic.service.impl;
 
 import edu.netcracker.project.logistic.dao.PersonCrudDao;
 import edu.netcracker.project.logistic.dao.ResetPasswordTokenDao;
+import edu.netcracker.project.logistic.model.Message;
 import edu.netcracker.project.logistic.model.Person;
 import edu.netcracker.project.logistic.model.ResetPasswordToken;
+import edu.netcracker.project.logistic.service.MessageService;
 import edu.netcracker.project.logistic.service.ResetPasswordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
@@ -26,16 +28,15 @@ public class ResetPasswordServiceImpl implements ResetPasswordService {
     private PersonCrudDao personService;
     private ResetPasswordTokenDao resetPasswordTokenDao;
     private HttpServletRequest request;
-    private Environment env;
-    private JavaMailSender sender;
+    private MessageService messageService;
 
     @Autowired
-    public ResetPasswordServiceImpl(PersonCrudDao personService, ResetPasswordTokenDao resetPasswordTokenDao, HttpServletRequest request, Environment env, JavaMailSender sender) {
+    public ResetPasswordServiceImpl(PersonCrudDao personService, ResetPasswordTokenDao resetPasswordTokenDao,
+                                    HttpServletRequest request, MessageService messageService) {
         this.personService = personService;
         this.resetPasswordTokenDao = resetPasswordTokenDao;
         this.request = request;
-        this.env = env;
-        this.sender = sender;
+        this.messageService = messageService;
     }
 
     @Transactional
@@ -59,19 +60,23 @@ public class ResetPasswordServiceImpl implements ResetPasswordService {
         resetPasswordTokenDao.save(resetPasswordToken);
 
         // send it in e-mail
+        sendGeneratedTokenOnEmail(resetPasswordToken);
+
+    }
+
+    private void sendGeneratedTokenOnEmail(ResetPasswordToken resetPasswordToken){
         String appUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
 
-        MimeMessage mimeMessage = sender.createMimeMessage();
-        MimeMessageHelper msg = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-        msg.setSubject("Verify email address");
-        String from = env.getProperty("spring.mail.username");
-        msg.setFrom(from);
-        msg.setTo(resetPasswordToken.getPerson().getContact().getEmail());
-        msg.setText("To reset your password, click the link below:\n" + appUrl
-                + "/password/reset?token=" + resetPasswordToken.getResetToken(), false);
+        Message message = new Message();
+        String subject = "Verify email address";
+        message.setSubject(subject);
+        String to = resetPasswordToken.getPerson().getContact().getEmail();
+        message.setTo(to);
+        String text = "To reset your password, click the link below:\n" + appUrl
+                + "/password/reset?token=" + resetPasswordToken.getResetToken();
+        message.setText(text);
 
-        sender.send(mimeMessage);
-
+        messageService.sendMessage(message);
     }
 
     @Override

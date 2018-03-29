@@ -345,8 +345,11 @@ public class RouteProcessor {
                 try {
                     if (!driverWorker) {
                         order = walkOrdersQueue.poll(15, TimeUnit.SECONDS);
-                        if(order == null)
+                        if(order == null) {
+                            logger.info("No walk order found. Restarting search");
+                            walkWorkerQueue.put(worker);
                             continue;
+                        }
                     } else {
                         while (order == null) {
                             order = driveOrdersQueue.poll(15, TimeUnit.SECONDS);
@@ -369,6 +372,8 @@ public class RouteProcessor {
                 } else {
                     flowBuilder.setOffice(office);
                 }
+
+
 
                 if (!flowBuilder.process(order, worker)) {
                     logger.error(flowBuilder.getError());
@@ -532,6 +537,9 @@ public class RouteProcessor {
     }
 
     public void removeCourier(Long employeeId) {
+        if(employeeId == null)
+            return;
+
         List<Order> uncompletedByEmployee = orderDao.findConfirmedByEmployeeId(employeeId);
         for (Order o : uncompletedByEmployee) {
             o.setCourier(null);
@@ -539,16 +547,15 @@ public class RouteProcessor {
             removeOrder(o.getId());
             createOrder(o);
         }
+        walkWorkerQueue.removeIf(c -> c.employeeId.equals(employeeId));
+        driveWorkerQueue.removeIf(c -> c.employeeId.equals(employeeId));
     }
 
     public void removeOrder(Long orderId) {
-        walkOrdersQueue.removeIf(orderEntry -> {
-            orderEntry.order.setCourier(null);
-            return orderEntry.order.getId().equals(orderId);
-        });
-        driveOrdersQueue.removeIf(orderEntry -> {
-            orderEntry.order.setCourier(null);
-            return orderEntry.order.getId().equals(orderId);
-        });
+        if(orderId == null)
+            return;
+
+        walkOrdersQueue.removeIf(orderEntry -> orderEntry.order.getId().equals(orderId));
+        driveOrdersQueue.removeIf(orderEntry -> orderEntry.order.getId().equals(orderId));
     }
 }

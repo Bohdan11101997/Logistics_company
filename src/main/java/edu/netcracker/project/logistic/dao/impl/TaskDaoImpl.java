@@ -106,8 +106,11 @@ public class TaskDaoImpl implements TaskDao, RowMapper<Task> {
     }
 
     @Override
-    public void delete(Long aLong) {
-        throw new RuntimeException("Not implemented yet.");
+    public void delete(Long taskId) {
+        jdbcTemplate.update(
+                getFindDeleteQuery(),
+                taskId
+        );
     }
 
     @Override
@@ -132,4 +135,6 @@ public class TaskDaoImpl implements TaskDao, RowMapper<Task> {
     }
 
     private String getFindByOrderIdQuery() { return queryService.getQuery("select.task.by.order_id"); }
+
+    private String getFindDeleteQuery() { return queryService.getQuery("delete.task"); }
 }

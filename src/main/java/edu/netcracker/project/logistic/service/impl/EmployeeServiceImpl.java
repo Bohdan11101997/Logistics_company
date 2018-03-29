@@ -4,6 +4,7 @@ import edu.netcracker.project.logistic.dao.*;
 import edu.netcracker.project.logistic.exception.NonUniqueRecordException;
 import edu.netcracker.project.logistic.model.*;
 import edu.netcracker.project.logistic.service.EmployeeService;
+import edu.netcracker.project.logistic.service.MessageService;
 import edu.netcracker.project.logistic.service.PersonService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +25,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-@PropertySource("classpath:mail.properties")
 public class EmployeeServiceImpl implements EmployeeService {
     private final Logger logger = LoggerFactory.getLogger(EmployeeServiceImpl.class);
 
@@ -32,21 +32,19 @@ public class EmployeeServiceImpl implements EmployeeService {
     private PersonCrudDao personDao;
     private PersonRoleDao personRoleDao;
     private RoleCrudDao roleDao;
-    private Environment env;
-    private JavaMailSender sender;
     private PersonService personService;
+    private MessageService messageService;
     private WorkDayDao workDayDao;
 
     @Autowired
     public EmployeeServiceImpl(ContactDao contactDao, PersonCrudDao personDao,
                                PersonRoleDao personRoleDao, RoleCrudDao roleDao,
-                               Environment env, JavaMailSender sender, WorkDayDao workDayDao) {
+                               MessageService messageService, WorkDayDao workDayDao) {
         this.contactDao = contactDao;
         this.personDao = personDao;
         this.personRoleDao = personRoleDao;
         this.roleDao = roleDao;
-        this.env = env;
-        this.sender = sender;
+        this.messageService = messageService;
         this.workDayDao = workDayDao;
     }
 
@@ -91,20 +89,20 @@ public class EmployeeServiceImpl implements EmployeeService {
         person.getRoles().add(userRole);
     }
 
-    private void sendMessageWithNewCredentialsOnMail(String email, String username, String temporaryPassword) throws MessagingException {
-        MimeMessage mimeMessage = sender.createMimeMessage();
-        MimeMessageHelper msg = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-        msg.setSubject("Successful registration!");
-        String from = env.getProperty("spring.mail.username");
-        msg.setFrom(from);
-        msg.setTo(email);
-        msg.setText("You have been registered in our logistic company service!\n" +
+    private void sendMessageWithNewCredentialsOnMail(String email, String username, String temporaryPassword) {
+
+        Message message = new Message();
+        String subject = "Successful registration!";
+        message.setSubject(subject);
+        String to = email;
+        message.setTo(to);
+        String text = "You have been registered in our logistic company service!\n" +
                 "You can login with credentials below.\n" +
                 "Username: " + username + "\n" +
                 "Password: " + temporaryPassword + "\n" +
-                "We recommend you log in and change temporary password!", false);
+                "We recommend you log in and change temporary password!";
 
-        sender.send(mimeMessage);
+        messageService.sendMessage(message);
     }
 
     @Override

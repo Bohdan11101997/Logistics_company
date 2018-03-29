@@ -41,26 +41,26 @@
                                 <div class="col-lg-8 col-lg-offset-2">
 
                                     <div class="form-group required"
-                                         th:classappend="${#fields.hasErrors('firstName')}? 'has-error'">
+                                         th:classappend="${#fields.hasErrors('contact.firstName')}? 'has-error'">
                                         <label for="first_name" class="control-label">First Name</label>
                                         <input type="text" class="form-control" id="first_name" placeholder=""
                                                required="required" minlength="1" maxlength="45"
-                                               th:field="*{firstName}"/>
+                                               th:field="*{contact.firstName}"/>
                                         <div class="has-error help-block"
-                                             th:if="${#fields.hasErrors('firstName')}"
-                                             th:errors="*{firstName}">
+                                             th:if="${#fields.hasErrors('contact.firstName')}"
+                                             th:errors="*{contact.firstName}">
                                         </div>
                                     </div>
 
                                     <div class="form-group required"
-                                         th:classappend="${#fields.hasErrors('lastName')}? 'has-error'">
+                                         th:classappend="${#fields.hasErrors('contact.lastName')}? 'has-error'">
                                         <label for="last_name" class="control-label">Last Name</label>
                                         <input type="text" class="form-control" id="last_name" placeholder=""
                                                required="required" minlength="1" maxlength="45"
-                                               th:field="*{lastName}"/>
+                                               th:field="*{contact.lastName}"/>
                                         <div class="has-error help-block"
-                                             th:if="${#fields.hasErrors('lastName')}"
-                                             th:errors="*{lastName}">
+                                             th:if="${#fields.hasErrors('contact.lastName')}"
+                                             th:errors="*{contact.lastName}">
                                         </div>
                                     </div>
 
@@ -77,27 +77,27 @@
                                     </div>
 
                                     <div class="form-group required"
-                                         th:classappend="${#fields.hasErrors('email')}? 'has-error'">
+                                         th:classappend="${#fields.hasErrors('contact.email')}? 'has-error'">
                                         <label for="email" class="control-label">E-mail</label>
                                         <input type="email" class="form-control" id="email" placeholder=""
                                                required="required" minlength="6" maxlength="254"
-                                               th:field="*{email}"/>
+                                               th:field="*{contact.email}"/>
                                         <div class="has-error help-block"
-                                             th:if="${#fields.hasErrors('email')}"
-                                             th:errors="*{email}">
+                                             th:if="${#fields.hasErrors('contact.email')}"
+                                             th:errors="*{contact.email}">
                                         </div>
                                     </div>
 
                                     <div class="form-group required"
-                                         th:classappend="${#fields.hasErrors('phoneNumber')}? 'has-error'">
+                                         th:classappend="${#fields.hasErrors('contact.phoneNumber')}? 'has-error'">
                                         <label for="phone" class="control-label">Phone</label>
                                         <input type="text" class="form-control" id="phone" placeholder=""
                                                required="required" minlength="9" maxlength="15"
                                                pattern="(\+380)*([\-\s]*\d[\-\s]*){9}" title="9 digit phone number without country code"
-                                               th:field="*{phoneNumber}"/>
+                                               th:field="*{contact.phoneNumber}"/>
                                         <div class="has-error help-block"
-                                             th:if="${#fields.hasErrors('phoneNumber')}"
-                                             th:errors="*{phoneNumber}">
+                                             th:if="${#fields.hasErrors('contact.phoneNumber')}"
+                                             th:errors="*{contact.phoneNumber}">
                                         </div>
                                     </div>
 

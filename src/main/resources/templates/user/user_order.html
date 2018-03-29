@@ -248,7 +248,7 @@
 <th:block th:replace="fragments/left_menu :: left-menu-footer"/>
 
 <script type="text/javascript">
-    document.getElementById('user_create_new_order').className = 'active';
+
     var orderSizeElement = document.getElementById('order-size');
     var orderWeightElement = document.getElementById('order-weight');
     var orderDetailsParent = orderSizeElement.parentElement;
@@ -274,6 +274,24 @@
             form.setAttribute("novalidate", "novalidate");
         }
     );
+</script>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+
+    // there must be parameter with boolean value
+    var flag = [[${param.drafted == null}]];
+    window.onload = function() {
+        if(flag)
+            return;
+        doIfNew();
+    };
+    /*]]>*/
+
+    function doIfNew() {
+        document.getElementById('user_create_new_order').className = 'active';
+    }
+
 </script>
 
 </body>
