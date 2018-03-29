@@ -101,6 +101,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 "Username: " + username + "\n" +
                 "Password: " + temporaryPassword + "\n" +
                 "We recommend you log in and change temporary password!";
+        message.setText(text);
 
         messageService.sendMessage(message);
     }
